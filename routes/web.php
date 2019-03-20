@@ -59,3 +59,13 @@ Route::resource('/setores', 'SetorController');
 Route::get('/protocolotipos/export/csv', 'ProtocoloTipoController@exportcsv')->name('protocolotipos.export.csv');
 Route::get('/protocolotipos/export/pdf', 'ProtocoloTipoController@exportpdf')->name('protocolotipos.export.pdf');
 Route::resource('/protocolotipos', 'ProtocoloTipoController');
+
+/* Situacões ou status dos protocolos */
+Route::get('/protocolosituacoes/export/csv', 'ProtocoloSituacaoController@exportcsv')->name('protocolosituacoes.export.csv');
+Route::get('/protocolosituacoes/export/pdf', 'ProtocoloSituacaoController@exportpdf')->name('protocolosituacoes.export.pdf');
+Route::resource('/protocolosituacoes', 'ProtocoloSituacaoController');
+
+/* Tipos de períodos */
+Route::get('/periodotipos/export/csv', 'PeriodoTipoController@exportcsv')->name('periodotipos.export.csv');
+Route::get('/periodotipos/export/pdf', 'PeriodoTipoController@exportpdf')->name('periodotipos.export.pdf');
+Route::resource('/periodotipos', 'PeriodoTipoController');

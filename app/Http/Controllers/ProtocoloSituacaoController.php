@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ProtocoloTipo;
+use App\ProtocoloSituacao;
 use App\Perpage;
 
 use Response;
@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Gate;
 
 use Illuminate\Support\Facades\DB;
 
-class ProtocoloTipoController extends Controller
+class ProtocoloSituacaoController extends Controller
 {
 
     protected $pdf;
 
-    /**
+     /**
      * Construtor.
      *
      * precisa estar logado ao sistema
@@ -27,14 +27,14 @@ class ProtocoloTipoController extends Controller
      *
      * @return 
      */
-    public function __construct(\App\Reports\ProtocoloTipoReport $pdf)
+    public function __construct(\App\Reports\ProtocoloSituacaoReport $pdf)
     {
         $this->middleware(['middleware' => 'auth']);
         $this->middleware(['middleware' => 'hasaccess']);
 
         $this->pdf = $pdf;
     }
-
+        
     /**
      * Display a listing of the resource.
      *
@@ -42,14 +42,14 @@ class ProtocoloTipoController extends Controller
      */
     public function index()
     {
-        if (Gate::denies('protocolotipo.index')) {
+        if (Gate::denies('protocolosituacao.index')) {
             abort(403, 'Acesso negado.');
         }
 
-        $protocolotipos = new ProtocoloTipo;
+        $protocolosituacoes = new ProtocoloSituacao;
 
         // ordena
-        $protocolotipos = $protocolotipos->orderBy('descricao', 'asc');
+        $protocolosituacoes = $protocolosituacoes->orderBy('descricao', 'asc');
 
         // se a requisição tiver um novo valor para a quantidade
         // de páginas por visualização ele altera aqui
@@ -62,9 +62,9 @@ class ProtocoloTipoController extends Controller
         $perpages = Perpage::orderBy('valor')->get();
 
         // paginação
-        $protocolotipos = $protocolotipos->paginate(session('perPage', '5'));
+        $protocolosituacoes = $protocolosituacoes->paginate(session('perPage', '5'));
 
-        return view('protocolotipos.index', compact('protocolotipos', 'perpages'));
+        return view('protocolosituacoes.index', compact('protocolosituacoes', 'perpages'));
     }
 
     /**
@@ -74,10 +74,10 @@ class ProtocoloTipoController extends Controller
      */
     public function create()
     {
-        if (Gate::denies('protocolotipo.create')) {
+        if (Gate::denies('protocolosituacao.create')) {
             abort(403, 'Acesso negado.');
-        }        
-        return view('protocolotipos.create');
+        }   
+        return view('protocolosituacoes.create');
     }
 
     /**
@@ -92,13 +92,13 @@ class ProtocoloTipoController extends Controller
           'descricao' => 'required',
         ]);
 
-        $ProtocoloTipo = $request->all();
+        $ProtocoloSituacao = $request->all();
 
-        ProtocoloTipo::create($ProtocoloTipo); //salva
+        ProtocoloSituacao::create($ProtocoloSituacao); //salva
 
-        Session::flash('create_protocolotipo', 'Tipo de protocolo cadastrado com sucesso!');
+        Session::flash('create_protocolosituacao', 'Situação do protocolo cadastrado com sucesso!');
 
-        return redirect(route('protocolotipos.index'));        
+        return redirect(route('protocolosituacoes.index'));  
     }
 
     /**
@@ -109,13 +109,13 @@ class ProtocoloTipoController extends Controller
      */
     public function show($id)
     {
-        if (Gate::denies('protocolotipo.show')) {
+        if (Gate::denies('protocolosituacao.show')) {
             abort(403, 'Acesso negado.');
         }
 
-        $protocolotipos = ProtocoloTipo::findOrFail($id);
+        $protocolosituacoes = ProtocoloSituacao::findOrFail($id);
 
-        return view('protocolotipos.show', compact('protocolotipos'));
+        return view('protocolosituacoes.show', compact('protocolosituacoes'));
     }
 
     /**
@@ -126,13 +126,13 @@ class ProtocoloTipoController extends Controller
      */
     public function edit($id)
     {
-        if (Gate::denies('protocolotipo.edit')) {
+        if (Gate::denies('protocolosituacao.edit')) {
             abort(403, 'Acesso negado.');
         }
 
-        $protocolotipo = ProtocoloTipo::findOrFail($id);
+        $protocolosituacao = ProtocoloSituacao::findOrFail($id);
 
-        return view('protocolotipos.edit', compact('protocolotipo'));
+        return view('protocolosituacoes.edit', compact('protocolosituacao'));
     }
 
     /**
@@ -148,13 +148,13 @@ class ProtocoloTipoController extends Controller
           'descricao' => 'required',
         ]);
 
-        $protocolotipo = ProtocoloTipo::findOrFail($id);
+        $protocolosituacao = ProtocoloSituacao::findOrFail($id);
             
-        $protocolotipo->update($request->all());
+        $protocolosituacao->update($request->all());
         
-        Session::flash('edited_protocolotipo', 'Tipo de protocolo alterado com sucesso!');
+        Session::flash('edited_protocolosituacao', 'Situação do protocolo alterado com sucesso!');
 
-        return redirect(route('protocolotipos.edit', $id));
+        return redirect(route('protocolosituacoes.edit', $id));
     }
 
     /**
@@ -165,15 +165,15 @@ class ProtocoloTipoController extends Controller
      */
     public function destroy($id)
     {
-        if (Gate::denies('protocolotipo.delete')) {
+        if (Gate::denies('protocolosituacao.delete')) {
             abort(403, 'Acesso negado.');
         }
 
-        ProtocoloTipo::findOrFail($id)->delete();
+        ProtocoloSituacao::findOrFail($id)->delete();
 
-        Session::flash('deleted_protocolotipo', 'Tipo de protocolo excluído com sucesso!');
+        Session::flash('deleted_protocolosituacao', 'Situação do protocolo excluído com sucesso!');
 
-        return redirect(route('protocolotipos.index'));
+        return redirect(route('protocolosituacoes.index'));
     }
 
     /**
@@ -184,25 +184,25 @@ class ProtocoloTipoController extends Controller
      */
     public function exportcsv()
     {
-        if (Gate::denies('protocolotipo.export')) {
+        if (Gate::denies('protocolosituacao.export')) {
             abort(403, 'Acesso negado.');
         }
 
-       $headers = [
+        $headers = [
                 'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
             ,   'Content-type'        => 'text/csv'
-            ,   'Content-Disposition' => 'attachment; filename=TiposProtocolo_' .  date("Y-m-d H:i:s") . '.csv'
+            ,   'Content-Disposition' => 'attachment; filename=SituacoesProtocolo_' .  date("Y-m-d H:i:s") . '.csv'
             ,   'Expires'             => '0'
             ,   'Pragma'              => 'public'
         ];
 
-        $protocolotipos = DB::table('protocolo_tipos');
+        $protocolosituacoes = DB::table('protocolo_situacaos');
 
-        $protocolotipos = $protocolotipos->select('descricao');
+        $protocolosituacoes = $protocolosituacoes->select('descricao');
 
-        $protocolotipos = $protocolotipos->orderBy('descricao', 'asc');
+        $protocolosituacoes = $protocolosituacoes->orderBy('descricao', 'asc');
 
-        $list = $protocolotipos->get()->toArray();
+        $list = $protocolosituacoes->get()->toArray();
 
         # converte os objetos para uma array
         $list = json_decode(json_encode($list), true);
@@ -221,7 +221,7 @@ class ProtocoloTipoController extends Controller
         };
 
         return Response::stream($callback, 200, $headers);
-    } 
+    }
 
     /**
      * Exportação para pdf
@@ -231,7 +231,7 @@ class ProtocoloTipoController extends Controller
      */
     public function exportpdf()
     {
-        if (Gate::denies('protocolotipo.export')) {
+        if (Gate::denies('protocolosituacao.export')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -240,23 +240,23 @@ class ProtocoloTipoController extends Controller
         $this->pdf->SetFont('Arial', '', 12);
         $this->pdf->AddPage();
 
-        $protocolotipos = DB::table('protocolo_tipos');
+        $protocolosituacoes = DB::table('protocolo_situacaos');
 
-        $protocolotipos = $protocolotipos->select('descricao');
-
-
-        $protocolotipos = $protocolotipos->orderBy('descricao', 'asc');    
+        $protocolosituacoes = $protocolosituacoes->select('descricao');
 
 
-        $protocolotipos = $protocolotipos->get();
+        $protocolosituacoes = $protocolosituacoes->orderBy('descricao', 'asc');    
 
-        foreach ($protocolotipos as $protocolotipo) {
-            $this->pdf->Cell(186, 6, utf8_decode($protocolotipo->descricao), 0, 0,'L');
+
+        $protocolosituacoes = $protocolosituacoes->get();
+
+        foreach ($protocolosituacoes as $protocolosituacao) {
+            $this->pdf->Cell(186, 6, utf8_decode($protocolosituacao->descricao), 0, 0,'L');
             $this->pdf->Ln();
         }
 
-        $this->pdf->Output('D', 'ProtocoloTipos_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        $this->pdf->Output('D', 'ProtocoloSituacao_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
 
-    }   
+    }      
 }

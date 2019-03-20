@@ -158,7 +158,7 @@ class PermissionsTableSeeder extends Seeder
         ]);
         DB::table('permissions')->insert([
             'name' => 'protocolotipo.create',
-            'description' => 'Registrar novo protocolo',
+            'description' => 'Registrar novo tipo de protocolo',
         ]);
         DB::table('permissions')->insert([
             'name' => 'protocolotipo.edit',
@@ -175,6 +175,58 @@ class PermissionsTableSeeder extends Seeder
         DB::table('permissions')->insert([
             'name' => 'protocolotipo.export',
             'description' => 'Exportação de dados dos tipos de protocolos',
+        ]);
+
+        //Situação do protocolo
+        DB::table('permissions')->insert([
+            'name' => 'protocolosituacao.index',
+            'description' => 'Lista de Situações do protocolos',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolosituacao.create',
+            'description' => 'Registrar nova situação do protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolosituacao.edit',
+            'description' => 'Alterar dados da situação do protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolosituacao.delete',
+            'description' => 'Excluir situação do protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolosituacao.show',
+            'description' => 'Mostrar dados da situação do protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolosituacao.export',
+            'description' => 'Exportação de dados das situações dos protocolos',
+        ]);
+
+        //Situação do protocolo
+        DB::table('permissions')->insert([
+            'name' => 'periodotipo.index',
+            'description' => 'Lista de tipos de período',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'periodotipo.create',
+            'description' => 'Registrar novo tipo de período',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'periodotipo.edit',
+            'description' => 'Alterar dados do tipo de período',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'periodotipo.delete',
+            'description' => 'Excluir tipo de período',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'periodotipo.show',
+            'description' => 'Mostrar dados do tipo de período',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'periodotipo.export',
+            'description' => 'Exportação de dados dos tipos de período',
         ]);
 
     }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ProtocoloTipo;
+use App\PeriodoTipo;
 use App\Perpage;
 
 use Response;
@@ -14,9 +14,8 @@ use Illuminate\Support\Facades\Gate;
 
 use Illuminate\Support\Facades\DB;
 
-class ProtocoloTipoController extends Controller
+class PeriodoTipoController extends Controller
 {
-
     protected $pdf;
 
     /**
@@ -27,7 +26,7 @@ class ProtocoloTipoController extends Controller
      *
      * @return 
      */
-    public function __construct(\App\Reports\ProtocoloTipoReport $pdf)
+    public function __construct(\App\Reports\PeriodoTipoReport $pdf)
     {
         $this->middleware(['middleware' => 'auth']);
         $this->middleware(['middleware' => 'hasaccess']);
@@ -42,14 +41,14 @@ class ProtocoloTipoController extends Controller
      */
     public function index()
     {
-        if (Gate::denies('protocolotipo.index')) {
+        if (Gate::denies('periodotipo.index')) {
             abort(403, 'Acesso negado.');
         }
 
-        $protocolotipos = new ProtocoloTipo;
+        $periodotipos = new PeriodoTipo;
 
         // ordena
-        $protocolotipos = $protocolotipos->orderBy('descricao', 'asc');
+        $periodotipos = $periodotipos->orderBy('descricao', 'asc');
 
         // se a requisição tiver um novo valor para a quantidade
         // de páginas por visualização ele altera aqui
@@ -62,9 +61,9 @@ class ProtocoloTipoController extends Controller
         $perpages = Perpage::orderBy('valor')->get();
 
         // paginação
-        $protocolotipos = $protocolotipos->paginate(session('perPage', '5'));
+        $periodotipos = $periodotipos->paginate(session('perPage', '5'));
 
-        return view('protocolotipos.index', compact('protocolotipos', 'perpages'));
+        return view('periodotipos.index', compact('periodotipos', 'perpages'));
     }
 
     /**
@@ -74,10 +73,10 @@ class ProtocoloTipoController extends Controller
      */
     public function create()
     {
-        if (Gate::denies('protocolotipo.create')) {
+        if (Gate::denies('periodotipo.create')) {
             abort(403, 'Acesso negado.');
-        }        
-        return view('protocolotipos.create');
+        } 
+        return view('periodotipos.create');
     }
 
     /**
@@ -92,13 +91,13 @@ class ProtocoloTipoController extends Controller
           'descricao' => 'required',
         ]);
 
-        $ProtocoloTipo = $request->all();
+        $PeriodoTipo = $request->all();
 
-        ProtocoloTipo::create($ProtocoloTipo); //salva
+        PeriodoTipo::create($PeriodoTipo); //salva
 
-        Session::flash('create_protocolotipo', 'Tipo de protocolo cadastrado com sucesso!');
+        Session::flash('create_periodotipo', 'Tipo de período cadastrado com sucesso!');
 
-        return redirect(route('protocolotipos.index'));        
+        return redirect(route('periodotipos.index'));  
     }
 
     /**
@@ -109,13 +108,13 @@ class ProtocoloTipoController extends Controller
      */
     public function show($id)
     {
-        if (Gate::denies('protocolotipo.show')) {
+        if (Gate::denies('periodotipo.show')) {
             abort(403, 'Acesso negado.');
         }
 
-        $protocolotipos = ProtocoloTipo::findOrFail($id);
+        $periodotipos = PeriodoTipo::findOrFail($id);
 
-        return view('protocolotipos.show', compact('protocolotipos'));
+        return view('periodotipos.show', compact('periodotipos'));
     }
 
     /**
@@ -126,13 +125,13 @@ class ProtocoloTipoController extends Controller
      */
     public function edit($id)
     {
-        if (Gate::denies('protocolotipo.edit')) {
+        if (Gate::denies('periodotipo.edit')) {
             abort(403, 'Acesso negado.');
         }
 
-        $protocolotipo = ProtocoloTipo::findOrFail($id);
+        $periodotipo = PeriodoTipo::findOrFail($id);
 
-        return view('protocolotipos.edit', compact('protocolotipo'));
+        return view('periodotipos.edit', compact('periodotipo'));
     }
 
     /**
@@ -148,13 +147,13 @@ class ProtocoloTipoController extends Controller
           'descricao' => 'required',
         ]);
 
-        $protocolotipo = ProtocoloTipo::findOrFail($id);
+        $periodotipo = PeriodoTipo::findOrFail($id);
             
-        $protocolotipo->update($request->all());
+        $periodotipo->update($request->all());
         
-        Session::flash('edited_protocolotipo', 'Tipo de protocolo alterado com sucesso!');
+        Session::flash('edited_protocolotipo', 'Tipo de período alterado com sucesso!');
 
-        return redirect(route('protocolotipos.edit', $id));
+        return redirect(route('periodotipos.edit', $id));
     }
 
     /**
@@ -165,15 +164,15 @@ class ProtocoloTipoController extends Controller
      */
     public function destroy($id)
     {
-        if (Gate::denies('protocolotipo.delete')) {
+        if (Gate::denies('periodotipo.delete')) {
             abort(403, 'Acesso negado.');
         }
 
-        ProtocoloTipo::findOrFail($id)->delete();
+        PeriodoTipo::findOrFail($id)->delete();
 
-        Session::flash('deleted_protocolotipo', 'Tipo de protocolo excluído com sucesso!');
+        Session::flash('deleted_periodotipo', 'Tipo de período excluído com sucesso!');
 
-        return redirect(route('protocolotipos.index'));
+        return redirect(route('periodotipos.index'));
     }
 
     /**
@@ -184,25 +183,25 @@ class ProtocoloTipoController extends Controller
      */
     public function exportcsv()
     {
-        if (Gate::denies('protocolotipo.export')) {
+        if (Gate::denies('periodotipo.export')) {
             abort(403, 'Acesso negado.');
         }
 
        $headers = [
                 'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
             ,   'Content-type'        => 'text/csv'
-            ,   'Content-Disposition' => 'attachment; filename=TiposProtocolo_' .  date("Y-m-d H:i:s") . '.csv'
+            ,   'Content-Disposition' => 'attachment; filename=TiposPeríodo_' .  date("Y-m-d H:i:s") . '.csv'
             ,   'Expires'             => '0'
             ,   'Pragma'              => 'public'
         ];
 
-        $protocolotipos = DB::table('protocolo_tipos');
+        $periodotipos = DB::table('periodo_tipos');
 
-        $protocolotipos = $protocolotipos->select('descricao');
+        $periodotipos = $periodotipos->select('descricao');
 
-        $protocolotipos = $protocolotipos->orderBy('descricao', 'asc');
+        $periodotipos = $periodotipos->orderBy('descricao', 'asc');
 
-        $list = $protocolotipos->get()->toArray();
+        $list = $periodotipos->get()->toArray();
 
         # converte os objetos para uma array
         $list = json_decode(json_encode($list), true);
@@ -231,7 +230,7 @@ class ProtocoloTipoController extends Controller
      */
     public function exportpdf()
     {
-        if (Gate::denies('protocolotipo.export')) {
+        if (Gate::denies('periodotipo.export')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -240,23 +239,23 @@ class ProtocoloTipoController extends Controller
         $this->pdf->SetFont('Arial', '', 12);
         $this->pdf->AddPage();
 
-        $protocolotipos = DB::table('protocolo_tipos');
+        $periodotipos = DB::table('periodo_tipos');
 
-        $protocolotipos = $protocolotipos->select('descricao');
-
-
-        $protocolotipos = $protocolotipos->orderBy('descricao', 'asc');    
+        $periodotipos = $periodotipos->select('descricao');
 
 
-        $protocolotipos = $protocolotipos->get();
+        $periodotipos = $periodotipos->orderBy('descricao', 'asc');    
 
-        foreach ($protocolotipos as $protocolotipo) {
-            $this->pdf->Cell(186, 6, utf8_decode($protocolotipo->descricao), 0, 0,'L');
+
+        $periodotipos = $periodotipos->get();
+
+        foreach ($periodotipos as $periodotipo) {
+            $this->pdf->Cell(186, 6, utf8_decode($periodotipo->descricao), 0, 0,'L');
             $this->pdf->Ln();
         }
 
-        $this->pdf->Output('D', 'ProtocoloTipos_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        $this->pdf->Output('D', 'PeríodoTipos_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
 
-    }   
+    }      
 }
