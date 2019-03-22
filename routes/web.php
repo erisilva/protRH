@@ -48,11 +48,13 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
 /* Funcionarios */
 Route::get('/funcionarios/export/csv', 'FuncionarioController@exportcsv')->name('funcionarios.export.csv');
 Route::get('/funcionarios/export/pdf', 'FuncionarioController@exportpdf')->name('funcionarios.export.pdf');
+Route::get('/funcionarios/autocomplete', 'FuncionarioController@autocomplete')->name('funcionarios.autocomplete');
 Route::resource('/funcionarios', 'FuncionarioController');
 
 /* Setores */
 Route::get('/setores/export/csv', 'SetorController@exportcsv')->name('setores.export.csv');
 Route::get('/setores/export/pdf', 'SetorController@exportpdf')->name('setores.export.pdf');
+Route::get('/setores/autocomplete', 'SetorController@autocomplete')->name('setores.autocomplete');
 Route::resource('/setores', 'SetorController');
 
 /* Tipificação dos protocolos */
@@ -69,3 +71,8 @@ Route::resource('/protocolosituacoes', 'ProtocoloSituacaoController');
 Route::get('/periodotipos/export/csv', 'PeriodoTipoController@exportcsv')->name('periodotipos.export.csv');
 Route::get('/periodotipos/export/pdf', 'PeriodoTipoController@exportpdf')->name('periodotipos.export.pdf');
 Route::resource('/periodotipos', 'PeriodoTipoController');
+
+/* PROTOCOLOS */
+Route::get('/protocolos/export/csv', 'ProtocoloController@exportcsv')->name('protocolos.export.csv');
+Route::get('/protocolos/export/pdf', 'ProtocoloController@exportpdf')->name('protocolos.export.pdf');
+Route::resource('/protocolos', 'ProtocoloController');

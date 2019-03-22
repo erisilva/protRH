@@ -293,4 +293,19 @@ class FuncionarioController extends Controller
         $this->pdf->Output('D', 'Funcionários_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
     }
+
+    /**
+     * Função de autocompletar para ser usada pelo typehead
+     *
+     * @param  
+     * @return json
+     */
+    public function autocomplete(Request $request)
+    {
+        $funcionarios = 
+         Funcionario::select(DB::raw('concat(nome, " ",matricula) as text, id as value'))
+                    ->where("nome","LIKE","%{$request->input('query')}%")
+                    ->get();
+        return response()->json($funcionarios);
+    }
 }

@@ -292,6 +292,20 @@ class SetorController extends Controller
 
         $this->pdf->Output('D', 'Setores_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
+    }
 
+    /**
+     * Função de autocompletar para ser usada pelo typehead
+     *
+     * @param  
+     * @return json
+     */
+    public function autocomplete(Request $request)
+    {
+        $setores = 
+         Setor::select(DB::raw('concat(descricao, " ",codigo) as text, id as value'))
+                    ->where("descricao","LIKE","%{$request->input('query')}%")
+                    ->get();
+        return response()->json($setores);
     }    
 }

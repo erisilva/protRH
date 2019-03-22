@@ -9,4 +9,9 @@ class ProtocoloTipo extends Model
     protected $fillable = [
         'descricao',
     ];
+
+    public function protocolo()
+    {
+        return $this->hasMany('Protocolo');
+    }    
 }

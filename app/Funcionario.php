@@ -9,4 +9,9 @@ class Funcionario extends Model
     protected $fillable = [
         'nome', 'matricula', 'email', 'numeropasta',
     ];
+
+    public function protocolos()
+    {
+        return $this->hasMany('Protocolo');
+    }
 }

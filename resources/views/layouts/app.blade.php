@@ -17,6 +17,9 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+
+    <!-- Custom css, necessary for typehead -->
+    @yield('css-header')
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-primary">

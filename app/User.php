@@ -76,6 +76,9 @@ class User extends Authenticatable
 
     }
 
-
+    public function protocolos()
+    {
+        return $this->hasMany('App\Protocolo');
+    }
 
 }
