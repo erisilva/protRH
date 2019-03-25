@@ -1,11 +1,8 @@
 @extends('layouts.app')
 
 @section('css-header')
-
     <style>
       .twitter-typeahead, .tt-hint, .tt-input, .tt-menu { width: 100%; }
-
-
       .tt-query,
       .tt-hint {
           outline: none;
@@ -20,7 +17,7 @@
       }
 
       .tt-menu { 
-          width: 422px;
+          width: 100%;
           margin-top: 12px;
           padding: 8px 0;
           background-color: #fff;
@@ -42,10 +39,6 @@
           margin: 0;
       }
     </style>
-
-
-
-
 @endsection
 
 @section('content')
@@ -63,44 +56,44 @@
     <div class="form-row">
       <div class="form-group col-md-6">
         <label for="funcionario">Funcionário</label>
-        <input type="text" class="form-control typeahead {{ $errors->has('funcionario') ? ' is-invalid' : '' }}" name="funcionario" id="funcionario" value="">
-        <input type="hidden" id="funcionario_id" name="funcionario_id" value="">
-        @if ($errors->has('funcionario'))
-        <div class="invalid-feedback">
-        {{ $errors->first('funcionario') }}
-        </div>
-        @endif
+        <input type="text" class="form-control typeahead {{ $errors->has('funcionario_id') ? ' is-invalid' : '' }}" name="funcionario" id="funcionario" value="{{ old('funcionario') ?? '' }}">
+        <input type="hidden" id="funcionario_id" name="funcionario_id" value="{{ old('funcionario_id') ?? '' }}">
       </div>
       <div class="form-group col-md-6">
         <label for="setor">Setor</label>
-        <input type="text" class="form-control{{ $errors->has('setor') ? ' is-invalid' : '' }}" name="setor" id="setor" value="">
-        <input type="hidden" id="setor_id" name="setor_id" value="">
-        @if ($errors->has('setor'))
-        <div class="invalid-feedback">
-        {{ $errors->first('setor') }}
-        </div>
-        @endif
+        <input type="text" class="form-control{{ $errors->has('setor_id') ? ' is-invalid' : '' }}" name="setor" id="setor" value="{{ old('setor') ?? '' }}">
+        <input type="hidden" id="setor_id" name="setor_id" value="{{ old('setor_id') ?? '' }}">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group col-md-8">
         <label for="protocolo_tipo_id">Tipo do Protocolo</label>
-        <select class="form-control" id="protocolo_tipo_id" id="protocolo_tipo_id">
+        <select class="form-control {{ $errors->has('protocolo_tipo_id') ? ' is-invalid' : '' }}" name="protocolo_tipo_id" id="protocolo_tipo_id">
           <option value="" selected="true">Selecione ...</option>        
           @foreach($protocolotipos as $protocolotipo)
           <option value="{{$protocolotipo->id}}">{{$protocolotipo->descricao}}</option>
           @endforeach
         </select>
+        @if ($errors->has('protocolo_tipo_id'))
+        <div class="invalid-feedback">
+        {{ $errors->first('protocolo_tipo_id') }}
+        </div>
+        @endif
       </div>
       <div class="form-group col-md-4">
         <label for="protocolo_situacao_id">Situação do Protocolo</label>
-        <select class="form-control" id="protocolo_situacao_id" id="protocolo_situacao_id">
+        <select class="form-control {{ $errors->has('protocolo_situacao_id') ? ' is-invalid' : '' }}" name="protocolo_situacao_id" id="protocolo_situacao_id">
             <option value="" selected="true">Selecione ...</option>
           @foreach($protocolosituacoes as $protocolosituacao)
           <option value="{{$protocolosituacao->id}}">{{$protocolosituacao->descricao}}</option>
           @endforeach
         </select>
+        @if ($errors->has('protocolo_situacao_id'))
+        <div class="invalid-feedback">
+        {{ $errors->first('protocolo_situacao_id') }}
+        </div>
+        @endif
       </div>      
     </div>  
 

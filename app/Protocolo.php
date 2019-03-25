@@ -13,30 +13,30 @@ class Protocolo extends Model
 
     public function user()
     {
-        return $this->belongsTo('User');
+        return $this->belongsTo('App\User');
     }
 
     public function funcionario()
     {
-        return $this->belongsTo('Funcionario');
+        return $this->belongsTo('App\Funcionario');
     }
 
     public function setor()
     {
-        return $this->belongsTo('Setor');
+        return $this->belongsTo('App\Setor');
     }
 
     // Nota Mental : No caso de Modelos com nomes compostos
     // user o formato camelCase para os relacionamentos
     public function protocoloTipo()
     {
-        return $this->belongsTo('ProtocoloTipo');
+        return $this->belongsTo('App\ProtocoloTipo');
     }
     // Nota Mental : No caso de Modelos com nomes compostos
     // user o formato camelCase para os relacionamentos
     public function protocoloSituacao()
     {
-        return $this->belongsTo('ProtocoloSituacao');
+        return $this->belongsTo('App\ProtocoloSituacao');
     }
 
 }

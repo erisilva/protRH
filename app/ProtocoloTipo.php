@@ -12,6 +12,6 @@ class ProtocoloTipo extends Model
 
     public function protocolo()
     {
-        return $this->hasMany('Protocolo');
+        return $this->hasMany('App\Protocolo');
     }    
 }
