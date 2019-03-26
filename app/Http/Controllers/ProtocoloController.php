@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Protocolo;
 use App\ProtocoloSituacao;
 use App\ProtocoloTipo;
+use App\PeriodoTipo;
 use App\Perpage;
 
 use Response;
@@ -16,7 +17,11 @@ use Illuminate\Support\Facades\Gate;
 
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Database\Eloquent\Builder; // para poder usar o whereHas nos filtros
+
 use Auth;
+
+use Carbon\Carbon; // tratamento de datas
 
 class ProtocoloController extends Controller
 {
@@ -44,6 +49,51 @@ class ProtocoloController extends Controller
     public function index()
     {
         $protocolos = new Protocolo;
+
+        // filtros
+        if (request()->has('numprotocolo')){
+            $protocolos = $protocolos->where('id', 'like', '%' . request('numprotocolo') . '%');
+        }
+
+        if (request()->has('nome')){ // nome do funcionário
+            $protocolos = $protocolos->whereHas('funcionario', function ($query) {
+                                                $query->where('nome', 'like', '%' . request('nome') . '%');
+                                            });
+        }
+
+        if (request()->has('setor')){ // nome do setor
+            $protocolos = $protocolos->whereHas('setor', function ($query) {
+                                                $query->where('descricao', 'like', '%' . request('setor') . '%');
+                                            });
+        }
+
+        if (request()->has('protocolo_tipo_id')){
+            if (request('protocolo_tipo_id') != ""){
+                $protocolos = $protocolos->where('protocolo_tipo_id', '=', request('protocolo_tipo_id'));
+            }
+        } 
+
+        if (request()->has('protocolo_situacao_id')){
+            if (request('protocolo_situacao_id') != ""){
+                $protocolos = $protocolos->where('protocolo_situacao_id', '=', request('protocolo_situacao_id'));
+            }
+        } 
+
+        if (request()->has('dtainicio')){
+             if (request('dtainicio') != ""){
+                // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
+                $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
+                $protocolos = $protocolos->where('created_at', '>=', $dataFormatadaMysql);                
+             }
+        }
+
+        if (request()->has('dtafinal')){
+             if (request('dtafinal') != ""){
+                // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
+                $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtafinal'))->format('Y-m-d 23:59:59');         
+                $protocolos = $protocolos->where('created_at', '<=', $dataFormatadaMysql);                
+             }
+        }
 
         // ordena
         $protocolos = $protocolos->orderBy('id', 'desc');
@@ -94,14 +144,17 @@ class ProtocoloController extends Controller
      */
     public function store(Request $request)
     {
+        // geração de uma string aleatória de tamanho configurável
         function generateRandomString($length = 10) {
             return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
         }
 
         $protocolo_input = $request->all();
 
+        // gera uma chave aleatória de 20 caracteres
         $protocolo_input['chave'] = generateRandomString(20);
 
+        // recebi o usuário logado no sistema
         $user = Auth::user();
 
         $protocolo_input['user_id'] = $user->id;
@@ -132,7 +185,9 @@ class ProtocoloController extends Controller
      */
     public function show($id)
     {
-        //
+        $protocolo = Protocolo::findOrFail($id);
+
+        return view('protocolos.show', compact('protocolo'));
     }
 
     /**
@@ -147,9 +202,11 @@ class ProtocoloController extends Controller
 
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
-        $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get();        
+        $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get(); 
 
-        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos'));
+        $periodotipos = PeriodoTipo::orderBy('descricao', 'asc')->get();        
+
+        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos'));
     }
 
     /**
@@ -185,6 +242,10 @@ class ProtocoloController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Protocolo::findOrFail($id)->delete();
+
+        Session::flash('deleted_protocolo', 'Protocolo excluído com sucesso!');
+
+        return redirect(route('protocolos.index'));
     }
 }

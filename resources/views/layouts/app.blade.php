@@ -51,7 +51,7 @@
                         </div>
                       </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">To-Do</a>
+                        <a class="nav-link" href="{{ route('protocolos.index') }}">Protocolos</a>
                     </li>    
                     @endif
                 </ul>

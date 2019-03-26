@@ -47,7 +47,6 @@
         <input type="hidden" id="setor_id" name="setor_id" value="{{ $protocolo->setor_id }}">
       </div>
     </div>
-
     <div class="form-row">
       <div class="form-group col-md-8">
         <label for="protocolo_tipo_id">Tipo do Protocolo</label>
@@ -61,14 +60,13 @@
       <div class="form-group col-md-4">
         <label for="protocolo_situacao_id">Situação do Protocolo</label>
         <select class="form-control" name="protocolo_situacao_id" id="protocolo_situacao_id">
-            <option value="{{$protocolo->protocolo_situacao_id}}" selected="true"> &rarr; {{ $protocolo->protocoloSituacao->descricao }}</option>
+          <option value="{{$protocolo->protocolo_situacao_id}}" selected="true"> &rarr; {{ $protocolo->protocoloSituacao->descricao }}</option>
           @foreach($protocolosituacoes as $protocolosituacao)
           <option value="{{$protocolosituacao->id}}">{{$protocolosituacao->descricao}}</option>
           @endforeach
         </select>
       </div>      
     </div>
-
     <div class="form-group">
       <label for="descricao">Observações</label>
       <textarea class="form-control" name="descricao" rows="3">{{ $protocolo->descricao }}</textarea>      
@@ -76,6 +74,41 @@
 
     <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Alterar Dados do Protocolo</button>
   </form>
+</div>
+<br>
+<div class="container bg-primary text-white">
+  <p class="text-center">Períodos</p>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <form>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="dtainicio">Data inicial</label>
+            <input type="text" class="form-control" id="dtainicio" name="dtainicio" value="" autocomplete="off">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="dtafinal">Data final</label>
+            <input type="text" class="form-control" id="dtafinal" name="dtafinal" value="" autocomplete="off"> 
+          </div>  
+        </div>
+        <div class="form-group">
+          <label for="periodo_tipo_id">Situação do Protocolo</label>
+          <select class="form-control" name="periodo_tipo_id" id="periodo_tipo_id">
+            <option value="" selected="true">Selecionar ... </option>
+            @foreach($periodotipos as $periodotipo)
+            <option value="{{$periodotipo->id}}">{{$periodotipo->descricao}}</option>
+            @endforeach
+          </select>          
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Incluir Período</button>    
+      </form>  
+    </div>
+    <div class="col-md-8">
+  
+    </div>    
+  </div>
 </div>
 <div class="container">
   <div class="float-right">
