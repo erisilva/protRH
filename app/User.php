@@ -76,9 +76,23 @@ class User extends Authenticatable
 
     }
 
+    /**
+     * protocolos  criados pelo operador
+     *
+     * @var Role
+     */
     public function protocolos()
     {
         return $this->hasMany('App\Protocolo');
     }
 
+    /**
+     * Tramitações do operador
+     *
+     * @var Role
+     */
+    public function tramitacaos()
+    {
+        return $this->hasMany('App\Tramitacao');
+    }
 }

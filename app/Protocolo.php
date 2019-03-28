@@ -39,4 +39,13 @@ class Protocolo extends Model
         return $this->belongsTo('App\ProtocoloSituacao');
     }
 
+    public function periodos()
+    {
+        return $this->belongsToMany('App\Periodo');
+    }
+
+    public function tramitacaos()
+    {
+        return $this->belongsToMany('App\Tramitacao');
+    }
 }

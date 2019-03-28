@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Protocolo;
+use App\Periodo;
 use App\ProtocoloSituacao;
 use App\ProtocoloTipo;
 use App\PeriodoTipo;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Redirect; // para poder usar o redirect
 
 use Illuminate\Support\Facades\DB;
 
@@ -115,7 +117,15 @@ class ProtocoloController extends Controller
         $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get();
 
         // paginação
-        $protocolos = $protocolos->paginate(session('perPage', '5'));
+        $protocolos = $protocolos->paginate(session('perPage', '5'))->appends([          
+            'numprotocolo' => request('numprotocolo'),
+            'nome' => request('nome'),
+            'setor' => request('setor'),
+            'protocolo_tipo_id' => request('protocolo_tipo_id'),
+            'protocolo_situacao_id' => request('protocolo_situacao_id'),
+            'dtainicio' => request('dtainicio'),
+            'dtafinal' => request('dtafinal'),          
+            ]);
 
         return view('protocolos.index', compact('protocolos', 'perpages', 'protocolosituacoes', 'protocolotipos'));
     }
@@ -131,6 +141,7 @@ class ProtocoloController extends Controller
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
         $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get();
+
 
 
         return view('protocolos.create', compact('protocolosituacoes', 'protocolotipos'));
@@ -170,11 +181,17 @@ class ProtocoloController extends Controller
 
         Session::flash('create_protocolo', 'Protocolo nº ' . $protocolo->id . ' cadastrado com sucesso!');
 
+        $periodos = Periodo::where('protocolo_id', '=', $protocolo->id)->orderBy('id', 'asc')->get();
+
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
         $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get();
 
-        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos'));
+        $periodotipos = PeriodoTipo::orderBy('descricao', 'asc')->get();
+        
+        //return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos'));
+
+        return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos');
     }
 
     /**
@@ -200,13 +217,17 @@ class ProtocoloController extends Controller
     {
         $protocolo = Protocolo::findOrFail($id);
 
+        $periodos = Periodo::where('protocolo_id', '=', $id)->orderBy('id', 'asc')->get();
+
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
         $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get(); 
 
         $periodotipos = PeriodoTipo::orderBy('descricao', 'asc')->get();        
 
-        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos'));
+        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos'));
+
+        //return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos');
     }
 
     /**

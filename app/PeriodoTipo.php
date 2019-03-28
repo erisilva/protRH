@@ -9,4 +9,9 @@ class PeriodoTipo extends Model
     protected $fillable = [
         'descricao',
     ];
+
+    public function periodos()
+    {
+        return $this->belongsToMany('App\Periodo');
+    }
 }

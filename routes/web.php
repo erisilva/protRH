@@ -76,3 +76,6 @@ Route::resource('/periodotipos', 'PeriodoTipoController');
 Route::get('/protocolos/export/csv', 'ProtocoloController@exportcsv')->name('protocolos.export.csv');
 Route::get('/protocolos/export/pdf', 'ProtocoloController@exportpdf')->name('protocolos.export.pdf');
 Route::resource('/protocolos', 'ProtocoloController');
+
+/*PERIODOS*/
+Route::resource('/periodos', 'PeriodoController')->only(['store', 'destroy',]);

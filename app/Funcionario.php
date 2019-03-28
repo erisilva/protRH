@@ -14,4 +14,9 @@ class Funcionario extends Model
     {
         return $this->hasMany('App\Protocolo');
     }
+
+    public function tramitacaos()
+    {
+        return $this->hasMany('App\Tramitacao');
+    }
 }

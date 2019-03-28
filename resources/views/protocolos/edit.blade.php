@@ -1,5 +1,28 @@
 @extends('layouts.app')
 
+@section('css-header')
+<link rel="stylesheet" href="{{ asset('css/bootstrap-datepicker.min.css') }}">
+<style>
+  .twitter-typeahead, .tt-hint, .tt-input, .tt-menu { width: 100%; }
+  .tt-query, .tt-hint { outline: none;}
+  .tt-query { box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);}
+  .tt-hint {color: #999;}
+  .tt-menu { 
+      width: 100%;
+      margin-top: 12px;
+      padding: 8px 0;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  }
+  .tt-suggestion { padding: 3px 20px; }
+  .tt-suggestion.tt-is-under-cursor { color: #fff; }
+  .tt-suggestion p { margin: 0;}
+</style>
+@endsection
+
 @section('content')
 <div class="container-fluid">
   <nav aria-label="breadcrumb">
@@ -82,7 +105,9 @@
 <div class="container">
   <div class="row">
     <div class="col-md-4">
-      <form>
+      <form method="POST" action="{{ route('periodos.store') }}">
+        @csrf
+        <input type="hidden" id="protocolo_id" name="protocolo_id" value="{{ $protocolo->id }}">
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="dtainicio">Data inicial</label>
@@ -94,25 +119,194 @@
           </div>  
         </div>
         <div class="form-group">
-          <label for="periodo_tipo_id">Situação do Protocolo</label>
-          <select class="form-control" name="periodo_tipo_id" id="periodo_tipo_id">
-            <option value="" selected="true">Selecionar ... </option>
+          <label for="periodo_tipo_id">Tipo do período</label>
+          <select class="form-control {{ $errors->has('periodo_tipo_id') ? ' is-invalid' : '' }}" name="periodo_tipo_id" id="periodo_tipo_id">
+            <option value="" selected>Selecionar ... </option>
             @foreach($periodotipos as $periodotipo)
             <option value="{{$periodotipo->id}}">{{$periodotipo->descricao}}</option>
             @endforeach
-          </select>          
+          </select>
+          @if ($errors->has('periodo_tipo_id'))
+          <div class="invalid-feedback">
+          {{ $errors->first('periodo_tipo_id') }}
+          </div>
+          @endif         
         </div>
         <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Incluir Período</button>    
       </form>  
     </div>
     <div class="col-md-8">
-  
+      @if(Session::has('create_periodo'))
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Info!</strong>  {{ session('create_periodo') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      @endif
+      @if(Session::has('delete_periodo'))
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Info!</strong>  {{ session('delete_periodo') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      @endif      
+      <div class="table-responsive">
+          <table class="table table-striped">
+              <thead>
+                  <tr>
+                      <th scope="col">Inicial</th>
+                      <th scope="col">Final</th>
+                      <th scope="col">Tipo</th>
+                      <th scope="col"></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  @foreach($periodos as $periodo)
+                  <tr>
+                      <td>{{ isset($periodo->inicio) ?  $periodo->inicio->format('d/m/Y') : '-' }}</td>
+                      <td>{{ isset($periodo->fim) ?  $periodo->fim->format('d/m/Y') : '-' }}</td>
+                      <td>{{ $periodo->periodoTipo->descricao }}</td>
+                      <td>
+                        <form method="post" action="{{route('periodos.destroy', $periodo->id)}}">
+                          @csrf
+                          @method('DELETE')  
+                          <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                        </form>
+                      </td>
+                  </tr>    
+                  @endforeach                                                 
+              </tbody>
+          </table>
+        </div>
     </div>    
   </div>
 </div>
+<br>
+<div class="container bg-primary text-white">
+  <p class="text-center">Tramitações</p>
+</div>
+<div class="container">
+  <form>
+    @csrf
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="funcionario">Funcionário</label>
+        <input type="text" class="form-control typeahead" name="funcionario" id="funcionario" value="{{ old('funcionario') ?? '' }}" autocomplete="off">
+        <input type="hidden" id="funcionario_id" name="funcionario_id" value="{{ old('funcionario_id') ?? '' }}">
+      </div>
+      <div class="form-group col-md-6">
+        <label for="setor">Setor</label>
+        <input type="text" class="form-control" name="setor" id="setor" value="{{ old('setor') ?? '' }}" autocomplete="off">
+        <input type="hidden" id="setor_id" name="setor_id" value="{{ old('setor_id') ?? '' }}">
+      </div>
+    </div>
+    <div class="form-group">
+        <label for="descricao">Observações</label>
+        <input type="text" class="form-control" name="descricao" id="descricao" value="{{ old('descricao') ?? '' }}" autocomplete="off">    
+    </div>
+
+    <button type="submit" class="btn btn-primary"><i class="fas fa-plus-square"></i> Incluir Tramitação</button>
+  </form>  
+</div>
+
+
 <div class="container">
   <div class="float-right">
     <a href="{{ route('protocolos.index') }}" class="btn btn-secondary btn-sm" role="button"><i class="fas fa-long-arrow-alt-left"></i> Voltar</i></a>
   </div>
 </div>
+@endsection
+
+@section('script-footer')
+<script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ asset('locales/bootstrap-datepicker.pt-BR.min.js') }}"></script>
+ <script src="{{ asset('js/typeahead.bundle.js') }}"></script>
+<script>
+$(document).ready(function(){
+
+    $('#dtainicio').datepicker({
+        format: "dd/mm/yyyy",
+        todayBtn: "linked",
+        clearBtn: true,
+        language: "pt-BR",
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    $('#dtafinal').datepicker({
+        format: "dd/mm/yyyy",
+        todayBtn: "linked",
+        clearBtn: true,
+        language: "pt-BR",
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    var funcionarios = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace("text"),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote: {
+            url: "{{route('funcionarios.autocomplete')}}?query=%QUERY",
+            wildcard: '%QUERY'
+        },
+        limit: 10
+    });
+    funcionarios.initialize();
+
+    $("#funcionario").typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    },
+    {
+        name: "funcionarios",
+        displayKey: "text",
+        source: funcionarios.ttAdapter()
+        }).on("typeahead:selected", function(obj, datum, name) {
+            console.log(datum);
+            $(this).data("seletectedId", datum.value);
+            $('#funcionario_id').val(datum.value);
+            console.log(datum.value);
+        }).on('typeahead:autocompleted', function (e, datum) {
+            console.log(datum);
+            $(this).data("seletectedId", datum.value);
+            $('#funcionario_id').val(datum.value);
+            console.log(datum.value);
+    });
+
+    var setores = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace("text"),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote: {
+            url: "{{route('setores.autocomplete')}}?query=%QUERY",
+            wildcard: '%QUERY'
+        },
+        limit: 10
+    });
+    setores.initialize();
+
+    $("#setor").typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    },
+    {
+        name: "setores",
+        displayKey: "text",
+        source: setores.ttAdapter()
+        }).on("typeahead:selected", function(obj, datum, name) {
+            console.log(datum);
+            $(this).data("seletectedId", datum.value);
+            $('#setor_id').val(datum.value);
+            console.log(datum.value);
+        }).on('typeahead:autocompleted', function (e, datum) {
+            console.log(datum);
+            $(this).data("seletectedId", datum.value);
+            $('#setor_id').val(datum.value);
+            console.log(datum.value);
+    });
+}); 
+</script>
 @endsection
