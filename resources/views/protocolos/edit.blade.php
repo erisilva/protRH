@@ -55,16 +55,29 @@
     @csrf
     @method('PUT')
     <div class="form-row">
+      <div class="form-group col-md-3">
+        <div class="p-3 bg-primary text-white text-right h2">Nº {{ $protocolo->id }}</div>    
+      </div>
       <div class="form-group col-md-2">
-        <label for="funcionario">Nº</label>
-        <input type="text" class="form-control" name="funcionario" value="{{ $protocolo->id }}" readonly>
+        <label for="dia">Data</label>
+        <input type="text" class="form-control" name="dia" value="{{ $protocolo->created_at->format('d/m/Y') }}" readonly>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="hora">Hora</label>
+        <input type="text" class="form-control" name="hora" value="{{ $protocolo->created_at->format('H:i') }}" readonly>
       </div>
       <div class="form-group col-md-5">
+        <label for="setor">Operador</label>
+        <input type="text" class="form-control" name="setor" value="{{ $protocolo->user->name }}" readonly>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
         <label for="funcionario">Funcionario</label>
         <input type="text" class="form-control" name="funcionario" value="{{ $protocolo->funcionario->nome }}" readonly>
         <input type="hidden" id="funcionario_id" name="funcionario_id" value="{{ $protocolo->funcionario_id }}">
       </div>
-      <div class="form-group col-md-5">
+      <div class="form-group col-md-6">
         <label for="setor">Setor</label>
         <input type="text" class="form-control" name="setor" value="{{ $protocolo->setor->descricao }}" readonly>
         <input type="hidden" id="setor_id" name="setor_id" value="{{ $protocolo->setor_id }}">
@@ -188,30 +201,83 @@
   <p class="text-center">Tramitações</p>
 </div>
 <div class="container">
-  <form>
+  <form method="POST" action="{{ route('tramitacoes.store') }}">
     @csrf
+    <input type="hidden" id="protocolo_id" name="protocolo_id" value="{{ $protocolo->id }}">
     <div class="form-row">
       <div class="form-group col-md-6">
-        <label for="funcionario">Funcionário</label>
-        <input type="text" class="form-control typeahead" name="funcionario" id="funcionario" value="{{ old('funcionario') ?? '' }}" autocomplete="off">
-        <input type="hidden" id="funcionario_id" name="funcionario_id" value="{{ old('funcionario_id') ?? '' }}">
+        {{-- o nome dos parametros foram mudados para não entrar em comflito com o formulário principal --}}
+        <label for="funcionario_tramitacao">Funcionário</label>
+        <input type="text" class="form-control typeahead" name="funcionario_tramitacao" id="funcionario_tramitacao" value="{{ old('funcionario_tramitacao') ?? '' }}" autocomplete="off">
+        <input type="hidden" id="funcionario_tramitacao_id" name="funcionario_tramitacao_id" value="{{ old('funcionario_tramitacao_id') ?? '' }}">
       </div>
       <div class="form-group col-md-6">
-        <label for="setor">Setor</label>
-        <input type="text" class="form-control" name="setor" id="setor" value="{{ old('setor') ?? '' }}" autocomplete="off">
-        <input type="hidden" id="setor_id" name="setor_id" value="{{ old('setor_id') ?? '' }}">
+        <label for="setor_tramitacao">Setor</label>
+        <input type="text" class="form-control" name="setor_tramitacao" id="setor_tramitacao" value="{{ old('setor_tramitacao') ?? '' }}" autocomplete="off">
+        <input type="hidden" id="setor_tramitacao_id" name="setor_tramitacao_id" value="{{ old('setor_tramitacao_id') ?? '' }}">
       </div>
     </div>
     <div class="form-group">
         <label for="descricao">Observações</label>
         <input type="text" class="form-control" name="descricao" id="descricao" value="{{ old('descricao') ?? '' }}" autocomplete="off">    
     </div>
-
     <button type="submit" class="btn btn-primary"><i class="fas fa-plus-square"></i> Incluir Tramitação</button>
   </form>  
 </div>
-
-
+<div class="container">
+  @if(Session::has('create_tramitacao'))
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Info!</strong>  {{ session('create_tramitacao') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  @endif
+  @if(Session::has('delete_tramitacao'))
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Info!</strong>  {{ session('delete_tramitacao') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  @endif
+  <div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Data</th>
+                <th scope="col">Hora</th>
+                <th scope="col">Funcionario</th>
+                <th scope="col">Matrícula</th>
+                <th scope="col">Setor</th>
+                <th scope="col">Código</th>
+                <th scope="col">Descrição</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($tramitacoes as $tramitacao)
+            <tr>
+                <td>{{ $tramitacao->created_at->format('d/m/Y')  }}</td>
+                <td>{{ $tramitacao->created_at->format('H:i') }}</td>
+                <td>{{ isset($tramitacao->funcionario_id) ?  $tramitacao->funcionario->nome : '-' }}</td>
+                <td>{{ isset($tramitacao->funcionario_id) ?  $tramitacao->funcionario->matricula : '-' }}</td>
+                <td>{{ isset($tramitacao->setor_id) ?  $tramitacao->setor->descricao : '-' }}</td>
+                <td>{{ isset($tramitacao->setor_id) ?  $tramitacao->setor->codigo : '-' }}</td>
+                <td>{{ $tramitacao->descricao }}</td>
+                <td>
+                  <form method="post" action="{{route('tramitacoes.destroy', $tramitacao->id)}}">
+                    @csrf
+                    @method('DELETE')  
+                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                  </form>
+                </td>
+            </tr>    
+            @endforeach                                                 
+        </tbody>
+    </table>
+  </div> 
+</div>
 <div class="container">
   <div class="float-right">
     <a href="{{ route('protocolos.index') }}" class="btn btn-secondary btn-sm" role="button"><i class="fas fa-long-arrow-alt-left"></i> Voltar</i></a>
@@ -255,7 +321,7 @@ $(document).ready(function(){
     });
     funcionarios.initialize();
 
-    $("#funcionario").typeahead({
+    $("#funcionario_tramitacao").typeahead({
         hint: true,
         highlight: true,
         minLength: 1
@@ -267,12 +333,12 @@ $(document).ready(function(){
         }).on("typeahead:selected", function(obj, datum, name) {
             console.log(datum);
             $(this).data("seletectedId", datum.value);
-            $('#funcionario_id').val(datum.value);
+            $('#funcionario_tramitacao_id').val(datum.value);
             console.log(datum.value);
         }).on('typeahead:autocompleted', function (e, datum) {
             console.log(datum);
             $(this).data("seletectedId", datum.value);
-            $('#funcionario_id').val(datum.value);
+            $('#funcionario_tramitacao_id').val(datum.value);
             console.log(datum.value);
     });
 
@@ -287,7 +353,7 @@ $(document).ready(function(){
     });
     setores.initialize();
 
-    $("#setor").typeahead({
+    $("#setor_tramitacao").typeahead({
         hint: true,
         highlight: true,
         minLength: 1
@@ -299,12 +365,12 @@ $(document).ready(function(){
         }).on("typeahead:selected", function(obj, datum, name) {
             console.log(datum);
             $(this).data("seletectedId", datum.value);
-            $('#setor_id').val(datum.value);
+            $('#setor_tramitacao_id').val(datum.value);
             console.log(datum.value);
         }).on('typeahead:autocompleted', function (e, datum) {
             console.log(datum);
             $(this).data("seletectedId", datum.value);
-            $('#setor_id').val(datum.value);
+            $('#setor_tramitacao_id').val(datum.value);
             console.log(datum.value);
     });
 }); 

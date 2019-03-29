@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Protocolo;
+use App\Tramitacao;
 use App\Periodo;
 use App\ProtocoloSituacao;
 use App\ProtocoloTipo;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Database\Eloquent\Builder; // para poder usar o whereHas nos filtros
 
-use Auth;
+use Auth; // receber o id do operador logado no sistema
 
 use Carbon\Carbon; // tratamento de datas
 
@@ -181,6 +182,8 @@ class ProtocoloController extends Controller
 
         Session::flash('create_protocolo', 'Protocolo nº ' . $protocolo->id . ' cadastrado com sucesso!');
 
+        $tramitacoes = Tramitacao::where('protocolo_id', '=', $protocolo->id)->orderBy('id', 'desc')->get();
+
         $periodos = Periodo::where('protocolo_id', '=', $protocolo->id)->orderBy('id', 'asc')->get();
 
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
@@ -191,7 +194,7 @@ class ProtocoloController extends Controller
         
         //return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos'));
 
-        return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos');
+        return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos', 'tramitacoes');
     }
 
     /**
@@ -204,7 +207,11 @@ class ProtocoloController extends Controller
     {
         $protocolo = Protocolo::findOrFail($id);
 
-        return view('protocolos.show', compact('protocolo'));
+        $tramitacoes = Tramitacao::where('protocolo_id', '=', $id)->orderBy('id', 'desc')->get();
+
+        $periodos = Periodo::where('protocolo_id', '=', $id)->orderBy('id', 'asc')->get();
+
+        return view('protocolos.show', compact('protocolo', 'tramitacoes', 'periodos'));
     }
 
     /**
@@ -217,6 +224,8 @@ class ProtocoloController extends Controller
     {
         $protocolo = Protocolo::findOrFail($id);
 
+        $tramitacoes = Tramitacao::where('protocolo_id', '=', $id)->orderBy('id', 'desc')->get();
+
         $periodos = Periodo::where('protocolo_id', '=', $id)->orderBy('id', 'asc')->get();
 
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
@@ -225,7 +234,7 @@ class ProtocoloController extends Controller
 
         $periodotipos = PeriodoTipo::orderBy('descricao', 'asc')->get();        
 
-        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos'));
+        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos', 'tramitacoes'));
 
         //return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos');
     }

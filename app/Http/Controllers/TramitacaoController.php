@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Periodo;
 use App\Tramitacao;
+use App\Periodo;
 use App\protocolo;
 use App\ProtocoloSituacao;
 use App\ProtocoloTipo;
@@ -18,7 +18,9 @@ use Illuminate\Support\Facades\Gate;
 use Carbon\Carbon; // tratamento de datas
 use Illuminate\Support\Facades\Redirect; // para poder usar o redirect
 
-class PeriodoController extends Controller
+use Auth; // receber o id do operador logado no sistema
+
+class TramitacaoController extends Controller
 {
     /**
      * Construtor.
@@ -44,29 +46,24 @@ class PeriodoController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-          'periodo_tipo_id' => 'required',
-        ]);
+        $input_tramitacao = $request->all();
 
-        $input_periodo = $request->all();
+        // recebi o usuário logado no sistema
+        $user = Auth::user();
 
-        if ($input_periodo['dtainicio'] != ""){
-            $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d');           
-            $input_periodo['inicio'] =  $dataFormatadaMysql;            
-        }
+        $input_tramitacao['user_id'] = $user->id;
 
-        if ($input_periodo['dtafinal'] != ""){
-            $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtafinal'))->format('Y-m-d');           
-            $input_periodo['fim'] =  $dataFormatadaMysql;            
-        }            
+        // ajusta os parametros (nomes) da entrada
+        $input_tramitacao['setor_id'] = $input_tramitacao['setor_tramitacao_id'];
+        $input_tramitacao['funcionario_id'] = $input_tramitacao['funcionario_tramitacao_id'];
 
-        Periodo::create($input_periodo); //salva
+        Tramitacao::create($input_tramitacao); //salva
 
-        $tramitacoes = Tramitacao::where('protocolo_id', '=', $input_periodo['protocolo_id'])->orderBy('id', 'desc')->get();
+        $tramitacoes = Tramitacao::where('protocolo_id', '=', $input_tramitacao['protocolo_id'])->orderBy('id', 'desc')->get();
+        
+        $periodos = Periodo::where('protocolo_id', '=', $input_tramitacao['protocolo_id'])->orderBy('id', 'asc')->get();
 
-        $periodos = Periodo::where('protocolo_id', '=', $input_periodo['protocolo_id'])->orderBy('id', 'asc')->get();
-
-        $protocolo = Protocolo::find($input_periodo['protocolo_id']);
+        $protocolo = Protocolo::find($input_tramitacao['protocolo_id']);
 
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
@@ -74,9 +71,9 @@ class PeriodoController extends Controller
 
         $periodotipos = PeriodoTipo::orderBy('descricao', 'asc')->get();
 
-        Session::flash('create_periodo', 'Período inserido com sucesso!');        
+        Session::flash('create_tramitacao', 'Tramitação inserida com sucesso!');        
 
-        return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos', 'tramitacoes');
+        return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos', 'tramitacoes');        
     }
 
     /**
@@ -87,13 +84,13 @@ class PeriodoController extends Controller
      */
     public function destroy($id)
     {
-        $periodo = Periodo::findOrFail($id);
+        $tramitacao = Tramitacao::findOrFail($id);
 
-        $tramitacoes = Tramitacao::where('protocolo_id', '=', $periodo->protocolo_id)->orderBy('id', 'desc')->get();
+        $tramitacoes = Tramitacao::where('protocolo_id', '=', $tramitacao->protocolo_id)->orderBy('id', 'desc')->get();
 
-        $periodos = Periodo::where('protocolo_id', '=', $periodo->protocolo_id)->orderBy('id', 'asc')->get();
+        $periodos = Periodo::where('protocolo_id', '=', $tramitacao->protocolo_id)->orderBy('id', 'asc')->get();
 
-        $protocolo = Protocolo::find($periodo->protocolo_id);
+        $protocolo = Protocolo::find($tramitacao->protocolo_id);
 
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
@@ -101,9 +98,9 @@ class PeriodoController extends Controller
 
         $periodotipos = PeriodoTipo::orderBy('descricao', 'asc')->get();
 
-        $periodo->delete();        
+        $tramitacao->delete();        
 
-        Session::flash('delete_periodo', 'Período excluído com sucesso!');
+        Session::flash('delete_tramitacao', 'Tramitação excluída com sucesso!');
 
         return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos', 'tramitacoes');
     }

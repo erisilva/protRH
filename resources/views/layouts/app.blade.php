@@ -93,10 +93,6 @@
         @yield('content')
     </main>
 
-    <footer class="container-fluid text-center py-4">
-        <p><strong>Diretória da Tecnologia da Informática</strong> - ramal: 6299 </p>
-    </footer>
-
     <!-- Scripts -->
     <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ asset('js/popper.min.js') }}"></script>

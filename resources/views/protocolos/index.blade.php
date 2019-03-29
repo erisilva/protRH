@@ -60,7 +60,8 @@
                 <td>
                   <div class="btn-group" role="group">
                     <a href="{{route('protocolos.edit', $protocolo->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
-                    <a href="{{route('protocolos.show', $protocolo->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-trash-alt"></i></a>
+                    <a href="{{route('protocolos.show', $protocolo->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-eye"></i></a>
+                    <a href="#" class="btn btn-primary btn-sm" role="button"><i class="fas fa-print"></i></a>
                   </div>
                 </td>
             </tr>    
@@ -201,9 +202,6 @@ $(document).ready(function(){
         autoclose: true,
         todayHighlight: true
     });
-
-
-
 }); 
 </script>
 @endsection

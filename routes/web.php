@@ -79,3 +79,6 @@ Route::resource('/protocolos', 'ProtocoloController');
 
 /*PERIODOS*/
 Route::resource('/periodos', 'PeriodoController')->only(['store', 'destroy',]);
+
+/*TRAMITAÇÕES*/
+Route::resource('/tramitacoes', 'TramitacaoController')->only(['store', 'destroy',]);
