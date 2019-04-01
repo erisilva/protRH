@@ -174,15 +174,25 @@ $(document).ready(function(){
     });
 
     $('#btnExportarCSV').on('click', function(){
-        var filtro_name = $('input[name="nome"]').val();
-        var filtro_email = $('input[name="matricula"]').val();
-        window.open("{{ route('protocolos.export.csv') }}" + "?nome=" + filtro_name + "&matricula=" + filtro_email,"_self");
+        var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
+        var filtro_nome = $('input[name="nome"]').val();
+        var filtro_setor = $('input[name="setor"]').val();
+        var filtro_protocolo_tipo_id = $('select[name="protocolo_tipo_id"]').val();
+        if (typeof filtro_protocolo_tipo_id === "undefined") {
+          filtro_protocolo_tipo_id = "";
+        }
+        var filtro_protocolo_situacao_id = $('select[name="protocolo_situacao_id"]').val();
+        if (typeof filtro_protocolo_situacao_id === "undefined") {
+          filtro_protocolo_situacao_id = "";
+        }        
+        var filtro_dtainicio = $('input[name="dtainicio"]').val();
+        var filtro_dtafinal = $('input[name="dtafinal"]').val();
+        window.open("{{ route('protocolos.export.csv') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
     });
 
     $('#btnExportarPDF').on('click', function(){
-        var filtro_name = $('input[name="nome"]').val();
-        var filtro_email = $('input[name="matricula"]').val();
-        window.open("{{ route('protocolos.export.pdf') }}" + "?nome=" + filtro_name + "&matricula=" + filtro_email,"_self");
+
+        window.open("{{ route('protocolos.export.pdf') }}","_self");
     });
 
     $('#dtainicio').datepicker({

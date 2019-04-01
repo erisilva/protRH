@@ -29,6 +29,8 @@ use Carbon\Carbon; // tratamento de datas
 class ProtocoloController extends Controller
 {
 
+    protected $pdf;
+
     /**
      * Construtor.
      *
@@ -37,11 +39,12 @@ class ProtocoloController extends Controller
      *
      * @return 
      */
-    public function __construct()
+    public function __construct(\App\Reports\ProtocoloReport $pdf)
     {
         $this->middleware(['middleware' => 'auth']);
         $this->middleware(['middleware' => 'hasaccess']);
 
+        $this->pdf = $pdf;
     }
 
     /**
@@ -142,8 +145,6 @@ class ProtocoloController extends Controller
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
         $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get();
-
-
 
         return view('protocolos.create', compact('protocolosituacoes', 'protocolotipos'));
     }
@@ -278,4 +279,242 @@ class ProtocoloController extends Controller
 
         return redirect(route('protocolos.index'));
     }
+
+    /**
+     * Exportação para planilha (csv)
+     *
+     * @param  int  $id
+     * @return Response::stream()
+     */
+    public function exportcsv()
+    {
+        if (Gate::denies('setor.export')) {
+            abort(403, 'Acesso negado.');
+        }
+
+       $headers = [
+                'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+            ,   'Content-type'        => 'text/csv'
+            ,   'Content-Disposition' => 'attachment; filename=protocolos_' .  date("Y-m-d H:i:s") . '.csv'
+            ,   'Expires'             => '0'
+            ,   'Pragma'              => 'public'
+        ];
+
+        $protocolos = DB::table('protocolos');
+        // joins
+        $protocolos = $protocolos->join('funcionarios', 'funcionarios.id', '=', 'protocolos.funcionario_id');
+        $protocolos = $protocolos->join('setors', 'setors.id', '=', 'protocolos.setor_id');
+        $protocolos = $protocolos->join('protocolo_tipos', 'protocolo_tipos.id', '=', 'protocolos.protocolo_tipo_id');
+        $protocolos = $protocolos->join('protocolo_situacaos', 'protocolo_situacaos.id', '=', 'protocolos.protocolo_situacao_id');
+        $protocolos = $protocolos->join('users', 'users.id', '=', 'protocolos.user_id');
+        // select
+        $protocolos = $protocolos->select('protocolos.id as numero', DB::raw('DATE_FORMAT(protocolos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(protocolos.created_at, \'%H:%i\') AS hora'),'protocolos.descricao as observacoes', 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo_setor', 'protocolo_tipos.descricao as tipo_protocolo', 'protocolo_situacaos.descricao as situacao_protocolo', 'users.name as operador');
+
+        //filtros
+
+        if (request()->has('numprotocolo')){
+            $protocolos = $protocolos->where('protocolos.id', 'like', '%' . request('numprotocolo') . '%');
+        }
+
+        if (request()->has('nome')){
+            $protocolos = $protocolos->where('funcionarios.nome', 'like', '%' . request('nome') . '%');
+        }
+
+        if (request()->has('setor')){
+            $protocolos = $protocolos->where('setors.descricao', 'like', '%' . request('setor') . '%');
+        }
+
+        if (request()->has('protocolo_tipo_id')){
+            if (request('protocolo_tipo_id') != ""){
+                $protocolos = $protocolos->where('protocolos.protocolo_tipo_id', '=', request('protocolo_tipo_id'));
+            }
+        }
+
+        if (request()->has('protocolo_situacao_id')){
+            if (request('protocolo_situacao_id') != ""){
+                $protocolos = $protocolos->where('protocolos.protocolo_situacao_id', '=', request('protocolo_situacao_id'));
+            }
+        } 
+
+        if (request()->has('dtainicio')){
+             if (request('dtainicio') != ""){
+                $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
+                $protocolos = $protocolos->where('protocolos.created_at', '>=', $dataFormatadaMysql);                
+             }
+        }
+
+        if (request()->has('dtafinal')){
+             if (request('dtafinal') != ""){
+                // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
+                $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtafinal'))->format('Y-m-d 23:59:59');         
+                $protocolos = $protocolos->where('protocolos.created_at', '<=', $dataFormatadaMysql);                
+             }
+        }
+
+        $protocolos = $protocolos->orderBy('protocolos.id', 'desc');
+
+        $list = $protocolos->get()->toArray();
+
+        # converte os objetos para uma array
+        $list = json_decode(json_encode($list), true);
+
+        # add headers for each column in the CSV download
+        array_unshift($list, array_keys($list[0]));
+
+       $callback = function() use ($list)
+        {
+            $FH = fopen('php://output', 'w');
+            fputs($FH, $bom = ( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
+            foreach ($list as $row) {
+                fputcsv($FH, $row, chr(9));
+            }
+            fclose($FH);
+        };
+
+        return Response::stream($callback, 200, $headers);
+    }
+
+    /**
+     * Exportação para pdf
+     *
+     * @param  
+     * @return 
+     */
+    public function exportpdf()
+    {
+        // consulta principal
+        $protocolos = DB::table('protocolos');
+        // joins
+        $protocolos = $protocolos->join('funcionarios', 'funcionarios.id', '=', 'protocolos.funcionario_id');
+        $protocolos = $protocolos->join('setors', 'setors.id', '=', 'protocolos.setor_id');
+        $protocolos = $protocolos->join('protocolo_tipos', 'protocolo_tipos.id', '=', 'protocolos.protocolo_tipo_id');
+        $protocolos = $protocolos->join('protocolo_situacaos', 'protocolo_situacaos.id', '=', 'protocolos.protocolo_situacao_id');
+        $protocolos = $protocolos->join('users', 'users.id', '=', 'protocolos.user_id');
+        // select
+        $protocolos = $protocolos->select('protocolos.id as numero', DB::raw('DATE_FORMAT(protocolos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(protocolos.created_at, \'%H:%i\') AS hora'),'protocolos.descricao as observacoes', 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo_setor', 'protocolo_tipos.descricao as tipo_protocolo', 'protocolo_situacaos.descricao as situacao_protocolo', 'users.name as operador');
+
+        //filtros
+
+        if (request()->has('numprotocolo')){
+            $protocolos = $protocolos->where('protocolos.id', 'like', '%' . request('numprotocolo') . '%');
+        }
+
+        if (request()->has('nome')){
+            $protocolos = $protocolos->where('funcionarios.nome', 'like', '%' . request('nome') . '%');
+        }
+
+        if (request()->has('setor')){
+            $protocolos = $protocolos->where('setors.descricao', 'like', '%' . request('setor') . '%');
+        }
+
+        if (request()->has('protocolo_tipo_id')){
+            if (request('protocolo_tipo_id') != ""){
+                $protocolos = $protocolos->where('protocolos.protocolo_tipo_id', '=', request('protocolo_tipo_id'));
+            }
+        }
+
+        if (request()->has('protocolo_situacao_id')){
+            if (request('protocolo_situacao_id') != ""){
+                $protocolos = $protocolos->where('protocolos.protocolo_situacao_id', '=', request('protocolo_situacao_id'));
+            }
+        } 
+
+        if (request()->has('dtainicio')){
+             if (request('dtainicio') != ""){
+                $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
+                $protocolos = $protocolos->where('protocolos.created_at', '>=', $dataFormatadaMysql);                
+             }
+        }
+
+        if (request()->has('dtafinal')){
+             if (request('dtafinal') != ""){
+                // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
+                $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtafinal'))->format('Y-m-d 23:59:59');         
+                $protocolos = $protocolos->where('protocolos.created_at', '<=', $dataFormatadaMysql);                
+             }
+        }
+
+        $protocolos = $protocolos->orderBy('protocolos.id', 'desc');
+
+        $protocolos = $protocolos->get();
+
+        // configurações do relatório
+        $this->pdf->AliasNbPages();   
+        $this->pdf->SetMargins(12, 10, 12);
+        $this->pdf->SetFont('Arial', '', 12);
+        $this->pdf->AddPage();
+
+        foreach ($protocolos as $protocolo) {
+
+            $this->pdf->Cell(40, 6, utf8_decode('Número'), 1, 0,'R');
+            $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+            $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
+            $this->pdf->Cell(90, 6, utf8_decode('Operador'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->Cell(40, 6, utf8_decode($protocolo->numero), 1, 0,'R');
+            $this->pdf->Cell(30, 6, utf8_decode($protocolo->data), 1, 0,'L');
+            $this->pdf->Cell(26, 6, utf8_decode($protocolo->hora), 1, 0,'L');
+            $this->pdf->Cell(90, 6, utf8_decode($protocolo->operador), 1, 0,'L');
+            $this->pdf->Ln();
+
+
+            $this->pdf->Cell(46, 6, utf8_decode('Matrícula'), 1, 0,'L');
+            $this->pdf->Cell(140, 6, utf8_decode('Funcionário'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->Cell(46, 6, utf8_decode($protocolo->matricula), 1, 0,'L');
+            $this->pdf->Cell(140, 6, utf8_decode($protocolo->funcionario), 1, 0,'L');
+            $this->pdf->Ln();
+
+            $this->pdf->Cell(46, 6, utf8_decode('Código'), 1, 0,'L');
+            $this->pdf->Cell(140, 6, utf8_decode('Setor'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->Cell(46, 6, utf8_decode($protocolo->codigo_setor), 1, 0,'L');
+            $this->pdf->Cell(140, 6, utf8_decode($protocolo->setor), 1, 0,'L');
+            $this->pdf->Ln();
+
+            $this->pdf->Cell(93, 6, utf8_decode('Tipo'), 1, 0,'L');
+            $this->pdf->Cell(93, 6, utf8_decode('Situação'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->Cell(93, 6, utf8_decode($protocolo->tipo_protocolo), 1, 0,'L');
+            $this->pdf->Cell(93, 6, utf8_decode($protocolo->situacao_protocolo), 1, 0,'L');
+            $this->pdf->Ln();
+
+            $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->MultiCell(186, 6, utf8_decode($protocolo->observacoes), 1, 'L', false);
+            $this->pdf->Ln();
+
+            // periodos
+            // consulta secundaria
+            $periodos = DB::table('periodos');
+            // joins
+            $periodos = $periodos->join('periodo_tipos', 'periodo_tipos.id', '=', 'periodos.periodo_tipo_id');
+            // select
+            $periodos = $periodos->select(DB::raw('DATE_FORMAT(periodos.inicio, \'%d/%m/%Y\') AS datainicio'), DB::raw('DATE_FORMAT(periodos.fim, \'%d/%m/%Y\') AS datafim'), 'periodo_tipos.descricao as tipo' );
+            // filter
+            $periodos = $periodos->where('periodos.protocolo_id', '=', $protocolo->numero);
+            // get
+            $periodos = $periodos->get();
+
+            if (count($periodos)){
+                $this->pdf->Cell(186, 6, utf8_decode('Períodos'), 'B', 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->Cell(40, 6, utf8_decode('Data inicial'), 0, 0,'L');
+                $this->pdf->Cell(40, 6, utf8_decode('Data Final'), 0, 0,'L');
+                $this->pdf->Cell(106, 6, utf8_decode('Descrição'), 0, 0,'L');
+                $this->pdf->Ln();
+                foreach ($periodos as $periodo) {
+                    $this->pdf->Cell(40, 6, utf8_decode($periodo->datainicio ?? '-'), 0, 0,'L');
+                    $this->pdf->Cell(40, 6, utf8_decode($periodo->datafim ?? '-'), 0, 0,'L');
+                    $this->pdf->Cell(106, 6, utf8_decode($periodo->tipo), 0, 0,'L');
+                    $this->pdf->Ln();
+                } 
+            }
+
+            $this->pdf->Ln(2);
+        }
+
+        $this->pdf->Output('D', 'Protocolos_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        exit;
+    }      
 }
