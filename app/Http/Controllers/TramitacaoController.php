@@ -45,6 +45,10 @@ class TramitacaoController extends Controller
      */
     public function store(Request $request)
     {
+        if (Gate::denies('tramitacao.create')) {
+            abort(403, 'Acesso negado.');
+        }
+
         $input_tramitacao = $request->all();
 
         // recebi o usuário logado no sistema
@@ -83,6 +87,10 @@ class TramitacaoController extends Controller
      */
     public function destroy($id)
     {
+        if (Gate::denies('tramitacao.delete')) {
+            abort(403, 'Acesso negado.');
+        }
+        
         $tramitacao = Tramitacao::findOrFail($id);
 
         $tramitacoes = Tramitacao::where('protocolo_id', '=', $tramitacao->protocolo_id)->orderBy('id', 'desc')->get();

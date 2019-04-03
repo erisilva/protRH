@@ -44,6 +44,10 @@ class PeriodoController extends Controller
      */
     public function store(Request $request)
     {
+        if (Gate::denies('periodo.create')) {
+            abort(403, 'Acesso negado.');
+        }
+
         $this->validate($request, [
           'periodo_tipo_id' => 'required',
         ]);
@@ -87,6 +91,10 @@ class PeriodoController extends Controller
      */
     public function destroy($id)
     {
+        if (Gate::denies('periodo.delete')) {
+            abort(403, 'Acesso negado.');
+        }
+        
         $periodo = Periodo::findOrFail($id);
 
         $tramitacoes = Tramitacao::where('protocolo_id', '=', $periodo->protocolo_id)->orderBy('id', 'desc')->get();

@@ -54,6 +54,9 @@ class ProtocoloController extends Controller
      */
     public function index()
     {
+        if (Gate::denies('protocolo.index')) {
+            abort(403, 'Acesso negado.');
+        }
         $protocolos = new Protocolo;
 
         // filtros
@@ -141,6 +144,9 @@ class ProtocoloController extends Controller
      */
     public function create()
     {
+        if (Gate::denies('protocolo.create')) {
+            abort(403, 'Acesso negado.');
+        }
 
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
@@ -206,6 +212,10 @@ class ProtocoloController extends Controller
      */
     public function show($id)
     {
+        if (Gate::denies('protocolo.show')) {
+            abort(403, 'Acesso negado.');
+        }
+
         $protocolo = Protocolo::findOrFail($id);
 
         $tramitacoes = Tramitacao::where('protocolo_id', '=', $id)->orderBy('id', 'desc')->get();
@@ -223,6 +233,10 @@ class ProtocoloController extends Controller
      */
     public function edit($id)
     {
+        if (Gate::denies('protocolo.edit')) {
+            abort(403, 'Acesso negado.');
+        }
+
         $protocolo = Protocolo::findOrFail($id);
 
         $tramitacoes = Tramitacao::where('protocolo_id', '=', $id)->orderBy('id', 'desc')->get();
@@ -273,6 +287,10 @@ class ProtocoloController extends Controller
      */
     public function destroy($id)
     {
+        if (Gate::denies('protocolo.delete')) {
+            abort(403, 'Acesso negado.');
+        }
+
         Protocolo::findOrFail($id)->delete();
 
         Session::flash('deleted_protocolo', 'Protocolo excluído com sucesso!');
@@ -288,7 +306,7 @@ class ProtocoloController extends Controller
      */
     public function exportcsv()
     {
-        if (Gate::denies('setor.export')) {
+        if (Gate::denies('protocolo.export')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -382,6 +400,10 @@ class ProtocoloController extends Controller
      */
     public function exportpdf()
     {
+        if (Gate::denies('protocolo.export')) {
+            abort(403, 'Acesso negado.');
+        }
+
         // consulta principal
         $protocolos = DB::table('protocolos');
         // joins
@@ -394,7 +416,6 @@ class ProtocoloController extends Controller
         $protocolos = $protocolos->select('protocolos.id as numero', DB::raw('DATE_FORMAT(protocolos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(protocolos.created_at, \'%H:%i\') AS hora'),'protocolos.descricao as observacoes', 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo_setor', 'protocolo_tipos.descricao as tipo_protocolo', 'protocolo_situacaos.descricao as situacao_protocolo', 'users.name as operador');
 
         //filtros
-
         if (request()->has('numprotocolo')){
             $protocolos = $protocolos->where('protocolos.id', 'like', '%' . request('numprotocolo') . '%');
         }
@@ -445,7 +466,6 @@ class ProtocoloController extends Controller
         $this->pdf->AddPage();
 
         foreach ($protocolos as $protocolo) {
-
             $this->pdf->Cell(40, 6, utf8_decode('Número'), 1, 0,'R');
             $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
             $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
@@ -456,33 +476,29 @@ class ProtocoloController extends Controller
             $this->pdf->Cell(26, 6, utf8_decode($protocolo->hora), 1, 0,'L');
             $this->pdf->Cell(90, 6, utf8_decode($protocolo->operador), 1, 0,'L');
             $this->pdf->Ln();
-
-
             $this->pdf->Cell(46, 6, utf8_decode('Matrícula'), 1, 0,'L');
             $this->pdf->Cell(140, 6, utf8_decode('Funcionário'), 1, 0,'L');
             $this->pdf->Ln();
             $this->pdf->Cell(46, 6, utf8_decode($protocolo->matricula), 1, 0,'L');
             $this->pdf->Cell(140, 6, utf8_decode($protocolo->funcionario), 1, 0,'L');
             $this->pdf->Ln();
-
             $this->pdf->Cell(46, 6, utf8_decode('Código'), 1, 0,'L');
             $this->pdf->Cell(140, 6, utf8_decode('Setor'), 1, 0,'L');
             $this->pdf->Ln();
             $this->pdf->Cell(46, 6, utf8_decode($protocolo->codigo_setor), 1, 0,'L');
             $this->pdf->Cell(140, 6, utf8_decode($protocolo->setor), 1, 0,'L');
             $this->pdf->Ln();
-
-            $this->pdf->Cell(93, 6, utf8_decode('Tipo'), 1, 0,'L');
-            $this->pdf->Cell(93, 6, utf8_decode('Situação'), 1, 0,'L');
+            $this->pdf->Cell(110, 6, utf8_decode('Tipo'), 1, 0,'L');
+            $this->pdf->Cell(76, 6, utf8_decode('Situação'), 1, 0,'L');
             $this->pdf->Ln();
-            $this->pdf->Cell(93, 6, utf8_decode($protocolo->tipo_protocolo), 1, 0,'L');
-            $this->pdf->Cell(93, 6, utf8_decode($protocolo->situacao_protocolo), 1, 0,'L');
+            $this->pdf->Cell(110, 6, utf8_decode($protocolo->tipo_protocolo), 1, 0,'L');
+            $this->pdf->Cell(76, 6, utf8_decode($protocolo->situacao_protocolo), 1, 0,'L');
             $this->pdf->Ln();
-
-            $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
-            $this->pdf->Ln();
-            $this->pdf->MultiCell(186, 6, utf8_decode($protocolo->observacoes), 1, 'L', false);
-            $this->pdf->Ln();
+            if ($protocolo->observacoes != ''){
+                $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->MultiCell(186, 6, utf8_decode($protocolo->observacoes), 1, 'L', false);
+            }
 
             // periodos
             // consulta secundaria
@@ -511,10 +527,189 @@ class ProtocoloController extends Controller
                 } 
             }
 
+            // tramitações
+            // consulta secundariatramitacoes
+            $tramitacoes = DB::table('tramitacaos');
+            // joins
+            $tramitacoes = $tramitacoes->leftJoin('funcionarios', 'funcionarios.id', '=', 'tramitacaos.funcionario_id');
+            $tramitacoes = $tramitacoes->leftJoin('setors', 'setors.id', '=', 'tramitacaos.setor_id');
+            $tramitacoes = $tramitacoes->join('users', 'users.id', '=', 'tramitacaos.user_id');
+            // select
+            $tramitacoes = $tramitacoes->select(DB::raw('DATE_FORMAT(tramitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(tramitacaos.created_at, \'%H:%i\') AS hora'), 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo', 'users.name as operador', 'tramitacaos.descricao as observacoes');
+            // filter
+            $tramitacoes = $tramitacoes->where('tramitacaos.protocolo_id', '=', $protocolo->numero);
+            // ordena
+            $tramitacoes = $tramitacoes->orderBy('tramitacaos.id', 'desc');
+            // get
+            $tramitacoes = $tramitacoes->get();
+            if (count($tramitacoes)){
+                $this->pdf->Cell(186, 6, utf8_decode('Tramitações'), 'B', 0,'L');
+                $this->pdf->Ln();
+                // diminui a fonte
+                $this->pdf->SetFont('Arial', '', 10);
+                foreach ($tramitacoes as $tramitacao) {
+                    $this->pdf->Cell(36, 5, utf8_decode('Data: ' . $tramitacao->data), 1, 0,'L');
+                    $this->pdf->Cell(20, 5, utf8_decode('Hora: ' . $tramitacao->hora), 1, 0,'L');
+                    $this->pdf->Cell(130, 5, utf8_decode('Operador: ' . $tramitacao->operador), 1, 0,'L');
+                    $this->pdf->Ln();
+                    $this->pdf->Cell(56, 5, utf8_decode('Matrícula: ' . $tramitacao->matricula), 1, 0,'L');
+                    $this->pdf->Cell(130, 5, utf8_decode('Funcionário: ' . $tramitacao->funcionario), 1, 0,'L');
+                    $this->pdf->Ln();
+                    $this->pdf->Cell(56, 5, utf8_decode('Código: ' . $tramitacao->codigo), 1, 0,'L');
+                    $this->pdf->Cell(130, 5, utf8_decode('Setor: ' . $tramitacao->setor), 1, 0,'L');
+                    $this->pdf->Ln();
+                    if ($tramitacao->observacoes != ''){
+                        $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $protocolo->observacoes), 1, 'L', false);
+                    }
+
+                    $this->pdf->Ln(2);
+                }
+            }
+
             $this->pdf->Ln(2);
         }
 
         $this->pdf->Output('D', 'Protocolos_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
-    }      
+    }
+
+    /**
+     * Exportação para pdf por protocolo
+     *
+     * @param  $id, id do protocolo
+     * @return pdf
+     */
+    public function exportpdfindividual($id)
+    {
+        if (Gate::denies('protocolo.export')) {
+            abort(403, 'Acesso negado.');
+        }
+        
+        // consulta principal
+        $protocolo = DB::table('protocolos');
+        // joins
+        $protocolo = $protocolo->join('funcionarios', 'funcionarios.id', '=', 'protocolos.funcionario_id');
+        $protocolo = $protocolo->join('setors', 'setors.id', '=', 'protocolos.setor_id');
+        $protocolo = $protocolo->join('protocolo_tipos', 'protocolo_tipos.id', '=', 'protocolos.protocolo_tipo_id');
+        $protocolo = $protocolo->join('protocolo_situacaos', 'protocolo_situacaos.id', '=', 'protocolos.protocolo_situacao_id');
+        $protocolo = $protocolo->join('users', 'users.id', '=', 'protocolos.user_id');
+        // select
+        $protocolo = $protocolo->select('protocolos.id as numero', DB::raw('DATE_FORMAT(protocolos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(protocolos.created_at, \'%H:%i\') AS hora'),'protocolos.descricao as observacoes', 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo_setor', 'protocolo_tipos.descricao as tipo_protocolo', 'protocolo_situacaos.descricao as situacao_protocolo', 'users.name as operador');
+
+        //filtros
+        $protocolo = $protocolo->where('protocolos.id', '=', $id);
+        // get
+        $protocolo = $protocolo->get()->first();
+
+        // configurações do relatório
+        $this->pdf->AliasNbPages();   
+        $this->pdf->SetMargins(12, 10, 12);
+        $this->pdf->SetFont('Arial', '', 12);
+        $this->pdf->AddPage();
+        $this->pdf->Cell(40, 6, utf8_decode('Número'), 1, 0,'R');
+        $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+        $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
+        $this->pdf->Cell(90, 6, utf8_decode('Operador'), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(40, 6, utf8_decode($protocolo->numero), 1, 0,'R');
+        $this->pdf->Cell(30, 6, utf8_decode($protocolo->data), 1, 0,'L');
+        $this->pdf->Cell(26, 6, utf8_decode($protocolo->hora), 1, 0,'L');
+        $this->pdf->Cell(90, 6, utf8_decode($protocolo->operador), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(46, 6, utf8_decode('Matrícula'), 1, 0,'L');
+        $this->pdf->Cell(140, 6, utf8_decode('Funcionário'), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(46, 6, utf8_decode($protocolo->matricula), 1, 0,'L');
+        $this->pdf->Cell(140, 6, utf8_decode($protocolo->funcionario), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(46, 6, utf8_decode('Código'), 1, 0,'L');
+        $this->pdf->Cell(140, 6, utf8_decode('Setor'), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(46, 6, utf8_decode($protocolo->codigo_setor), 1, 0,'L');
+        $this->pdf->Cell(140, 6, utf8_decode($protocolo->setor), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(110, 6, utf8_decode('Tipo'), 1, 0,'L');
+        $this->pdf->Cell(76, 6, utf8_decode('Situação'), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(110, 6, utf8_decode($protocolo->tipo_protocolo), 1, 0,'L');
+        $this->pdf->Cell(76, 6, utf8_decode($protocolo->situacao_protocolo), 1, 0,'L');
+        $this->pdf->Ln();
+        if ($protocolo->observacoes != ''){
+            $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->MultiCell(186, 6, utf8_decode($protocolo->observacoes), 1, 'L', false);
+        }
+
+        // periodos
+        // consulta secundaria
+        $periodos = DB::table('periodos');
+        // joins
+        $periodos = $periodos->join('periodo_tipos', 'periodo_tipos.id', '=', 'periodos.periodo_tipo_id');
+        // select
+        $periodos = $periodos->select(DB::raw('DATE_FORMAT(periodos.inicio, \'%d/%m/%Y\') AS datainicio'), DB::raw('DATE_FORMAT(periodos.fim, \'%d/%m/%Y\') AS datafim'), 'periodo_tipos.descricao as tipo' );
+        // filter
+        $periodos = $periodos->where('periodos.protocolo_id', '=', $id);
+        // get
+        $periodos = $periodos->get();
+
+        if (count($periodos)){
+            $this->pdf->Cell(186, 6, utf8_decode('Períodos'), 'B', 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->Cell(40, 6, utf8_decode('Data inicial'), 0, 0,'L');
+            $this->pdf->Cell(40, 6, utf8_decode('Data Final'), 0, 0,'L');
+            $this->pdf->Cell(106, 6, utf8_decode('Descrição'), 0, 0,'L');
+            $this->pdf->Ln();
+            foreach ($periodos as $periodo) {
+                $this->pdf->Cell(40, 6, utf8_decode($periodo->datainicio ?? '-'), 0, 0,'L');
+                $this->pdf->Cell(40, 6, utf8_decode($periodo->datafim ?? '-'), 0, 0,'L');
+                $this->pdf->Cell(106, 6, utf8_decode($periodo->tipo), 0, 0,'L');
+                $this->pdf->Ln();
+            } 
+        }
+
+        // tramitações
+        // consulta secundariatramitacoes
+        $tramitacoes = DB::table('tramitacaos');
+        // joins
+        $tramitacoes = $tramitacoes->leftJoin('funcionarios', 'funcionarios.id', '=', 'tramitacaos.funcionario_id');
+        $tramitacoes = $tramitacoes->leftJoin('setors', 'setors.id', '=', 'tramitacaos.setor_id');
+        $tramitacoes = $tramitacoes->join('users', 'users.id', '=', 'tramitacaos.user_id');
+        // select
+        $tramitacoes = $tramitacoes->select(DB::raw('DATE_FORMAT(tramitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(tramitacaos.created_at, \'%H:%i\') AS hora'), 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo', 'users.name as operador', 'tramitacaos.descricao as observacoes');
+        // filter
+        $tramitacoes = $tramitacoes->where('tramitacaos.protocolo_id', '=', $id);
+        // ordena
+        $tramitacoes = $tramitacoes->orderBy('tramitacaos.id', 'desc');
+        // get
+        $tramitacoes = $tramitacoes->get();
+        if (count($tramitacoes)){
+            $this->pdf->Cell(186, 6, utf8_decode('Tramitações'), 'B', 0,'L');
+            $this->pdf->Ln();
+            // diminui a fonte
+            $this->pdf->SetFont('Arial', '', 10);
+            foreach ($tramitacoes as $tramitacao) {
+                $this->pdf->Cell(36, 5, utf8_decode('Data: ' . $tramitacao->data), 1, 0,'L');
+                $this->pdf->Cell(20, 5, utf8_decode('Hora: ' . $tramitacao->hora), 1, 0,'L');
+                $this->pdf->Cell(130, 5, utf8_decode('Operador: ' . $tramitacao->operador), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->Cell(56, 5, utf8_decode('Matrícula: ' . $tramitacao->matricula), 1, 0,'L');
+                $this->pdf->Cell(130, 5, utf8_decode('Funcionário: ' . $tramitacao->funcionario), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->Cell(56, 5, utf8_decode('Código: ' . $tramitacao->codigo), 1, 0,'L');
+                $this->pdf->Cell(130, 5, utf8_decode('Setor: ' . $tramitacao->setor), 1, 0,'L');
+                $this->pdf->Ln();
+                if ($tramitacao->observacoes != ''){
+                    $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $protocolo->observacoes), 1, 'L', false);
+                }
+
+                $this->pdf->Ln(2);
+            }
+        }
+
+        $this->pdf->Ln(2);
+
+        $this->pdf->Output('D', 'Protocolos_num' . $id . '_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        exit;
+
+    }     
 }

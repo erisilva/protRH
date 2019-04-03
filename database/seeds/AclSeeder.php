@@ -91,7 +91,6 @@ class AclSeeder extends Seeder
 		$protocolosituacao_delete = Permission::where('name', '=', 'protocolosituacao.delete')->get()->first();
 		$protocolosituacao_show = Permission::where('name', '=', 'protocolosituacao.show')->get()->first();  
 		$protocolosituacao_export = Permission::where('name', '=', 'protocolosituacao.export')->get()->first();
-
 		// para tipos de periodo
 		$periodotipo_index = Permission::where('name', '=', 'periodotipo.index')->get()->first(); 
 		$periodotipo_create = Permission::where('name', '=', 'periodotipo.create')->get()->first();
@@ -99,6 +98,19 @@ class AclSeeder extends Seeder
 		$periodotipo_delete = Permission::where('name', '=', 'periodotipo.delete')->get()->first();
 		$periodotipo_show = Permission::where('name', '=', 'periodotipo.show')->get()->first();  
 		$periodotipo_export = Permission::where('name', '=', 'periodotipo.export')->get()->first();
+		// para protocolos
+		$protocolo_index = Permission::where('name', '=', 'protocolo.index')->get()->first(); 
+		$protocolo_create = Permission::where('name', '=', 'protocolo.create')->get()->first();
+		$protocolo_edit = Permission::where('name', '=', 'protocolo.edit')->get()->first();  
+		$protocolo_delete = Permission::where('name', '=', 'protocolo.delete')->get()->first();
+		$protocolo_show = Permission::where('name', '=', 'protocolo.show')->get()->first();  
+		$protocolo_export = Permission::where('name', '=', 'protocolo.export')->get()->first();
+		// para protocolos (periodos)
+		$periodo_create = Permission::where('name', '=', 'periodo.create')->get()->first(); 
+		$periodo_delete = Permission::where('name', '=', 'periodo.delete')->get()->first();
+		// para protocolos (tramitacões)
+		$tramitacao_create = Permission::where('name', '=', 'tramitacao.create')->get()->first(); 
+		$tramitacao_delete = Permission::where('name', '=', 'tramitacao.delete')->get()->first();
 
 
 		// salva os relacionamentos entre perfil e suas permissões
@@ -158,8 +170,19 @@ class AclSeeder extends Seeder
 		$administrador_perfil->permissions()->attach($periodotipo_delete);
 		$administrador_perfil->permissions()->attach($periodotipo_show);
 		$administrador_perfil->permissions()->attach($periodotipo_export);
-
-
+		#permissões protocolos
+		$administrador_perfil->permissions()->attach($protocolo_index);
+		$administrador_perfil->permissions()->attach($protocolo_create);
+		$administrador_perfil->permissions()->attach($protocolo_edit);
+		$administrador_perfil->permissions()->attach($protocolo_delete);
+		$administrador_perfil->permissions()->attach($protocolo_show);
+		$administrador_perfil->permissions()->attach($protocolo_export);
+		#permissões protocolos (periodos)
+		$administrador_perfil->permissions()->attach($periodo_create);
+		$administrador_perfil->permissions()->attach($periodo_delete);
+		#permissões protocolos (tramitações)
+		$administrador_perfil->permissions()->attach($tramitacao_create);
+		$administrador_perfil->permissions()->attach($tramitacao_delete);
 
 
 		//
@@ -199,7 +222,19 @@ class AclSeeder extends Seeder
 		$gerente_perfil->permissions()->attach($periodotipo_edit);
 		$gerente_perfil->permissions()->attach($periodotipo_show);
 		$gerente_perfil->permissions()->attach($periodotipo_export);
-
+		#permissões para protocolos
+		$gerente_perfil->permissions()->attach($protocolo_index);
+		$gerente_perfil->permissions()->attach($protocolo_create);
+		$gerente_perfil->permissions()->attach($protocolo_edit);
+		$gerente_perfil->permissions()->attach($protocolo_show);
+		$gerente_perfil->permissions()->attach($protocolo_export);
+		$gerente_perfil->permissions()->attach($protocolo_delete); // gerente pode excluir os protocolos
+		#permissões para protocolos (periodos)
+		$gerente_perfil->permissions()->attach($periodo_create);
+		$gerente_perfil->permissions()->attach($periodo_delete);
+		#permissões para protocolos (tramitações)
+		$gerente_perfil->permissions()->attach($tramitacao_create);
+		$gerente_perfil->permissions()->attach($tramitacao_delete);
 
 
 		// o operador é o nível de operação do sistema não pode criar
@@ -231,8 +266,18 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($periodotipo_index);
 		$operador_perfil->permissions()->attach($periodotipo_show);
 		$operador_perfil->permissions()->attach($periodotipo_export);
-
-
+		#permissões para protocolos, o operador pode editar e criar
+		$operador_perfil->permissions()->attach($protocolo_index);
+		$operador_perfil->permissions()->attach($protocolo_create);
+		$operador_perfil->permissions()->attach($protocolo_edit);		
+		$operador_perfil->permissions()->attach($protocolo_show);
+		$operador_perfil->permissions()->attach($protocolo_export);
+		#permissões para protocolos (periodos)
+		$operador_perfil->permissions()->attach($periodo_create);
+		$operador_perfil->permissions()->attach($periodo_delete); // na dúvida aqui
+		#permissões para protocolos (tramitações)
+		$operador_perfil->permissions()->attach($tramitacao_create);
+		// melhor não $operador_perfil->permissions()->attach($tramitacao_delete);
 
 
 		// leitura é um tipo de operador que só pode ler
@@ -254,8 +299,13 @@ class AclSeeder extends Seeder
 		#permissões para tipos de periodo
 		$leitor_perfil->permissions()->attach($periodotipo_index);
 		$leitor_perfil->permissions()->attach($periodotipo_show);
-
-
+		#permissões para protocolo
+		$leitor_perfil->permissions()->attach($protocolo_index);
+		$leitor_perfil->permissions()->attach($protocolo_show);
+		#permissões para protocolos (periodos)
+		// leitor não pode criar ou alterar periodos, mas pode consultar
+		#permissões para protocolos (tramitações)
+		// leitor não pode criar nem alterar, mas pode consultas
 
 
 		echo "usuário Administrador: adm@mail.br senha:123456  \n";		

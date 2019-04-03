@@ -61,7 +61,7 @@
                   <div class="btn-group" role="group">
                     <a href="{{route('protocolos.edit', $protocolo->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
                     <a href="{{route('protocolos.show', $protocolo->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-eye"></i></a>
-                    <a href="#" class="btn btn-primary btn-sm" role="button"><i class="fas fa-print"></i></a>
+                    <a href="{{ route('protocolos.export.pdf.individual', $protocolo->id) }}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-print"></i></a>
                   </div>
                 </td>
             </tr>    
@@ -191,8 +191,20 @@ $(document).ready(function(){
     });
 
     $('#btnExportarPDF').on('click', function(){
-
-        window.open("{{ route('protocolos.export.pdf') }}","_self");
+                var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
+        var filtro_nome = $('input[name="nome"]').val();
+        var filtro_setor = $('input[name="setor"]').val();
+        var filtro_protocolo_tipo_id = $('select[name="protocolo_tipo_id"]').val();
+        if (typeof filtro_protocolo_tipo_id === "undefined") {
+          filtro_protocolo_tipo_id = "";
+        }
+        var filtro_protocolo_situacao_id = $('select[name="protocolo_situacao_id"]').val();
+        if (typeof filtro_protocolo_situacao_id === "undefined") {
+          filtro_protocolo_situacao_id = "";
+        }        
+        var filtro_dtainicio = $('input[name="dtainicio"]').val();
+        var filtro_dtafinal = $('input[name="dtafinal"]').val();
+        window.open("{{ route('protocolos.export.pdf') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
     });
 
     $('#dtainicio').datepicker({

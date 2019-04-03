@@ -229,5 +229,53 @@ class PermissionsTableSeeder extends Seeder
             'description' => 'Exportação de dados dos tipos de período',
         ]);
 
+        //Permissões do protocolo
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.index',
+            'description' => 'Lista de protocolos',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.create',
+            'description' => 'Registrar novo protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.edit',
+            'description' => 'Alterar dados de um protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.delete',
+            'description' => 'Excluir protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.show',
+            'description' => 'Mostrar dados de um protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.export',
+            'description' => 'Exportação de dados dos protocolos',
+        ]);
+
+        //Permissões para periodos do protocolos
+        DB::table('permissions')->insert([
+            'name' => 'periodo.create',
+            'description' => 'Registrar novo período no protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'periodo.delete',
+            'description' => 'Excluir período do protocolo',
+        ]);
+
+        //Permissões para tramitações dos protocolos
+        DB::table('permissions')->insert([
+            'name' => 'tramitacao.create',
+            'description' => 'Registrar nova tramitação no protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'tramitacao.delete',
+            'description' => 'Excluir tramitação do protocolo',
+        ]);
+
+
+
     }
 }
