@@ -30,6 +30,7 @@
       <div class="dropdown-menu" aria-labelledby="btnGroupDropOptions">
         <a class="dropdown-item" href="#" id="btnExportarCSV"><i class="fas fa-file-download"></i> Exportar Planilha</a>
         <a class="dropdown-item" href="#" id="btnExportarPDF"><i class="fas fa-file-download"></i> Exportar PDF</a>
+        <a class="dropdown-item" href="#" id="btnExportarPDFporsetor"><i class="fas fa-file-download"></i> Exportar PDF por Setor</a>
       </div>
     </div>
   </div>
@@ -205,6 +206,23 @@ $(document).ready(function(){
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
         window.open("{{ route('protocolos.export.pdf') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
+    });
+
+    $('#btnExportarPDFporsetor').on('click', function(){
+                var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
+        var filtro_nome = $('input[name="nome"]').val();
+        var filtro_setor = $('input[name="setor"]').val();
+        var filtro_protocolo_tipo_id = $('select[name="protocolo_tipo_id"]').val();
+        if (typeof filtro_protocolo_tipo_id === "undefined") {
+          filtro_protocolo_tipo_id = "";
+        }
+        var filtro_protocolo_situacao_id = $('select[name="protocolo_situacao_id"]').val();
+        if (typeof filtro_protocolo_situacao_id === "undefined") {
+          filtro_protocolo_situacao_id = "";
+        }        
+        var filtro_dtainicio = $('input[name="dtainicio"]').val();
+        var filtro_dtafinal = $('input[name="dtafinal"]').val();
+        window.open("{{ route('protocolos.export.porsetor.pdf') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
     });
 
     $('#dtainicio').datepicker({

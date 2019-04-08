@@ -75,6 +75,7 @@ Route::resource('/periodotipos', 'PeriodoTipoController');
 /* PROTOCOLOS */
 Route::get('/protocolos/export/csv', 'ProtocoloController@exportcsv')->name('protocolos.export.csv');
 Route::get('/protocolos/export/pdf', 'ProtocoloController@exportpdf')->name('protocolos.export.pdf');
+Route::get('/protocolos/export/pdf/porsetor', 'ProtocoloController@exportpdfporsetor')->name('protocolos.export.porsetor.pdf');
 Route::get('/protocolos/export/pdf/{id}/individual', 'ProtocoloController@exportpdfindividual')->name('protocolos.export.pdf.individual');
 Route::resource('/protocolos', 'ProtocoloController');
 

@@ -109,6 +109,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Alterar Dados do Protocolo</button>
+    <a href="{{ route('protocolos.export.pdf.individual', $protocolo->id) }}" class="btn btn-primary" role="button"><i class="fas fa-print"></i> exportar para PDF</i></a>
   </form>
 </div>
 <br>
