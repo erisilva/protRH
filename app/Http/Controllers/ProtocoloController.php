@@ -559,7 +559,7 @@ class ProtocoloController extends Controller
                     $this->pdf->Cell(130, 5, utf8_decode('Setor: ' . $tramitacao->setor), 1, 0,'L');
                     $this->pdf->Ln();
                     if ($tramitacao->observacoes != ''){
-                        $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $protocolo->observacoes), 1, 'L', false);
+                        $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $tramitacao->observacoes), 1, 'L', false);
                     }
 
                     $this->pdf->Ln(2);
@@ -699,7 +699,7 @@ class ProtocoloController extends Controller
                 $this->pdf->Cell(130, 5, utf8_decode('Setor: ' . $tramitacao->setor), 1, 0,'L');
                 $this->pdf->Ln();
                 if ($tramitacao->observacoes != ''){
-                    $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $protocolo->observacoes), 1, 'L', false);
+                    $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $tramitacao->observacoes), 1, 'L', false);
                 }
 
                 $this->pdf->Ln(2);
@@ -948,7 +948,7 @@ class ProtocoloController extends Controller
                         $this->pdf->Cell(130, 5, utf8_decode('Setor: ' . $tramitacao->setor), 1, 0,'L');
                         $this->pdf->Ln();
                         if ($tramitacao->observacoes != ''){
-                            $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $protocolo->observacoes), 1, 'L', false);
+                            $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $tramitacao->observacoes), 1, 'L', false);
                         }
 
                         $this->pdf->Ln(2);

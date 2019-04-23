@@ -97,7 +97,7 @@
               <th scope="col">Matrícula</th>
               <th scope="col">Setor</th>
               <th scope="col">Código</th>
-              <th scope="col">Descrição</th>
+              <th scope="col">Observações</th>
           </tr>
       </thead>
       <tbody>
