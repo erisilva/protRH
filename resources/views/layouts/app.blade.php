@@ -48,6 +48,9 @@
                           <a class="dropdown-item" href="{{ route('protocolotipos.index') }}"><i class="fas fa-table"></i> Tipos de Protocolo</a>
                           <a class="dropdown-item" href="{{ route('protocolosituacoes.index') }}"><i class="fas fa-table"></i> Situações do Protocolo</a>
                           <a class="dropdown-item" href="{{ route('periodotipos.index') }}"><i class="fas fa-table"></i> Tipos de Período</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="{{ route('memorandotipos.index') }}"><i class="fas fa-table"></i> Tipos de Memorando</a>
+                          <a class="dropdown-item" href="{{ route('memorandosituacoes.index') }}"><i class="fas fa-table"></i> Situações do Memorando</a>
                         </div>
                       </li>
                     <li class="nav-item">

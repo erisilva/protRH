@@ -111,6 +111,23 @@ class AclSeeder extends Seeder
 		// para protocolos (tramitacões)
 		$tramitacao_create = Permission::where('name', '=', 'tramitacao.create')->get()->first(); 
 		$tramitacao_delete = Permission::where('name', '=', 'tramitacao.delete')->get()->first();
+		// para tipos de memorando
+		$memorandotipo_index = Permission::where('name', '=', 'memorandotipo.index')->get()->first(); 
+		$memorandotipo_create = Permission::where('name', '=', 'memorandotipo.create')->get()->first();
+		$memorandotipo_edit = Permission::where('name', '=', 'memorandotipo.edit')->get()->first();  
+		$memorandotipo_delete = Permission::where('name', '=', 'memorandotipo.delete')->get()->first();
+		$memorandotipo_show = Permission::where('name', '=', 'memorandotipo.show')->get()->first();  
+		$memorandotipo_export = Permission::where('name', '=', 'memorandotipo.export')->get()->first();
+		// para situações do memorando
+		$memorandosituacao_index = Permission::where('name', '=', 'memorandosituacao.index')->get()->first(); 
+		$memorandosituacao_create = Permission::where('name', '=', 'memorandosituacao.create')->get()->first();
+		$memorandosituacao_edit = Permission::where('name', '=', 'memorandosituacao.edit')->get()->first();  
+		$memorandosituacao_delete = Permission::where('name', '=', 'memorandosituacao.delete')->get()->first();
+		$memorandosituacao_show = Permission::where('name', '=', 'memorandosituacao.show')->get()->first();  
+		$memorandosituacao_export = Permission::where('name', '=', 'memorandosituacao.export')->get()->first();
+
+
+
 
 
 		// salva os relacionamentos entre perfil e suas permissões
@@ -183,6 +200,22 @@ class AclSeeder extends Seeder
 		#permissões protocolos (tramitações)
 		$administrador_perfil->permissions()->attach($tramitacao_create);
 		$administrador_perfil->permissions()->attach($tramitacao_delete);
+		#permissões para tipos de memorando
+		$administrador_perfil->permissions()->attach($memorandotipo_index);
+		$administrador_perfil->permissions()->attach($memorandotipo_create);
+		$administrador_perfil->permissions()->attach($memorandotipo_edit);
+		$administrador_perfil->permissions()->attach($memorandotipo_delete);
+		$administrador_perfil->permissions()->attach($memorandotipo_show);
+		$administrador_perfil->permissions()->attach($memorandotipo_export);
+		#permissões para situações dos memorandos
+		$administrador_perfil->permissions()->attach($memorandosituacao_index);
+		$administrador_perfil->permissions()->attach($memorandosituacao_create);
+		$administrador_perfil->permissions()->attach($memorandosituacao_edit);
+		$administrador_perfil->permissions()->attach($memorandosituacao_delete);
+		$administrador_perfil->permissions()->attach($memorandosituacao_show);
+		$administrador_perfil->permissions()->attach($memorandosituacao_export);
+
+
 
 
 		//
@@ -235,6 +268,19 @@ class AclSeeder extends Seeder
 		#permissões para protocolos (tramitações)
 		$gerente_perfil->permissions()->attach($tramitacao_create);
 		$gerente_perfil->permissions()->attach($tramitacao_delete);
+		#permissões para tipos de memorando
+		$gerente_perfil->permissions()->attach($memorandotipo_index);
+		$gerente_perfil->permissions()->attach($memorandotipo_create);
+		$gerente_perfil->permissions()->attach($memorandotipo_edit);
+		$gerente_perfil->permissions()->attach($memorandotipo_show);
+		$gerente_perfil->permissions()->attach($memorandotipo_export);
+		#permissões para situações dos memorando
+		$gerente_perfil->permissions()->attach($memorandosituacao_index);
+		$gerente_perfil->permissions()->attach($memorandosituacao_create);
+		$gerente_perfil->permissions()->attach($memorandosituacao_edit);
+		$gerente_perfil->permissions()->attach($memorandosituacao_show);
+		$gerente_perfil->permissions()->attach($memorandosituacao_export);
+
 
 
 		// o operador é o nível de operação do sistema não pode criar
@@ -278,6 +324,15 @@ class AclSeeder extends Seeder
 		#permissões para protocolos (tramitações)
 		$operador_perfil->permissions()->attach($tramitacao_create);
 		// melhor não $operador_perfil->permissions()->attach($tramitacao_delete);
+		#permissões para tipos de memorando
+		$operador_perfil->permissions()->attach($memorandotipo_index);
+		$operador_perfil->permissions()->attach($memorandotipo_show);
+		$operador_perfil->permissions()->attach($memorandotipo_export);
+		#permissões para situações dos memorandos
+		$operador_perfil->permissions()->attach($memorandosituacao_index);
+		$operador_perfil->permissions()->attach($memorandosituacao_show);
+		$operador_perfil->permissions()->attach($memorandosituacao_export);
+
 
 
 		// leitura é um tipo de operador que só pode ler
@@ -306,6 +361,13 @@ class AclSeeder extends Seeder
 		// leitor não pode criar ou alterar periodos, mas pode consultar
 		#permissões para protocolos (tramitações)
 		// leitor não pode criar nem alterar, mas pode consultas
+		#permissões para tipos de memorando
+		$leitor_perfil->permissions()->attach($memorandotipo_index);
+		$leitor_perfil->permissions()->attach($memorandotipo_show);
+		#permissões para situações dos memorandos
+		$leitor_perfil->permissions()->attach($memorandosituacao_index);
+		$leitor_perfil->permissions()->attach($memorandosituacao_show);
+
 
 
 		echo "usuário Administrador: adm@mail.br senha:123456  \n";		

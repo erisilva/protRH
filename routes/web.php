@@ -84,3 +84,13 @@ Route::resource('/periodos', 'PeriodoController')->only(['store', 'destroy',]);
 
 /*TRAMITAÇÕES*/
 Route::resource('/tramitacoes', 'TramitacaoController')->only(['store', 'destroy',]);
+
+/* Tipificação dos memorandos */
+Route::get('/memorandotipos/export/csv', 'MemorandoTipoController@exportcsv')->name('memorandotipos.export.csv');
+Route::get('/memorandotipos/export/pdf', 'MemorandoTipoController@exportpdf')->name('memorandotipos.export.pdf');
+Route::resource('/memorandotipos', 'MemorandoTipoController');
+
+/* Situacões ou status dos memorandos */
+Route::get('/memorandosituacoes/export/csv', 'MemorandoSituacaoController@exportcsv')->name('memorandosituacoes.export.csv');
+Route::get('/memorandosituacoes/export/pdf', 'MemorandoSituacaoController@exportpdf')->name('memorandosituacoes.export.pdf');
+Route::resource('/memorandosituacoes', 'MemorandoSituacaoController');

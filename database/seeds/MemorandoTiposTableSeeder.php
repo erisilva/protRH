@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class ProtocoloTiposTableSeeder extends Seeder
+class MemorandoTiposTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,31 +11,31 @@ class ProtocoloTiposTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('protocolo_tipos')->insert([
+        DB::table('memorando_tipos')->insert([
             'descricao' => 'Décimo Terceiro',
         ]);
 
-        DB::table('protocolo_tipos')->insert([
+        DB::table('memorando_tipos')->insert([
             'descricao' => 'Licença Saúde',
         ]);
 
-        DB::table('protocolo_tipos')->insert([
+        DB::table('memorando_tipos')->insert([
             'descricao' => 'Licença Maternidade',
         ]);
 
-        DB::table('protocolo_tipos')->insert([
+        DB::table('memorando_tipos')->insert([
             'descricao' => 'Pedido de 1/3 de Férias',
         ]);
 
-        DB::table('protocolo_tipos')->insert([
+        DB::table('memorando_tipos')->insert([
             'descricao' => 'Pedido de Transferência',
         ]);
 
-        DB::table('protocolo_tipos')->insert([
+        DB::table('memorando_tipos')->insert([
             'descricao' => 'Requerimento de Férias',
         ]);
 
-        DB::table('protocolo_tipos')->insert([
+        DB::table('memorando_tipos')->insert([
             'descricao' => 'RH Interno',
         ]);
     }

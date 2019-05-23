@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ProtocoloTiposTableSeeder::class);
         $this->call(ProtocoloSituacoesTableSeeder::class);
         $this->call(PeriodoTipoTableSeeder::class);
+        $this->call(MemorandoTiposTableSeeder::class);
+        $this->call(MemorandoSituacoesTableSeeder::class);
 
         $this->call(AclSeeder::class);
         

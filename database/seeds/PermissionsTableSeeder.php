@@ -203,7 +203,7 @@ class PermissionsTableSeeder extends Seeder
             'description' => 'Exportação de dados das situações dos protocolos',
         ]);
 
-        //Situação do protocolo
+        //Tipo de período
         DB::table('permissions')->insert([
             'name' => 'periodotipo.index',
             'description' => 'Lista de tipos de período',
@@ -275,6 +275,57 @@ class PermissionsTableSeeder extends Seeder
             'description' => 'Excluir tramitação do protocolo',
         ]);
 
+        //Tipo de memorando
+        DB::table('permissions')->insert([
+            'name' => 'memorandotipo.index',
+            'description' => 'Lista de tipos de memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandotipo.create',
+            'description' => 'Registrar novo tipo de memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandotipo.edit',
+            'description' => 'Alterar dados do tipo de memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandotipo.delete',
+            'description' => 'Excluir tipo de memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandotipo.show',
+            'description' => 'Mostrar dados do tipo de memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandotipo.export',
+            'description' => 'Exportação de dados dos tipos de memorando',
+        ]);
+
+        //Situação do memorando
+        DB::table('permissions')->insert([
+            'name' => 'memorandosituacao.index',
+            'description' => 'Lista de situações do memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandosituacao.create',
+            'description' => 'Registrar nova situação do memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandosituacao.edit',
+            'description' => 'Alterar dados da situação do memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandosituacao.delete',
+            'description' => 'Excluir situação do memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandosituacao.show',
+            'description' => 'Mostrar dados do situação do memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorandosituacao.export',
+            'description' => 'Exportação de dados das situações do memorando',
+        ]);
 
 
     }

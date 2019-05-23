@@ -87,7 +87,6 @@
         <div class="modal-body">
           <!-- Filtragem dos dados -->
           <form method="GET" action="{{ route('protocolos.index') }}">
-
             <div class="form-row">
               <div class="form-group col-md-4">
                 <label for="numprotocolo">Nº</label>
@@ -102,7 +101,6 @@
                 <input type="text" class="form-control" id="dtafinal" name="dtafinal" value="{{request()->input('dtafinal')}}" autocomplete="off">                
               </div>  
             </div>
-
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label for="nome">Nome</label>
@@ -113,7 +111,6 @@
                 <input type="text" class="form-control" id="setor" name="setor" value="{{request()->input('setor')}}">
               </div>  
             </div>
-
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label for="protocolo_tipo_id">Tipo do Protocolo</label>
@@ -134,13 +131,8 @@
                 </select>
               </div>  
             </div>
-
-
             <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Pesquisar</button>
             <a href="{{ route('protocolos.index') }}" class="btn btn-primary btn-sm" role="button">Limpar</a>
-
-
-
           </form>
           <br>
           <!-- Seleção de número de resultados por página -->
@@ -192,7 +184,7 @@ $(document).ready(function(){
     });
 
     $('#btnExportarPDF').on('click', function(){
-                var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
+        var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
         var filtro_nome = $('input[name="nome"]').val();
         var filtro_setor = $('input[name="setor"]').val();
         var filtro_protocolo_tipo_id = $('select[name="protocolo_tipo_id"]').val();
