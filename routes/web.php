@@ -77,12 +77,13 @@ Route::get('/protocolos/export/csv', 'ProtocoloController@exportcsv')->name('pro
 Route::get('/protocolos/export/pdf', 'ProtocoloController@exportpdf')->name('protocolos.export.pdf');
 Route::get('/protocolos/export/pdf/porsetor', 'ProtocoloController@exportpdfporsetor')->name('protocolos.export.porsetor.pdf');
 Route::get('/protocolos/export/pdf/{id}/individual', 'ProtocoloController@exportpdfindividual')->name('protocolos.export.pdf.individual');
+Route::get('/protocolos/{chave}/buscar', 'ProtocoloPublicoController@buscar')->name('protocolos.chave.buscar');
 Route::resource('/protocolos', 'ProtocoloController');
 
 /*PERIODOS*/
 Route::resource('/periodos', 'PeriodoController')->only(['store', 'destroy',]);
 
-/*TRAMITAÇÕES*/
+/*TRAMITAÇÕES DOS PROTOCOLOS*/
 Route::resource('/tramitacoes', 'TramitacaoController')->only(['store', 'destroy',]);
 
 /* Tipificação dos memorandos */
@@ -94,3 +95,8 @@ Route::resource('/memorandotipos', 'MemorandoTipoController');
 Route::get('/memorandosituacoes/export/csv', 'MemorandoSituacaoController@exportcsv')->name('memorandosituacoes.export.csv');
 Route::get('/memorandosituacoes/export/pdf', 'MemorandoSituacaoController@exportpdf')->name('memorandosituacoes.export.pdf');
 Route::resource('/memorandosituacoes', 'MemorandoSituacaoController');
+
+/* MEMORANDOS */
+Route::get('/memorandos/export/csv', 'MemorandoController@exportcsv')->name('memorandos.export.csv');
+Route::get('/memorandos/export/pdf', 'MemorandoController@exportpdf')->name('memorandos.export.pdf');
+Route::resource('/memorandos', 'MemorandoController');

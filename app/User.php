@@ -87,12 +87,22 @@ class User extends Authenticatable
     }
 
     /**
-     * Tramitações do operador
+     * Tramitações (Protocolo) do operador
      *
      * @var Role
      */
     public function tramitacaos()
     {
         return $this->hasMany('App\Tramitacao');
+    }
+
+    /**
+     * Memorandos do operador
+     *
+     * @var Role
+     */
+    public function memorandos()
+    {
+        return $this->hasMany('App\Memorando');
     }
 }

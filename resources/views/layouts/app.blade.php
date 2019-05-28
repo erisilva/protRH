@@ -55,7 +55,10 @@
                       </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('protocolos.index') }}">Protocolos</a>
-                    </li>    
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('memorandos.index') }}">Memorandos</a>
+                    </li>   
                     @endif
                 </ul>
 

@@ -26,6 +26,8 @@ use Auth; // receber o id do operador logado no sistema
 
 use Carbon\Carbon; // tratamento de datas
 
+use QrCode;
+
 class ProtocoloController extends Controller
 {
 
@@ -163,6 +165,7 @@ class ProtocoloController extends Controller
      */
     public function store(Request $request)
     {
+
         // geração de uma string aleatória de tamanho configurável
         function generateRandomString($length = 10) {
             return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
@@ -183,7 +186,20 @@ class ProtocoloController extends Controller
           'setor_id' => 'required',
           'protocolo_tipo_id' => 'required',
           'protocolo_situacao_id' => 'required',
+        ],
+        [
+            'funcionario_id.required' => 'Selecione um funcionário para o protocolo',
+            'setor_id.required' => 'Selecione o setor para esse protocolo',
+            'protocolo_tipo_id.required' => 'Selecione o tipo do protocolo',
+            'protocolo_situacao_id.required' => 'Selecione a situação do protocolo',
         ]);
+
+        // salvar o barcode
+        $urlImageFile = public_path() . '\qrcodes\\' . $protocolo_input['chave'] . '.png';
+        $urlLinkPublic = $request->url() . '/protocolos/' . $protocolo_input['chave'] . '/buscar';
+
+        // salva a imagem com o barcode
+        QrCode::format('png')->size(250)->margin(1)->generate($urlLinkPublic, $urlImageFile);
 
         $protocolo = Protocolo::create($protocolo_input); //salva
 
@@ -594,7 +610,7 @@ class ProtocoloController extends Controller
         $protocolo = $protocolo->join('protocolo_situacaos', 'protocolo_situacaos.id', '=', 'protocolos.protocolo_situacao_id');
         $protocolo = $protocolo->join('users', 'users.id', '=', 'protocolos.user_id');
         // select
-        $protocolo = $protocolo->select('protocolos.id as numero', DB::raw('DATE_FORMAT(protocolos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(protocolos.created_at, \'%H:%i\') AS hora'),'protocolos.descricao as observacoes', 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo_setor', 'protocolo_tipos.descricao as tipo_protocolo', 'protocolo_situacaos.descricao as situacao_protocolo', 'users.name as operador');
+        $protocolo = $protocolo->select('protocolos.id as numero', DB::raw('DATE_FORMAT(protocolos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(protocolos.created_at, \'%H:%i\') AS hora'),'protocolos.descricao as observacoes', 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo_setor', 'protocolo_tipos.descricao as tipo_protocolo', 'protocolo_situacaos.descricao as situacao_protocolo', 'users.name as operador', 'protocolos.chave');
 
         //filtros
         $protocolo = $protocolo->where('protocolos.id', '=', $id);
@@ -705,6 +721,21 @@ class ProtocoloController extends Controller
                 $this->pdf->Ln(2);
             }
         }
+
+        $this->pdf->Ln(2);
+
+        // imprime o barcode
+        $urlLinkPublic = 'qrcodes/' . $protocolo->chave . '.png';
+
+        //$urlImageFile = public_path() . '\qrcodes\\' . $protocolo->chave . '.png';
+
+
+
+        //$this->pdf->Cell(186, 5, utf8_decode('link: ' . $urlLinkPublic), 1, 0,'L');
+
+        //dd(response()->file($urlImageFile));
+
+        $this->pdf->Image($urlLinkPublic, null, null, 0, 0, 'PNG');
 
         $this->pdf->Ln(2);
 

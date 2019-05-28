@@ -96,14 +96,10 @@
         @endif
       </div>      
     </div>  
-
-
     <div class="form-group">
       <label for="descricao">Observações</label>
       <textarea class="form-control" name="descricao" rows="3">{{ old('descricao') ?? '' }}</textarea>      
     </div>
-
-
     <button type="submit" class="btn btn-primary"><i class="fas fa-plus-square"></i> Incluir Protocolo</button>
   </form>
   <div class="float-right">

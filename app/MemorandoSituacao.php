@@ -9,4 +9,9 @@ class MemorandoSituacao extends Model
     protected $fillable = [
         'descricao',
     ];
+
+    public function memorandos()
+    {
+        return $this->hasMany('App\Memorando');
+    }
 }
