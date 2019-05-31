@@ -70,6 +70,7 @@
                   <div class="btn-group" role="group">
                     <a href="{{route('memorandos.edit', $memorando->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
                     <a href="{{route('memorandos.show', $memorando->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-eye"></i></a>
+                    <a href="{{ route('memorandos.export.pdf.individual', $memorando->id) }}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-print"></i></a>
                   </div>
                 </td>
             </tr>    
@@ -94,11 +95,14 @@
         <div class="modal-body">
           <!-- Filtragem dos dados -->
           <form method="GET" action="{{ route('memorandos.index') }}">
-
+            <div class="form-group">
+              <label for="remetente">Remetente</label>
+                <input type="text" class="form-control" id="remetente" name="remetente" value="{{request()->input('remetente')}}">
+            </div>  
             <div class="form-row">
               <div class="form-group col-md-4">
-                <label for="nummemorando">Nº(RH)</label>
-                <input type="text" class="form-control" id="nummemorando" name="nummemorando" value="{{request()->input('nummemorando')}}">
+                <label for="numeromemorando">Nº(RH)</label>
+                <input type="text" class="form-control" id="numeromemorando" name="numeromemorando" value="{{request()->input('numeromemorando')}}">
               </div>
               <div class="form-group col-md-4">
                 <label for="dtainicio">Data inicial</label>
@@ -109,7 +113,30 @@
                 <input type="text" class="form-control" id="dtafinal" name="dtafinal" value="{{request()->input('dtafinal')}}" autocomplete="off">                
               </div>  
             </div>
-
+            <div class="form-row">
+              <div class="form-group col-md-4">
+                <label for="numero">Número</label>
+                <input type="text" class="form-control" id="numero" name="numero" value="{{request()->input('numero')}}">
+              </div>
+              <div class="form-group col-md-4">
+                <label for="memorando_tipo_id">Tipo do Memorando</label>
+                <select class="form-control" name="memorando_tipo_id" id="memorando_tipo_id">
+                  <option value="">Mostrar todos</option>    
+                  @foreach($memorandotipos as $memorandotipo)
+                  <option value="{{$memorandotipo->id}}" {{ ($memorandotipo->id == request()->input('memorando_tipo_id')) ? ' selected' : '' }} >{{$memorandotipo->descricao}}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="form-group col-md-4">
+                <label for="memorando_situacao_id">Situação do Memorando</label>
+                <select class="form-control" name="memorando_situacao_id" id="memorando_situacao_id">
+                  <option value="">Mostrar todos</option>
+                  @foreach($memorandosituacoes as $memorandosituacao)
+                  <option value="{{$memorandosituacao->id}}" {{ ($memorandosituacao->id == request()->input('memorando_situacao_id')) ? ' selected' : '' }} >{{$memorandosituacao->descricao}}</option>
+                  @endforeach
+                </select>
+              </div>  
+            </div>
             <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Pesquisar</button>
             <a href="{{ route('memorandos.index') }}" class="btn btn-primary btn-sm" role="button">Limpar</a>
           </form>
@@ -144,11 +171,39 @@ $(document).ready(function(){
     });
 
     $('#btnExportarCSV').on('click', function(){
-        window.open("{{ route('memorandos.export.csv') }}","_self");
+        var filtro_remetente = $('input[name="remetente"]').val();
+        var filtro_numeromemorando = $('input[name="numeromemorando"]').val();
+        var filtro_numero = $('input[name="numero"]').val();
+        var filtro_memorando_tipo_id = $('select[name="memorando_tipo_id"]').val();
+        if (typeof filtro_memorando_tipo_id === "undefined") {
+          filtro_memorando_tipo_id = "";
+        }
+        var filtro_memorando_situacao_id = $('select[name="memorando_situacao_id"]').val();
+        if (typeof filtro_memorando_situacao_id === "undefined") {
+          filtro_memorando_situacao_id = "";
+        }        
+        var filtro_dtainicio = $('input[name="dtainicio"]').val();
+        var filtro_dtafinal = $('input[name="dtafinal"]').val();
+
+        window.open("{{ route('memorandos.export.csv') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&numero=" + filtro_numero + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
     });
 
     $('#btnExportarPDF').on('click', function(){
-        window.open("{{ route('memorandos.export.pdf') }}","_self");
+        var filtro_remetente = $('input[name="remetente"]').val();
+        var filtro_numeromemorando = $('input[name="numeromemorando"]').val();
+        var filtro_numero = $('input[name="numero"]').val();
+        var filtro_memorando_tipo_id = $('select[name="memorando_tipo_id"]').val();
+        if (typeof filtro_memorando_tipo_id === "undefined") {
+          filtro_memorando_tipo_id = "";
+        }
+        var filtro_memorando_situacao_id = $('select[name="memorando_situacao_id"]').val();
+        if (typeof filtro_memorando_situacao_id === "undefined") {
+          filtro_memorando_situacao_id = "";
+        }        
+        var filtro_dtainicio = $('input[name="dtainicio"]').val();
+        var filtro_dtafinal = $('input[name="dtafinal"]').val();
+
+        window.open("{{ route('memorandos.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&numero=" + filtro_numero + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
     });
 
     $('#dtainicio').datepicker({

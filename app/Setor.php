@@ -18,5 +18,10 @@ class Setor extends Model
     public function tramitacaos()
     {
         return $this->hasMany('App\Tramitacao');
-    }   
+    }
+
+    public function memorandoTramitacaos()
+    {
+        return $this->hasMany('App\MemorandoTramitacao');
+    } 
 }

@@ -42,9 +42,6 @@
                         <div class="dropdown-menu" aria-labelledby="navbarConfig">
                           <a class="dropdown-item" href="{{ route('users.index') }}"><i class="fas fa-users-cog"></i> Operadores do Sistema</a>
                           <div class="dropdown-divider"></div>
-                          <a class="dropdown-item" href="{{ route('funcionarios.index') }}"><i class="fas fa-user-friends"></i> Funcionários</a>
-                          <a class="dropdown-item" href="{{ route('setores.index') }}"><i class="fas fa-warehouse"></i> Setores</a>
-                          <div class="dropdown-divider"></div>
                           <a class="dropdown-item" href="{{ route('protocolotipos.index') }}"><i class="fas fa-table"></i> Tipos de Protocolo</a>
                           <a class="dropdown-item" href="{{ route('protocolosituacoes.index') }}"><i class="fas fa-table"></i> Situações do Protocolo</a>
                           <a class="dropdown-item" href="{{ route('periodotipos.index') }}"><i class="fas fa-table"></i> Tipos de Período</a>
@@ -58,7 +55,13 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('memorandos.index') }}">Memorandos</a>
-                    </li>   
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('funcionarios.index') }}">Funcionários</a>
+                    </li> 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('setores.index') }}">Setores</a>
+                    </li>  
                     @endif
                 </ul>
 

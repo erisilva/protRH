@@ -122,7 +122,7 @@
       @csrf
       @method('DELETE')
       <a href="{{ route('protocolos.index') }}" class="btn btn-primary" role="button"><i class="fas fa-long-arrow-alt-left"></i> Voltar</i></a>
-      <a href="{{ route('protocolos.export.pdf.individual', $protocolo->id) }}" class="btn btn-primary" role="button"><i class="fas fa-print"></i> exportar para PDF</i></a>
+      <a href="{{ route('protocolos.export.pdf.individual', $protocolo->id) }}" class="btn btn-primary" role="button"><i class="fas fa-print"></i> Exportar para PDF</a>
       <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Excluir</button>
     </form>
   </div>

@@ -56,16 +56,15 @@
     <div class="form-row">
       <div class="form-group col-md-6">
         <label for="funcionario">Funcionário</label>
-        <input type="text" class="form-control typeahead {{ $errors->has('funcionario_id') ? ' is-invalid' : '' }}" name="funcionario" id="funcionario" value="{{ old('funcionario') ?? '' }}">
+        <input type="text" class="form-control typeahead {{ $errors->has('funcionario_id') ? ' is-invalid' : '' }}" name="funcionario" id="funcionario" value="{{ old('funcionario') ?? '' }}" autocomplete="off">
         <input type="hidden" id="funcionario_id" name="funcionario_id" value="{{ old('funcionario_id') ?? '' }}">
       </div>
       <div class="form-group col-md-6">
         <label for="setor">Setor</label>
-        <input type="text" class="form-control{{ $errors->has('setor_id') ? ' is-invalid' : '' }}" name="setor" id="setor" value="{{ old('setor') ?? '' }}">
+        <input type="text" class="form-control{{ $errors->has('setor_id') ? ' is-invalid' : '' }}" name="setor" id="setor" value="{{ old('setor') ?? '' }}" autocomplete="off">
         <input type="hidden" id="setor_id" name="setor_id" value="{{ old('setor_id') ?? '' }}">
       </div>
     </div>
-
     <div class="form-row">
       <div class="form-group col-md-8">
         <label for="protocolo_tipo_id">Tipo do Protocolo</label>
@@ -109,7 +108,7 @@
 @endsection
 
 @section('script-footer')
-  <script src="{{ asset('js/typeahead.bundle.js') }}"></script>
+  <script src="{{ asset('js/typeahead.bundle.min.js') }}"></script>
   <script>        
         $(document).ready(function(){               
             var funcionarios = new Bloodhound({

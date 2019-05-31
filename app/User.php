@@ -105,4 +105,14 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Memorando');
     }
+
+    /**
+     * Tramitacoes do operador
+     *
+     * @var MemorandoTramitacao
+     */
+    public function memorandoTramitacaos()
+    {
+        return $this->hasMany('App\MemorandoTramitacao');
+    }
 }

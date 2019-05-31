@@ -196,7 +196,7 @@ class ProtocoloController extends Controller
 
         // salvar o barcode
         $urlImageFile = public_path() . '\qrcodes\\' . $protocolo_input['chave'] . '.png';
-        $urlLinkPublic = $request->url() . '/protocolos/' . $protocolo_input['chave'] . '/buscar';
+        $urlLinkPublic = $request->url() . '/' . $protocolo_input['chave'] . '/buscar';
 
         // salva a imagem com o barcode
         QrCode::format('png')->size(250)->margin(1)->generate($urlLinkPublic, $urlImageFile);
@@ -280,10 +280,12 @@ class ProtocoloController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-          'funcionario_id' => 'required',
-          'setor_id' => 'required',
           'protocolo_tipo_id' => 'required',
           'protocolo_situacao_id' => 'required',
+        ],
+        [
+            'protocolo_tipo_id.required' => 'Selecione o tipo do protocolo',
+            'protocolo_situacao_id.required' => 'Selecione a situação do protocolo',
         ]);
 
         $protocolo = Protocolo::findOrFail($id);
@@ -739,7 +741,7 @@ class ProtocoloController extends Controller
 
         $this->pdf->Ln(2);
 
-        $this->pdf->Output('D', 'Protocolos_num' . $id . '_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        $this->pdf->Output('D', 'Protocolo_num' . $id . '_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
     }
 

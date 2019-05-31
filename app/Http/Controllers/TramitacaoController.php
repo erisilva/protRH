@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Tramitacao;
 use App\Periodo;
-use App\protocolo;
+use App\Protocolo;
 use App\ProtocoloSituacao;
 use App\ProtocoloTipo;
 use App\PeriodoTipo;

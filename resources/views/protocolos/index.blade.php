@@ -201,7 +201,7 @@ $(document).ready(function(){
     });
 
     $('#btnExportarPDFporsetor').on('click', function(){
-                var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
+        var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
         var filtro_nome = $('input[name="nome"]').val();
         var filtro_setor = $('input[name="setor"]').val();
         var filtro_protocolo_tipo_id = $('select[name="protocolo_tipo_id"]').val();

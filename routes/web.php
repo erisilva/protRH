@@ -99,4 +99,8 @@ Route::resource('/memorandosituacoes', 'MemorandoSituacaoController');
 /* MEMORANDOS */
 Route::get('/memorandos/export/csv', 'MemorandoController@exportcsv')->name('memorandos.export.csv');
 Route::get('/memorandos/export/pdf', 'MemorandoController@exportpdf')->name('memorandos.export.pdf');
+Route::get('/memorandos/export/pdf/{id}/individual', 'MemorandoController@exportpdfindividual')->name('memorandos.export.pdf.individual');
 Route::resource('/memorandos', 'MemorandoController');
+
+/*TRAMITAÇÕES DOS MEMORANDOS*/
+Route::resource('/memorandotramitacoes', 'MemorandoTramitacaoController')->only(['store', 'destroy',]);

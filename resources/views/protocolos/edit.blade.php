@@ -107,7 +107,6 @@
       <label for="descricao">Observações</label>
       <textarea class="form-control" name="descricao" rows="3">{{ $protocolo->descricao }}</textarea>      
     </div>
-
     <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Alterar Dados do Protocolo</button>
     <a href="{{ route('protocolos.export.pdf.individual', $protocolo->id) }}" class="btn btn-primary" role="button"><i class="fas fa-print"></i> exportar para PDF</i></a>
   </form>
@@ -289,7 +288,7 @@
 @section('script-footer')
 <script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script>
 <script src="{{ asset('locales/bootstrap-datepicker.pt-BR.min.js') }}"></script>
- <script src="{{ asset('js/typeahead.bundle.js') }}"></script>
+<script src="{{ asset('js/typeahead.bundle.min.js') }}"></script>
 <script>
 $(document).ready(function(){
 

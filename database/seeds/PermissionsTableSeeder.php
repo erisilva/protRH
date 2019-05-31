@@ -327,6 +327,42 @@ class PermissionsTableSeeder extends Seeder
             'description' => 'Exportação de dados das situações do memorando',
         ]);
 
+        //Memorandos
+        DB::table('permissions')->insert([
+            'name' => 'memorando.index',
+            'description' => 'Lista de memorandos',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.create',
+            'description' => 'Registrar novo memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.edit',
+            'description' => 'Alterar dados do memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.delete',
+            'description' => 'Excluir memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.show',
+            'description' => 'Mostrar dados do memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.export',
+            'description' => 'Exportação de dados dos memorandos',
+        ]);
+
+        //Permissões para tramitações dos protocolos
+        DB::table('permissions')->insert([
+            'name' => 'memorando.tramitacao.create',
+            'description' => 'Registrar nova tramitação no memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.tramitacao.delete',
+            'description' => 'Excluir tramitação do memorando',
+        ]);
+
 
     }
 }

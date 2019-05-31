@@ -125,7 +125,16 @@ class AclSeeder extends Seeder
 		$memorandosituacao_delete = Permission::where('name', '=', 'memorandosituacao.delete')->get()->first();
 		$memorandosituacao_show = Permission::where('name', '=', 'memorandosituacao.show')->get()->first();  
 		$memorandosituacao_export = Permission::where('name', '=', 'memorandosituacao.export')->get()->first();
-
+		// memorando
+		$memorando_index = Permission::where('name', '=', 'memorando.index')->get()->first(); 
+		$memorando_create = Permission::where('name', '=', 'memorando.create')->get()->first();
+		$memorando_edit = Permission::where('name', '=', 'memorando.edit')->get()->first();  
+		$memorando_delete = Permission::where('name', '=', 'memorando.delete')->get()->first();
+		$memorando_show = Permission::where('name', '=', 'memorando.show')->get()->first();  
+		$memorando_export = Permission::where('name', '=', 'memorando.export')->get()->first();
+		// memorando (tramitacões)
+		$memorando_tramitacao_create = Permission::where('name', '=', 'memorando.tramitacao.create')->get()->first(); 
+		$memorando_tramitacao_delete = Permission::where('name', '=', 'memorando.tramitacao.delete')->get()->first();
 
 
 
@@ -214,6 +223,16 @@ class AclSeeder extends Seeder
 		$administrador_perfil->permissions()->attach($memorandosituacao_delete);
 		$administrador_perfil->permissions()->attach($memorandosituacao_show);
 		$administrador_perfil->permissions()->attach($memorandosituacao_export);
+		#permissões para memorandos
+		$administrador_perfil->permissions()->attach($memorando_index);
+		$administrador_perfil->permissions()->attach($memorando_create);
+		$administrador_perfil->permissions()->attach($memorando_edit);
+		$administrador_perfil->permissions()->attach($memorando_delete);
+		$administrador_perfil->permissions()->attach($memorando_show);
+		$administrador_perfil->permissions()->attach($memorando_export);
+		#permissões memorandos (tramitações)
+		$administrador_perfil->permissions()->attach($memorando_tramitacao_create);
+		$administrador_perfil->permissions()->attach($memorando_tramitacao_delete);
 
 
 
@@ -280,6 +299,16 @@ class AclSeeder extends Seeder
 		$gerente_perfil->permissions()->attach($memorandosituacao_edit);
 		$gerente_perfil->permissions()->attach($memorandosituacao_show);
 		$gerente_perfil->permissions()->attach($memorandosituacao_export);
+		#permissões para situações dos memorando
+		$gerente_perfil->permissions()->attach($memorando_index);
+		$gerente_perfil->permissions()->attach($memorando_create);
+		$gerente_perfil->permissions()->attach($memorando_edit);
+		$gerente_perfil->permissions()->attach($memorando_show);
+		$gerente_perfil->permissions()->attach($memorando_export);
+		$gerente_perfil->permissions()->attach($memorando_delete);
+		#permissões memorandos (tramitações)
+		$gerente_perfil->permissions()->attach($memorando_tramitacao_create);
+		$gerente_perfil->permissions()->attach($memorando_tramitacao_delete);
 
 
 
@@ -332,6 +361,15 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($memorandosituacao_index);
 		$operador_perfil->permissions()->attach($memorandosituacao_show);
 		$operador_perfil->permissions()->attach($memorandosituacao_export);
+		#permissões para memorandos, o operador pode editar e criar
+		$operador_perfil->permissions()->attach($memorando_index);
+		$operador_perfil->permissions()->attach($memorando_create);
+		$operador_perfil->permissions()->attach($memorando_edit);		
+		$operador_perfil->permissions()->attach($memorando_show);
+		$operador_perfil->permissions()->attach($memorando_export);
+		#permissões memorandos (tramitações)
+		$operador_perfil->permissions()->attach($memorando_tramitacao_create);
+
 
 
 
@@ -367,6 +405,9 @@ class AclSeeder extends Seeder
 		#permissões para situações dos memorandos
 		$leitor_perfil->permissions()->attach($memorandosituacao_index);
 		$leitor_perfil->permissions()->attach($memorandosituacao_show);
+		#permissões para memorandos
+		$leitor_perfil->permissions()->attach($memorando_index);
+		$leitor_perfil->permissions()->attach($memorando_show);
 
 
 

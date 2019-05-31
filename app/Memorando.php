@@ -24,4 +24,9 @@ class Memorando extends Model
     {
         return $this->belongsTo('App\MemorandoSituacao');
     }
+
+    public function memorandoTramitacaos()
+    {
+        return $this->hasMany('App\MemorandoTramitacao');
+    }
 }
