@@ -11,7 +11,7 @@
 </div>
 <div class="container">
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>Atenção!</strong> Para sua segurança <strong>não</strong> compartilhe, salve ou envie por e-mail esse link (endereço de página). Os dados dessa consulta podem ser alterados a qualquer momento sem aviso prévio. Essa é uma página de consulta, não pode ser usada como documento oficial.
+    <strong>Atenção!</strong> Para sua segurança <strong>não</strong> compartilhe, salve ou envie por e-mail esse link (endereço de página).
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>

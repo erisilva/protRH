@@ -22,16 +22,7 @@
       @endif     
     </div>
     <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="numero">Numeração</label>
-        <input type="text" class="form-control{{ $errors->has('numero') ? ' is-invalid' : '' }}" name="numero" value="{{ old('numero') ?? '' }}">
-        @if ($errors->has('numero'))
-        <div class="invalid-feedback">
-        {{ $errors->first('numero') }}
-        </div>
-        @endif
-      </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-6">
         <label for="memorando_tipo_id">Tipo do Memorando</label>
         <select class="form-control {{ $errors->has('memorando_tipo_id') ? ' is-invalid' : '' }}" name="memorando_tipo_id" id="memorando_tipo_id">
           <option value="" selected="true">Selecione ...</option>        
@@ -45,7 +36,7 @@
         </div>
         @endif
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-6">
         <label for="memorando_situacao_id">Situação do Memorando</label>
         <select class="form-control {{ $errors->has('memorando_situacao_id') ? ' is-invalid' : '' }}" name="memorando_situacao_id" id="memorando_situacao_id">
           <option value="" selected="true">Selecione ...</option>        

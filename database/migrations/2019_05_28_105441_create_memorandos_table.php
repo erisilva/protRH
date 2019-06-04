@@ -17,7 +17,6 @@ class CreateMemorandosTable extends Migration
             $table->increments('id');
             $table->text('remetente')->nullable();
             $table->text('observacao')->nullable();
-            $table->string('numero');
             $table->string('chave', 20)->unique();
             $table->integer('memorando_tipo_id')->unsigned();
             $table->integer('memorando_situacao_id')->unsigned();

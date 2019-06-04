@@ -33,15 +33,11 @@
       <textarea class="form-control" name="remetente" rows="3" readonly>{{ $memorando->remetente }}</textarea>      
     </div>
     <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="numero">Número</label>
-        <input type="text" class="form-control" name="numero" value="{{ $memorando->numero }}" readonly>
-      </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-6">
         <label for="memorando_tipo">Tipo do Memorando</label>
         <input type="text" class="form-control" name="memorando_tipo" value="{{ $memorando->memorandoTipo->descricao }}" readonly>
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-6">
         <label for="memorando_situacao">Situação do Memorando</label>
         <input type="text" class="form-control" name="memorando_situacao" value="{{ $memorando->memorandoSituacao->descricao }}" readonly>
       </div>      

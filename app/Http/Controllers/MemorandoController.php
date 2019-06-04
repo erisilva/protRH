@@ -67,10 +67,6 @@ class MemorandoController extends Controller
             $memorandos = $memorandos->where('id', 'like', '%' . request('numeromemorando') . '%');
         }
 
-        if (request()->has('numero')){
-            $memorandos = $memorandos->where('numero', 'like', '%' . request('numero') . '%');
-        }
-
         if (request()->has('memorando_tipo_id')){
             if (request('memorando_tipo_id') != ""){
                 $memorandos = $memorandos->where('memorando_tipo_id', '=', request('memorando_tipo_id'));
@@ -116,7 +112,6 @@ class MemorandoController extends Controller
         $memorandos = $memorandos->paginate(session('perPage', '5'))->appends([          
             'remetente' => request('remetente'),
             'numeromemorando' => request('numeromemorando'),
-            'numero' => request('numero'),
             'memorando_tipo_id' => request('memorando_tipo_id'),
             'memorando_situacao_id' => request('memorando_situacao_id'),
             'dtainicio' => request('dtainicio'),
@@ -319,16 +314,13 @@ class MemorandoController extends Controller
         $memorandos = $memorandos->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
         $memorandos = $memorandos->join('users', 'users.id', '=', 'memorandos.user_id');
         // select
-        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorandos.numero', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador');
+        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador');
         // filtros
         if (request()->has('numeromemorando')){
             $memorandos = $memorandos->where('memorandos.id', 'like', '%' . request('numeromemorando') . '%');
         }
         if (request()->has('remetente')){
             $memorandos = $memorandos->where('memorandos.remetente', 'like', '%' . request('remetente') . '%');
-        }
-        if (request()->has('numero')){
-            $memorandos = $memorandos->where('memorandos.numero', 'like', '%' . request('numero') . '%');
         }
         if (request()->has('memorando_tipo_id')){
             if (request('memorando_tipo_id') != ""){
@@ -394,16 +386,13 @@ class MemorandoController extends Controller
         $memorandos = $memorandos->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
         $memorandos = $memorandos->join('users', 'users.id', '=', 'memorandos.user_id');
         // select
-        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorandos.numero', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador');
+        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador');
         // filtros
         if (request()->has('numeromemorando')){
             $memorandos = $memorandos->where('memorandos.id', 'like', '%' . request('numeromemorando') . '%');
         }
         if (request()->has('remetente')){
             $memorandos = $memorandos->where('memorandos.remetente', 'like', '%' . request('remetente') . '%');
-        }
-        if (request()->has('numero')){
-            $memorandos = $memorandos->where('memorandos.numero', 'like', '%' . request('numero') . '%');
         }
         if (request()->has('memorando_tipo_id')){
             if (request('memorando_tipo_id') != ""){
@@ -452,13 +441,11 @@ class MemorandoController extends Controller
             $this->pdf->Cell(186, 6, utf8_decode('Remetente'), 1, 0,'L');
             $this->pdf->Ln();
             $this->pdf->MultiCell(186, 6, utf8_decode($memorando->remetente), 1, 'L', false);
-            $this->pdf->Cell(50, 6, utf8_decode('Número'), 1, 0,'L');
-            $this->pdf->Cell(76, 6, utf8_decode('Tipo'), 1, 0,'L');
-            $this->pdf->Cell(60, 6, utf8_decode('Situacao'), 1, 0,'L');
+            $this->pdf->Cell(93, 6, utf8_decode('Tipo'), 1, 0,'L');
+            $this->pdf->Cell(93, 6, utf8_decode('Situacao'), 1, 0,'L');
             $this->pdf->Ln();
-            $this->pdf->Cell(50, 6, utf8_decode($memorando->numero), 1, 0,'L');
-            $this->pdf->Cell(76, 6, utf8_decode($memorando->tipo_memorando), 1, 0,'L');
-            $this->pdf->Cell(60, 6, utf8_decode($memorando->situacao_memorando), 1, 0,'L');
+            $this->pdf->Cell(93, 6, utf8_decode($memorando->tipo_memorando), 1, 0,'L');
+            $this->pdf->Cell(93, 6, utf8_decode($memorando->situacao_memorando), 1, 0,'L');
             $this->pdf->Ln();
             if ($memorando->observacao != ''){
                 $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
@@ -530,7 +517,7 @@ class MemorandoController extends Controller
         $memorando = $memorando->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
         $memorando = $memorando->join('users', 'users.id', '=', 'memorandos.user_id');
         // select
-        $memorando = $memorando->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorandos.numero', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador', 'memorandos.chave');
+        $memorando = $memorando->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador', 'memorandos.chave');
         // filtros
         //filtros
         $memorando = $memorando->where('memorandos.id', '=', $id);
@@ -555,13 +542,11 @@ class MemorandoController extends Controller
         $this->pdf->Cell(186, 6, utf8_decode('Remetente'), 1, 0,'L');
         $this->pdf->Ln();
         $this->pdf->MultiCell(186, 6, utf8_decode($memorando->remetente), 1, 'L', false);
-        $this->pdf->Cell(50, 6, utf8_decode('Número'), 1, 0,'L');
-        $this->pdf->Cell(76, 6, utf8_decode('Tipo'), 1, 0,'L');
-        $this->pdf->Cell(60, 6, utf8_decode('Situacao'), 1, 0,'L');
+        $this->pdf->Cell(93, 6, utf8_decode('Tipo'), 1, 0,'L');
+        $this->pdf->Cell(93, 6, utf8_decode('Situacao'), 1, 0,'L');
         $this->pdf->Ln();
-        $this->pdf->Cell(50, 6, utf8_decode($memorando->numero), 1, 0,'L');
-        $this->pdf->Cell(76, 6, utf8_decode($memorando->tipo_memorando), 1, 0,'L');
-        $this->pdf->Cell(60, 6, utf8_decode($memorando->situacao_memorando), 1, 0,'L');
+        $this->pdf->Cell(93, 6, utf8_decode($memorando->tipo_memorando), 1, 0,'L');
+        $this->pdf->Cell(93, 6, utf8_decode($memorando->situacao_memorando), 1, 0,'L');
         $this->pdf->Ln();
         if ($memorando->observacao != ''){
             $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');

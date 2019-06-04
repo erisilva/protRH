@@ -34,7 +34,7 @@
     <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#modalFilter"><i class="fas fa-filter"></i> Filtrar</button>
     <div class="btn-group" role="group">
       <button id="btnGroupDropOptions" type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Opções
+        <i class="fas fa-print"></i> Relatórios
       </button>
       <div class="dropdown-menu" aria-labelledby="btnGroupDropOptions">
         <a class="dropdown-item" href="#" id="btnExportarCSV"><i class="fas fa-file-download"></i> Exportar Planilha</a>
@@ -50,9 +50,9 @@
                 <th scope="col">Dia</th>
                 <th scope="col">Hora</th>
                 <th scope="col">Remetente</th>
-                <th scope="col">Número</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Situação</th>
+                <th scope="col">Operador</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -63,9 +63,9 @@
                 <td>{{$memorando->created_at->format('d/m/Y')}}</td>
                 <td>{{$memorando->created_at->format('H:i')}}</td>
                 <td>{{$memorando->remetente}}</td>
-                <td>{{$memorando->numero}}</td>
                 <td>{{$memorando->memorandoTipo->descricao}}</td>
                 <td>{{$memorando->memorandoSituacao->descricao}}</td>
+                <td>{{$memorando->user->name}}</td>
                 <td>
                   <div class="btn-group" role="group">
                     <a href="{{route('memorandos.edit', $memorando->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
@@ -173,7 +173,6 @@ $(document).ready(function(){
     $('#btnExportarCSV').on('click', function(){
         var filtro_remetente = $('input[name="remetente"]').val();
         var filtro_numeromemorando = $('input[name="numeromemorando"]').val();
-        var filtro_numero = $('input[name="numero"]').val();
         var filtro_memorando_tipo_id = $('select[name="memorando_tipo_id"]').val();
         if (typeof filtro_memorando_tipo_id === "undefined") {
           filtro_memorando_tipo_id = "";
@@ -185,13 +184,12 @@ $(document).ready(function(){
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('memorandos.export.csv') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&numero=" + filtro_numero + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('memorandos.export.csv') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
     });
 
     $('#btnExportarPDF').on('click', function(){
         var filtro_remetente = $('input[name="remetente"]').val();
         var filtro_numeromemorando = $('input[name="numeromemorando"]').val();
-        var filtro_numero = $('input[name="numero"]').val();
         var filtro_memorando_tipo_id = $('select[name="memorando_tipo_id"]').val();
         if (typeof filtro_memorando_tipo_id === "undefined") {
           filtro_memorando_tipo_id = "";
@@ -203,7 +201,7 @@ $(document).ready(function(){
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('memorandos.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&numero=" + filtro_numero + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('memorandos.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&numero=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
     });
 
     $('#dtainicio').datepicker({

@@ -80,16 +80,7 @@
       @endif  
     </div>
     <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="numero">Número</label>
-        <input type="text" class="form-control{{ $errors->has('numero') ? ' is-invalid' : '' }}" name="numero" value="{{ old('numero') ?? $memorando->numero }}">
-        @if ($errors->has('numero'))
-        <div class="invalid-feedback">
-        {{ $errors->first('numero') }}
-        </div>
-        @endif
-      </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-6">
         <label for="memorando_tipo_id">Tipo de Memorando</label>
         <select class="form-control" name="memorando_tipo_id" id="memorando_tipo_id">
           <option value="{{ $memorando->memorando_tipo_id }}" selected="true"> &rarr; {{ $memorando->memorandoTipo->descricao }}</option>        
@@ -98,7 +89,7 @@
           @endforeach
         </select>
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-6">
         <label for="memorando_situacao_id">Situação de Memorando</label>
         <select class="form-control" name="memorando_situacao_id" id="memorando_situacao_id">
           <option value="{{$memorando->memorando_situacao_id}}" selected="true"> &rarr; {{ $memorando->memorandoSituacao->descricao }}</option>

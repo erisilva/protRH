@@ -11,7 +11,7 @@
 </div>
 <div class="container">
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>Atenção!</strong> Para sua segurança <strong>não</strong> compartilhe, salve ou envie por e-mail esse link (endereço de página). Os dados dessa consulta podem ser alterados a qualquer momento sem aviso prévio. Essa é uma página de consulta, não pode ser usado como documento oficial.
+    <strong>Atenção!</strong> Para sua segurança <strong>não</strong> compartilhe, salve ou envie por e-mail esse link (endereço de página).
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -43,15 +43,11 @@
     </div>
 
     <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="numero">Número (Identificação)</label>
-        <input type="text" class="form-control" name="numero" value="{{ $memorando->numero }}" readonly>
-      </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-6">
         <label for="protocolo_tipo">Tipo do Memorando</label>
         <input type="text" class="form-control" name="protocolo_tipo" value="{{ $memorando->memorandoTipo->descricao }}" readonly>
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-6">
         <label for="protocolo_situacao">Situação do Memorando</label>
         <input type="text" class="form-control" name="protocolo_situacao" value="{{ $memorando->memorandoSituacao->descricao }}" readonly>
       </div>      
