@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="form-group">
-      <label for="remetente">Remetente</label>
+      <label for="remetente">Remetente(s)/Assunto</label>
       <textarea class="form-control" name="remetente" rows="3" readonly>{{ $memorando->remetente }}</textarea>      
     </div>
     <div class="form-row">

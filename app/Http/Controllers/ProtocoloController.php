@@ -78,6 +78,12 @@ class ProtocoloController extends Controller
                                             });
         }
 
+        if (request()->has('operador')){ // nome do operador
+            $protocolos = $protocolos->whereHas('user', function ($query) {
+                                                $query->where('name', 'like', '%' . request('operador') . '%');
+                                            });
+        }
+
         if (request()->has('protocolo_tipo_id')){
             if (request('protocolo_tipo_id') != ""){
                 $protocolos = $protocolos->where('protocolo_tipo_id', '=', request('protocolo_tipo_id'));
@@ -130,6 +136,7 @@ class ProtocoloController extends Controller
             'numprotocolo' => request('numprotocolo'),
             'nome' => request('nome'),
             'setor' => request('setor'),
+            'operador' => request('operador'),
             'protocolo_tipo_id' => request('protocolo_tipo_id'),
             'protocolo_situacao_id' => request('protocolo_situacao_id'),
             'dtainicio' => request('dtainicio'),
@@ -347,38 +354,34 @@ class ProtocoloController extends Controller
         $protocolos = $protocolos->select('protocolos.id as numero', DB::raw('DATE_FORMAT(protocolos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(protocolos.created_at, \'%H:%i\') AS hora'),'protocolos.descricao as observacoes', 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo_setor', 'protocolo_tipos.descricao as tipo_protocolo', 'protocolo_situacaos.descricao as situacao_protocolo', 'users.name as operador');
 
         //filtros
-
         if (request()->has('numprotocolo')){
             $protocolos = $protocolos->where('protocolos.id', 'like', '%' . request('numprotocolo') . '%');
         }
-
         if (request()->has('nome')){
             $protocolos = $protocolos->where('funcionarios.nome', 'like', '%' . request('nome') . '%');
         }
-
+        if (request()->has('operador')){
+            $protocolos = $protocolos->where('users.name', 'like', '%' . request('operador') . '%');
+        }
         if (request()->has('setor')){
             $protocolos = $protocolos->where('setors.descricao', 'like', '%' . request('setor') . '%');
         }
-
         if (request()->has('protocolo_tipo_id')){
             if (request('protocolo_tipo_id') != ""){
                 $protocolos = $protocolos->where('protocolos.protocolo_tipo_id', '=', request('protocolo_tipo_id'));
             }
         }
-
         if (request()->has('protocolo_situacao_id')){
             if (request('protocolo_situacao_id') != ""){
                 $protocolos = $protocolos->where('protocolos.protocolo_situacao_id', '=', request('protocolo_situacao_id'));
             }
         } 
-
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
                 $protocolos = $protocolos->where('protocolos.created_at', '>=', $dataFormatadaMysql);                
              }
         }
-
         if (request()->has('dtafinal')){
              if (request('dtafinal') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
@@ -437,34 +440,31 @@ class ProtocoloController extends Controller
         if (request()->has('numprotocolo')){
             $protocolos = $protocolos->where('protocolos.id', 'like', '%' . request('numprotocolo') . '%');
         }
-
         if (request()->has('nome')){
             $protocolos = $protocolos->where('funcionarios.nome', 'like', '%' . request('nome') . '%');
         }
-
         if (request()->has('setor')){
             $protocolos = $protocolos->where('setors.descricao', 'like', '%' . request('setor') . '%');
         }
-
+        if (request()->has('operador')){
+            $protocolos = $protocolos->where('users.name', 'like', '%' . request('operador') . '%');
+        }
         if (request()->has('protocolo_tipo_id')){
             if (request('protocolo_tipo_id') != ""){
                 $protocolos = $protocolos->where('protocolos.protocolo_tipo_id', '=', request('protocolo_tipo_id'));
             }
         }
-
         if (request()->has('protocolo_situacao_id')){
             if (request('protocolo_situacao_id') != ""){
                 $protocolos = $protocolos->where('protocolos.protocolo_situacao_id', '=', request('protocolo_situacao_id'));
             }
         } 
-
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
                 $protocolos = $protocolos->where('protocolos.created_at', '>=', $dataFormatadaMysql);                
              }
         }
-
         if (request()->has('dtafinal')){
              if (request('dtafinal') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
@@ -767,6 +767,7 @@ class ProtocoloController extends Controller
         $setores = $setores->join('setors', 'setors.id', '=', 'protocolos.setor_id');
         $setores = $setores->join('protocolo_tipos', 'protocolo_tipos.id', '=', 'protocolos.protocolo_tipo_id');
         $setores = $setores->join('protocolo_situacaos', 'protocolo_situacaos.id', '=', 'protocolos.protocolo_situacao_id');
+        $setores = $setores->join('users', 'users.id', '=', 'protocolos.user_id');
         // select
         $setores = $setores->select('setors.id', 'setors.descricao');
 
@@ -774,34 +775,31 @@ class ProtocoloController extends Controller
         if (request()->has('numprotocolo')){
             $setores = $setores->where('protocolos.id', 'like', '%' . request('numprotocolo') . '%');
         }
-
         if (request()->has('nome')){
             $setores = $setores->where('funcionarios.nome', 'like', '%' . request('nome') . '%');
         }
-
         if (request()->has('setor')){
             $setores = $setores->where('setors.descricao', 'like', '%' . request('setor') . '%');
         }
-
+        if (request()->has('operador')){
+            $setores = $setores->where('users.name', 'like', '%' . request('operador') . '%');
+        }
         if (request()->has('protocolo_tipo_id')){
             if (request('protocolo_tipo_id') != ""){
                 $setores = $setores->where('protocolos.protocolo_tipo_id', '=', request('protocolo_tipo_id'));
             }
         }
-
         if (request()->has('protocolo_situacao_id')){
             if (request('protocolo_situacao_id') != ""){
                 $setores = $setores->where('protocolos.protocolo_situacao_id', '=', request('protocolo_situacao_id'));
             }
         } 
-
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
                 $setores = $setores->where('protocolos.created_at', '>=', $dataFormatadaMysql);                
              }
         }
-
         if (request()->has('dtafinal')){
              if (request('dtafinal') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
@@ -849,34 +847,31 @@ class ProtocoloController extends Controller
             if (request()->has('numprotocolo')){
                 $protocolos = $protocolos->where('protocolos.id', 'like', '%' . request('numprotocolo') . '%');
             }
-
             if (request()->has('nome')){
                 $protocolos = $protocolos->where('funcionarios.nome', 'like', '%' . request('nome') . '%');
             }
-
             if (request()->has('setor')){
                 $protocolos = $protocolos->where('setors.descricao', 'like', '%' . request('setor') . '%');
             }
-
+            if (request()->has('operador')){
+                $protocolos = $protocolos->where('users.name', 'like', '%' . request('operador') . '%');
+            }
             if (request()->has('protocolo_tipo_id')){
                 if (request('protocolo_tipo_id') != ""){
                     $protocolos = $protocolos->where('protocolos.protocolo_tipo_id', '=', request('protocolo_tipo_id'));
                 }
             }
-
             if (request()->has('protocolo_situacao_id')){
                 if (request('protocolo_situacao_id') != ""){
                     $protocolos = $protocolos->where('protocolos.protocolo_situacao_id', '=', request('protocolo_situacao_id'));
                 }
             } 
-
             if (request()->has('dtainicio')){
                  if (request('dtainicio') != ""){
                     $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
                     $protocolos = $protocolos->where('protocolos.created_at', '>=', $dataFormatadaMysql);                
                  }
             }
-
             if (request()->has('dtafinal')){
                  if (request('dtafinal') != ""){
                     // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
@@ -888,8 +883,6 @@ class ProtocoloController extends Controller
             $protocolos = $protocolos->orderBy('protocolos.id', 'desc');
 
             $protocolos = $protocolos->get();
-
-            //
 
             $this->pdf->SetFont('Arial', '', 12);
 

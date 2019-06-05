@@ -45,6 +45,7 @@
                 <th scope="col">Setor</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Situação</th>
+                <th scope="col">Operador</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -58,6 +59,7 @@
                 <td>{{ $protocolo->setor->descricao }}</td>
                 <td>{{ $protocolo->protocoloTipo->descricao }}</td>
                 <td>{{ $protocolo->protocoloSituacao->descricao }}</td>
+                <td>{{ $protocolo->user->name }}</td>
                 <td>
                   <div class="btn-group" role="group">
                     <a href="{{route('protocolos.edit', $protocolo->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
@@ -102,13 +104,17 @@
               </div>  
             </div>
             <div class="form-row">
-              <div class="form-group col-md-6">
-                <label for="nome">Nome</label>
+              <div class="form-group col-md-4">
+                <label for="nome">Nome do Funcionário</label>
                 <input type="text" class="form-control" id="nome" name="nome" value="{{request()->input('nome')}}">
               </div>
-              <div class="form-group col-md-6">
-                <label for="setor">Setor</label>
+              <div class="form-group col-md-4">
+                <label for="setor">Setor do Funcionário</label>
                 <input type="text" class="form-control" id="setor" name="setor" value="{{request()->input('setor')}}">
+              </div>
+              <div class="form-group col-md-4">
+                <label for="operador">Nome do Operador</label>
+                <input type="text" class="form-control" id="operador" name="operador" value="{{request()->input('operador')}}">
               </div>  
             </div>
             <div class="form-row">
@@ -130,7 +136,7 @@
                   @endforeach
                 </select>
               </div>  
-            </div>
+            </div> 
             <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Pesquisar</button>
             <a href="{{ route('protocolos.index') }}" class="btn btn-primary btn-sm" role="button">Limpar</a>
           </form>
@@ -170,6 +176,7 @@ $(document).ready(function(){
         var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
         var filtro_nome = $('input[name="nome"]').val();
         var filtro_setor = $('input[name="setor"]').val();
+        var filtro_operador = $('input[name="operador"]').val();
         var filtro_protocolo_tipo_id = $('select[name="protocolo_tipo_id"]').val();
         if (typeof filtro_protocolo_tipo_id === "undefined") {
           filtro_protocolo_tipo_id = "";
@@ -180,13 +187,14 @@ $(document).ready(function(){
         }        
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
-        window.open("{{ route('protocolos.export.csv') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
+        window.open("{{ route('protocolos.export.csv') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&operador=" + filtro_operador + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
     });
 
     $('#btnExportarPDF').on('click', function(){
         var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
         var filtro_nome = $('input[name="nome"]').val();
         var filtro_setor = $('input[name="setor"]').val();
+        var filtro_operador = $('input[name="operador"]').val();
         var filtro_protocolo_tipo_id = $('select[name="protocolo_tipo_id"]').val();
         if (typeof filtro_protocolo_tipo_id === "undefined") {
           filtro_protocolo_tipo_id = "";
@@ -197,13 +205,14 @@ $(document).ready(function(){
         }        
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
-        window.open("{{ route('protocolos.export.pdf') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
+        window.open("{{ route('protocolos.export.pdf') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&operador=" + filtro_operador + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
     });
 
     $('#btnExportarPDFporsetor').on('click', function(){
         var filtro_numprotocolo = $('input[name="numprotocolo"]').val();
         var filtro_nome = $('input[name="nome"]').val();
         var filtro_setor = $('input[name="setor"]').val();
+        var filtro_operador = $('input[name="operador"]').val();
         var filtro_protocolo_tipo_id = $('select[name="protocolo_tipo_id"]').val();
         if (typeof filtro_protocolo_tipo_id === "undefined") {
           filtro_protocolo_tipo_id = "";
@@ -214,7 +223,7 @@ $(document).ready(function(){
         }        
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
-        window.open("{{ route('protocolos.export.porsetor.pdf') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
+        window.open("{{ route('protocolos.export.porsetor.pdf') }}" + "?numprotocolo=" + filtro_numprotocolo + "&nome=" + filtro_nome + "&setor=" + filtro_setor + "&operador=" + filtro_operador + "&protocolo_tipo_id=" + filtro_protocolo_tipo_id + "&protocolo_situacao_id=" + filtro_protocolo_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal, "_self");
     });
 
     $('#dtainicio').datepicker({

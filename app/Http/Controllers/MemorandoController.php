@@ -169,13 +169,11 @@ class MemorandoController extends Controller
 
         $this->validate($request, [
           'remetente' => 'required',
-          'numero' => 'required',
           'memorando_tipo_id' => 'required',
           'memorando_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
-            'numero.required' => 'Preencha o campo com a numeração do memorando',
             'memorando_tipo_id.required' => 'Selecione o tipo do memorando',
             'memorando_situacao_id.required' => 'Selecione a situação do memorando',
         ]);
@@ -249,13 +247,11 @@ class MemorandoController extends Controller
     {
         $this->validate($request, [
             'remetente' => 'required',
-            'numero' => 'required',
             'memorando_tipo_id' => 'required',
             'memorando_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
-            'numero.required' => 'Preencha o campo com a numeração do memorando',
             'memorando_tipo_id.required' => 'Selecione o tipo do memorando',
             'memorando_situacao_id.required' => 'Selecione a situação do memorando',
         ]);
@@ -438,7 +434,7 @@ class MemorandoController extends Controller
             $this->pdf->Cell(26, 6, utf8_decode($memorando->hora), 1, 0,'L');
             $this->pdf->Cell(90, 6, utf8_decode($memorando->operador), 1, 0,'L');
             $this->pdf->Ln();
-            $this->pdf->Cell(186, 6, utf8_decode('Remetente'), 1, 0,'L');
+            $this->pdf->Cell(186, 6, utf8_decode('Remetente(s)/Assunto'), 1, 0,'L');
             $this->pdf->Ln();
             $this->pdf->MultiCell(186, 6, utf8_decode($memorando->remetente), 1, 'L', false);
             $this->pdf->Cell(93, 6, utf8_decode('Tipo'), 1, 0,'L');
@@ -539,7 +535,7 @@ class MemorandoController extends Controller
         $this->pdf->Cell(26, 6, utf8_decode($memorando->hora), 1, 0,'L');
         $this->pdf->Cell(90, 6, utf8_decode($memorando->operador), 1, 0,'L');
         $this->pdf->Ln();
-        $this->pdf->Cell(186, 6, utf8_decode('Remetente'), 1, 0,'L');
+        $this->pdf->Cell(186, 6, utf8_decode('Remetente(s)/Assunto'), 1, 0,'L');
         $this->pdf->Ln();
         $this->pdf->MultiCell(186, 6, utf8_decode($memorando->remetente), 1, 'L', false);
         $this->pdf->Cell(93, 6, utf8_decode('Tipo'), 1, 0,'L');

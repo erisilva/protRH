@@ -71,7 +71,7 @@
       </div>
     </div>
     <div class="form-group">
-      <label for="remetente">Remetente</label>
+      <label for="remetente">Remetente(s)/Assunto</label>
       <textarea class="form-control{{ $errors->has('remetente') ? ' is-invalid' : '' }}" name="remetente" rows="3">{{ old('remetente') ?? $memorando->remetente }}</textarea>
       @if ($errors->has('remetente'))
       <div class="invalid-feedback">
