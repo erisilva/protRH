@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Memorando extends Model
 {
     protected $fillable = [
-        'remetente', 'observacao', 'numero', 'chave', 'memorando_tipo_id', 'memorando_situacao_id', 'user_id'
+        'remetente', 'observacao', 'chave', 'memorando_tipo_id', 'memorando_situacao_id', 'user_id'
     ];
 
     public function user()

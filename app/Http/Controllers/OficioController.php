@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Memorando;
-use App\MemorandoTipo;
-use App\MemorandoSituacao;
-use App\MemorandoTramitacao;
+use App\Oficio;
+use App\OficioTipo;
+use App\OficioSituacao;
+use App\OficioTramitacao;
 use App\Perpage;
 
 use Response;
@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Redirect; // para poder usar o redirect
 
 use Illuminate\Database\Eloquent\Builder; // para poder usar o whereHas nos filtros
 
-class MemorandoController extends Controller
+class OficioController extends Controller
 {
     protected $pdf;
 
@@ -39,14 +39,13 @@ class MemorandoController extends Controller
      *
      * @return 
      */
-    public function __construct(\App\Reports\MemorandoReport $pdf)
+    public function __construct(\App\Reports\OficioReport $pdf)
     {
         $this->middleware(['middleware' => 'auth']);
         $this->middleware(['middleware' => 'hasaccess']);
 
         $this->pdf = $pdf;
-    }
-
+    }    
     /**
      * Display a listing of the resource.
      *
@@ -54,36 +53,36 @@ class MemorandoController extends Controller
      */
     public function index()
     {
-        if (Gate::denies('memorando.index')) {
+        if (Gate::denies('oficio.index')) {
             abort(403, 'Acesso negado.');
         }
 
-        $memorandos = new Memorando;
+        $oficios = new Oficio;
 
         // filtros
         if (request()->has('remetente')){
-            $memorandos = $memorandos->where('remetente', 'like', '%' . request('remetente') . '%');
+            $oficios = $oficios->where('remetente', 'like', '%' . request('remetente') . '%');
         }
 
-        if (request()->has('numeromemorando')){
-            $memorandos = $memorandos->where('id', 'like', '%' . request('numeromemorando') . '%');
+        if (request()->has('numero')){
+            $oficios = $oficios->where('id', 'like', '%' . request('numero') . '%');
         }
 
         if (request()->has('operador')){ // nome do operador que fez o cadastro
-            $memorandos = $memorandos->whereHas('user', function ($query) {
+            $oficios = $oficios->whereHas('user', function ($query) {
                                                 $query->where('name', 'like', '%' . request('operador') . '%');
                                             });
         }
 
-        if (request()->has('memorando_tipo_id')){
-            if (request('memorando_tipo_id') != ""){
-                $memorandos = $memorandos->where('memorando_tipo_id', '=', request('memorando_tipo_id'));
+        if (request()->has('oficio_tipo_id')){
+            if (request('oficio_tipo_id') != ""){
+                $oficios = $oficios->where('oficio_tipo_id', '=', request('oficio_tipo_id'));
             }
         }
 
-        if (request()->has('memorando_situacao_id')){
-            if (request('memorando_situacao_id') != ""){
-                $memorandos = $memorandos->where('memorando_situacao_id', '=', request('memorando_situacao_id'));
+        if (request()->has('oficio_situacao_id')){
+            if (request('oficio_situacao_id') != ""){
+                $oficios = $oficios->where('oficio_situacao_id', '=', request('oficio_situacao_id'));
             }
         }
 
@@ -91,7 +90,7 @@ class MemorandoController extends Controller
              if (request('dtainicio') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
-                $memorandos = $memorandos->where('created_at', '>=', $dataFormatadaMysql);                
+                $oficios = $oficios->where('created_at', '>=', $dataFormatadaMysql);                
              }
         }
 
@@ -99,12 +98,12 @@ class MemorandoController extends Controller
              if (request('dtafinal') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtafinal'))->format('Y-m-d 23:59:59');         
-                $memorandos = $memorandos->where('created_at', '<=', $dataFormatadaMysql);                
+                $oficios = $oficios->where('created_at', '<=', $dataFormatadaMysql);                
              }
         }
 
         // ordena
-        $memorandos = $memorandos->orderBy('id', 'desc');
+        $oficios = $oficios->orderBy('id', 'desc');
 
         // se a requisição tiver um novo valor para a quantidade
         // de páginas por visualização ele altera aqui
@@ -117,22 +116,22 @@ class MemorandoController extends Controller
         $perpages = Perpage::orderBy('valor')->get();
 
         // paginação
-        $memorandos = $memorandos->paginate(session('perPage', '5'))->appends([          
+        $oficios = $oficios->paginate(session('perPage', '5'))->appends([          
             'remetente' => request('remetente'),
-            'numeromemorando' => request('numeromemorando'),
+            'numero' => request('numero'),
             'operador' => request('operador'),
-            'memorando_tipo_id' => request('memorando_tipo_id'),
-            'memorando_situacao_id' => request('memorando_situacao_id'),
+            'oficio_tipo_id' => request('oficio_tipo_id'),
+            'oficio_situacao_id' => request('oficio_situacao_id'),
             'dtainicio' => request('dtainicio'),
             'dtafinal' => request('dtafinal'),          
             ]);
 
         // tabelas auxiliares usadas pelo filtro
-        $memorandotipos = MemorandoTipo::orderBy('descricao', 'asc')->get();
+        $oficiotipos = OficioTipo::orderBy('descricao', 'asc')->get();
 
-        $memorandosituacoes = MemorandoSituacao::orderBy('descricao', 'asc')->get();
+        $oficiosituacoes = OficioSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('memorandos.index', compact('memorandos', 'perpages', 'memorandotipos', 'memorandosituacoes'));
+        return view('oficios.index', compact('oficios', 'perpages', 'oficiotipos', 'oficiosituacoes'));
     }
 
     /**
@@ -142,15 +141,15 @@ class MemorandoController extends Controller
      */
     public function create()
     {
-        if (Gate::denies('memorando.create')) {
+        if (Gate::denies('oficio.create')) {
             abort(403, 'Acesso negado.');
         }
 
-        $memorandotipos = MemorandoTipo::orderBy('descricao', 'asc')->get();
+        $oficiotipos = OficioTipo::orderBy('descricao', 'asc')->get();
 
-        $memorandosituacoes = MemorandoSituacao::orderBy('descricao', 'asc')->get();
+        $oficiosituacoes = OficioSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('memorandos.create', compact('memorandotipos', 'memorandosituacoes'));
+        return view('oficios.create', compact('oficiotipos', 'oficiosituacoes'));
     }
 
     /**
@@ -166,43 +165,41 @@ class MemorandoController extends Controller
             return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
         }
 
-        $memorando_input = $request->all();
+        $oficio_input = $request->all();
 
         // gera uma chave aleatória de 20 caracteres
-        $memorando_input['chave'] = generateRandomString(20);
+        $oficio_input['chave'] = generateRandomString(20);
 
         // recebi o usuário logado no sistema
         $user = Auth::user();
 
-        $memorando_input['user_id'] = $user->id;
+        $oficio_input['user_id'] = $user->id;
 
         $this->validate($request, [
           'remetente' => 'required',
-          'memorando_tipo_id' => 'required',
-          'memorando_situacao_id' => 'required',
+          'oficio_tipo_id' => 'required',
+          'oficio_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
-            'memorando_tipo_id.required' => 'Selecione o tipo do memorando',
-            'memorando_situacao_id.required' => 'Selecione a situação do memorando',
+            'oficio_tipo_id.required' => 'Selecione o tipo de ofício',
+            'oficio_situacao_id.required' => 'Selecione a situação de ofício',
         ]);
 
                 // salvar o barcode
-        $urlImageFile = public_path() . '\qrcodes\\' . $memorando_input['chave'] . '.png';
-        $urlLinkPublic = $request->url() . '/' . $memorando_input['chave'] . '/buscar';
+        $urlImageFile = public_path() . '\qrcodes\\' . $oficio_input['chave'] . '.png';
+        $urlLinkPublic = $request->url() . '/' . $oficio_input['chave'] . '/buscar';
 
         // salva a imagem com o barcode
         QrCode::format('png')->size(250)->margin(1)->generate($urlLinkPublic, $urlImageFile);
 
-        $memorando = Memorando::create($memorando_input); //salva
+        $oficio = Oficio::create($oficio_input); //salva
 
         #mudar aqui
 
-        Session::flash('create_memorando', 'Memorando Nº ' . $memorando->id . ' cadastrado com sucesso!');
+        Session::flash('create_memorando', 'Ofício Nº ' . $oficio->id . ' cadastrado com sucesso!');
 
-        //return redirect(route('memorandos.index'));
-
-        return Redirect::route('memorandos.edit', $memorando->id);
+        return Redirect::route('oficios.edit', $oficio->id);
     }
 
     /**
@@ -213,15 +210,15 @@ class MemorandoController extends Controller
      */
     public function show($id)
     {
-        if (Gate::denies('memorando.show')) {
+        if (Gate::denies('oficio.show')) {
             abort(403, 'Acesso negado.');
         }
 
-        $memorando = Memorando::findOrFail($id);
+        $oficio = Oficio::findOrFail($id);
 
-        $tramitacoes = MemorandoTramitacao::where('memorando_id', '=', $id)->orderBy('id', 'desc')->get();
+        $tramitacoes = OficioTramitacao::where('oficio_id', '=', $id)->orderBy('id', 'desc')->get();
 
-        return view('memorandos.show', compact('memorando', 'tramitacoes'));
+        return view('oficios.show', compact('oficio', 'tramitacoes'));
     }
 
     /**
@@ -232,19 +229,19 @@ class MemorandoController extends Controller
      */
     public function edit($id)
     {
-        if (Gate::denies('memorando.edit')) {
+        if (Gate::denies('oficio.edit')) {
             abort(403, 'Acesso negado.');
         }
 
-        $memorando = Memorando::findOrFail($id);
+        $oficio = Oficio::findOrFail($id);
 
-        $memorandotramitacoes = MemorandoTramitacao::where('memorando_id', '=', $id)->orderBy('id', 'desc')->get();
+        $oficiotramitacoes = OficioTramitacao::where('oficio_id', '=', $id)->orderBy('id', 'desc')->get();
 
-        $memorandotipos = MemorandoTipo::orderBy('descricao', 'asc')->get();
+        $oficiotipos = OficioTipo::orderBy('descricao', 'asc')->get();
 
-        $memorandosituacoes = MemorandoSituacao::orderBy('descricao', 'asc')->get();
+        $oficiosituacoes = OficioSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('memorandos.edit', compact('memorando', 'memorandotipos', 'memorandotipos', 'memorandosituacoes', 'memorandotramitacoes'));
+        return view('oficios.edit', compact('oficio', 'oficiotipos', 'oficiosituacoes', 'oficiotramitacoes'));
     }
 
     /**
@@ -258,22 +255,22 @@ class MemorandoController extends Controller
     {
         $this->validate($request, [
             'remetente' => 'required',
-            'memorando_tipo_id' => 'required',
-            'memorando_situacao_id' => 'required',
+            'oficio_tipo_id' => 'required',
+            'oficio_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
-            'memorando_tipo_id.required' => 'Selecione o tipo do memorando',
-            'memorando_situacao_id.required' => 'Selecione a situação do memorando',
+            'oficio_tipo_id.required' => 'Selecione o tipo de ofício',
+            'oficio_situacao_id.required' => 'Selecione a situação de ofício',
         ]);
 
-        $memorando = Memorando::findOrFail($id);
+        $oficio = Oficio::findOrFail($id);
             
-        $memorando->update($request->all());
+        $oficio->update($request->all());
         
-        Session::flash('edited_memorando', 'Memorando n° ' . $memorando->id . ' alterado com sucesso!');
+        Session::flash('edited_oficio', 'Ofício n° ' . $oficio->id . ' alterado com sucesso!');
 
-        return redirect(route('memorandos.edit', $id));
+        return redirect(route('oficios.edit', $id));
     }
 
     /**
@@ -284,15 +281,15 @@ class MemorandoController extends Controller
      */
     public function destroy($id)
     {
-        if (Gate::denies('memorando.delete')) {
+        if (Gate::denies('oficio.delete')) {
             abort(403, 'Acesso negado.');
         }
 
-        Memorando::findOrFail($id)->delete();
+        Oficio::findOrFail($id)->delete();
 
-        Session::flash('deleted_memorando', 'Memorando excluído com sucesso!');
+        Session::flash('deleted_oficio', 'Ofício excluído com sucesso!');
 
-        return redirect(route('memorandos.index'));
+        return redirect(route('oficios.index'));
     }
 
     /**
@@ -303,61 +300,61 @@ class MemorandoController extends Controller
      */
     public function exportcsv()
     {
-        if (Gate::denies('memorando.export')) {
+        if (Gate::denies('oficio.export')) {
             abort(403, 'Acesso negado.');
         }
 
        $headers = [
                 'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
             ,   'Content-type'        => 'text/csv'
-            ,   'Content-Disposition' => 'attachment; filename=Memorandos_' .  date("Y-m-d H:i:s") . '.csv'
+            ,   'Content-Disposition' => 'attachment; filename=Ofícios_' .  date("Y-m-d H:i:s") . '.csv'
             ,   'Expires'             => '0'
             ,   'Pragma'              => 'public'
         ];
 
-        $memorandos = DB::table('memorandos');
+        $oficios = DB::table('oficios');
         // joins
-        $memorandos = $memorandos->join('memorando_tipos', 'memorando_tipos.id', '=', 'memorandos.memorando_tipo_id');
-        $memorandos = $memorandos->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
-        $memorandos = $memorandos->join('users', 'users.id', '=', 'memorandos.user_id');
+        $oficios = $oficios->join('oficio_tipos', 'oficio_tipos.id', '=', 'oficios.oficio_tipo_id');
+        $oficios = $oficios->join('oficio_situacaos', 'oficio_situacaos.id', '=', 'oficios.oficio_situacao_id');
+        $oficios = $oficios->join('users', 'users.id', '=', 'oficios.user_id');
         // select
-        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador');
+        $oficios = $oficios->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador');
         // filtros
         if (request()->has('numeromemorando')){
-            $memorandos = $memorandos->where('memorandos.id', 'like', '%' . request('numeromemorando') . '%');
+            $oficios = $oficios->where('oficios.id', 'like', '%' . request('numeromemorando') . '%');
         }
         if (request()->has('remetente')){
-            $memorandos = $memorandos->where('memorandos.remetente', 'like', '%' . request('remetente') . '%');
+            $oficios = $oficios->where('oficios.remetente', 'like', '%' . request('remetente') . '%');
         }
         if (request()->has('operador')){
-            $memorandos = $memorandos->where('users.name', 'like', '%' . request('operador') . '%');
+            $oficios = $oficios->where('users.name', 'like', '%' . request('operador') . '%');
         }
-        if (request()->has('memorando_tipo_id')){
-            if (request('memorando_tipo_id') != ""){
-                $memorandos = $memorandos->where('memorandos.memorando_tipo_id', '=', request('memorando_tipo_id'));
+        if (request()->has('oficio_tipo_id')){
+            if (request('oficio_tipo_id') != ""){
+                $oficios = $oficios->where('oficios.oficio_tipo_id', '=', request('oficio_tipo_id'));
             }
         }
-        if (request()->has('memorando_situacao_id')){
-            if (request('memorando_situacao_id') != ""){
-                $memorandos = $memorandos->where('memorandos.memorando_situacao_id', '=', request('memorando_situacao_id'));
+        if (request()->has('oficio_situacao_id')){
+            if (request('oficio_situacao_id') != ""){
+                $oficios = $oficios->where('oficios.oficio_situacao_id', '=', request('oficio_situacao_id'));
             }
         } 
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
-                $memorandos = $memorandos->where('memorandos.created_at', '>=', $dataFormatadaMysql);                
+                $oficios = $oficios->where('oficios.created_at', '>=', $dataFormatadaMysql);                
              }
         }
         if (request()->has('dtafinal')){
              if (request('dtafinal') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtafinal'))->format('Y-m-d 23:59:59');         
-                $memorandos = $memorandos->where('memorandos.created_at', '<=', $dataFormatadaMysql);                
+                $oficios = $oficios->where('oficios.created_at', '<=', $dataFormatadaMysql);                
              }
         }
-        $memorandos = $memorandos->orderBy('memorandos.id', 'desc');
+        $oficios = $oficios->orderBy('oficios.id', 'desc');
 
-        $list = $memorandos->get()->toArray();
+        $list = $oficios->get()->toArray();
 
         # converte os objetos para uma array
         $list = json_decode(json_encode($list), true);
@@ -386,53 +383,53 @@ class MemorandoController extends Controller
      */
     public function exportpdf()
     {
-        if (Gate::denies('memorando.export')) {
+        if (Gate::denies('oficio.export')) {
             abort(403, 'Acesso negado.');
         }
 
-        $memorandos = DB::table('memorandos');
+        $oficios = DB::table('oficios');
         // joins
-        $memorandos = $memorandos->join('memorando_tipos', 'memorando_tipos.id', '=', 'memorandos.memorando_tipo_id');
-        $memorandos = $memorandos->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
-        $memorandos = $memorandos->join('users', 'users.id', '=', 'memorandos.user_id');
+        $oficios = $oficios->join('oficio_tipos', 'oficio_tipos.id', '=', 'oficios.oficio_tipo_id');
+        $oficios = $oficios->join('oficio_situacaos', 'oficio_situacaos.id', '=', 'oficios.oficio_situacao_id');
+        $oficios = $oficios->join('users', 'users.id', '=', 'oficios.user_id');
         // select
-        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador');
+        $oficios = $oficios->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador');
         // filtros
         if (request()->has('numeromemorando')){
-            $memorandos = $memorandos->where('memorandos.id', 'like', '%' . request('numeromemorando') . '%');
+            $oficios = $oficios->where('oficios.id', 'like', '%' . request('numeromemorando') . '%');
         }
         if (request()->has('remetente')){
-            $memorandos = $memorandos->where('memorandos.remetente', 'like', '%' . request('remetente') . '%');
+            $oficios = $oficios->where('oficios.remetente', 'like', '%' . request('remetente') . '%');
         }
         if (request()->has('operador')){
-            $memorandos = $memorandos->where('users.name', 'like', '%' . request('operador') . '%');
+            $oficios = $oficios->where('users.name', 'like', '%' . request('operador') . '%');
         }
-        if (request()->has('memorando_tipo_id')){
-            if (request('memorando_tipo_id') != ""){
-                $memorandos = $memorandos->where('memorandos.memorando_tipo_id', '=', request('memorando_tipo_id'));
+        if (request()->has('oficio_tipo_id')){
+            if (request('oficio_tipo_id') != ""){
+                $oficios = $oficios->where('oficios.oficio_tipo_id', '=', request('oficio_tipo_id'));
             }
         }
-        if (request()->has('memorando_situacao_id')){
-            if (request('memorando_situacao_id') != ""){
-                $memorandos = $memorandos->where('memorandos.memorando_situacao_id', '=', request('memorando_situacao_id'));
+        if (request()->has('oficio_situacao_id')){
+            if (request('oficio_situacao_id') != ""){
+                $oficios = $oficios->where('oficios.oficio_situacao_id', '=', request('oficio_situacao_id'));
             }
         } 
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
-                $memorandos = $memorandos->where('memorandos.created_at', '>=', $dataFormatadaMysql);                
+                $oficios = $oficios->where('oficios.created_at', '>=', $dataFormatadaMysql);                
              }
         }
         if (request()->has('dtafinal')){
              if (request('dtafinal') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtafinal'))->format('Y-m-d 23:59:59');         
-                $memorandos = $memorandos->where('memorandos.created_at', '<=', $dataFormatadaMysql);                
+                $oficios = $oficios->where('oficios.created_at', '<=', $dataFormatadaMysql);                
              }
         }
-        $memorandos = $memorandos->orderBy('memorandos.id', 'desc');
+        $oficios = $oficios->orderBy('oficios.id', 'desc');
 
-        $memorandos = $memorandos->get();
+        $oficios = $oficios->get();
 
         // configurações do relatório
         $this->pdf->AliasNbPages();   
@@ -440,45 +437,45 @@ class MemorandoController extends Controller
         $this->pdf->SetFont('Arial', '', 12);
         $this->pdf->AddPage();
 
-        foreach ($memorandos as $memorando) {
+        foreach ($oficios as $oficio) {
             $this->pdf->Cell(40, 6, utf8_decode('Nº(RH)'), 1, 0,'R');
             $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
             $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
             $this->pdf->Cell(90, 6, utf8_decode('Operador'), 1, 0,'L');
             $this->pdf->Ln();
-            $this->pdf->Cell(40, 6, utf8_decode($memorando->numeroRH), 1, 0,'R');
-            $this->pdf->Cell(30, 6, utf8_decode($memorando->data), 1, 0,'L');
-            $this->pdf->Cell(26, 6, utf8_decode($memorando->hora), 1, 0,'L');
-            $this->pdf->Cell(90, 6, utf8_decode($memorando->operador), 1, 0,'L');
+            $this->pdf->Cell(40, 6, utf8_decode($oficio->numeroRH), 1, 0,'R');
+            $this->pdf->Cell(30, 6, utf8_decode($oficio->data), 1, 0,'L');
+            $this->pdf->Cell(26, 6, utf8_decode($oficio->hora), 1, 0,'L');
+            $this->pdf->Cell(90, 6, utf8_decode($oficio->operador), 1, 0,'L');
             $this->pdf->Ln();
             $this->pdf->Cell(186, 6, utf8_decode('Remetente(s)/Assunto'), 1, 0,'L');
             $this->pdf->Ln();
-            $this->pdf->MultiCell(186, 6, utf8_decode($memorando->remetente), 1, 'L', false);
+            $this->pdf->MultiCell(186, 6, utf8_decode($oficio->remetente), 1, 'L', false);
             $this->pdf->Cell(93, 6, utf8_decode('Tipo'), 1, 0,'L');
             $this->pdf->Cell(93, 6, utf8_decode('Situacao'), 1, 0,'L');
             $this->pdf->Ln();
-            $this->pdf->Cell(93, 6, utf8_decode($memorando->tipo_memorando), 1, 0,'L');
-            $this->pdf->Cell(93, 6, utf8_decode($memorando->situacao_memorando), 1, 0,'L');
+            $this->pdf->Cell(93, 6, utf8_decode($oficio->tipo_oficio), 1, 0,'L');
+            $this->pdf->Cell(93, 6, utf8_decode($oficio->situacao_oficio), 1, 0,'L');
             $this->pdf->Ln();
-            if ($memorando->observacao != ''){
+            if ($oficio->observacao != ''){
                 $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
                 $this->pdf->Ln();
-                $this->pdf->MultiCell(186, 6, utf8_decode($memorando->observacao), 1, 'L', false);
+                $this->pdf->MultiCell(186, 6, utf8_decode($oficio->observacao), 1, 'L', false);
             }
 
             // tramitações
             // consulta secundariatramitacoes
-            $tramitacoes = DB::table('memorando_tramitacaos');
+            $tramitacoes = DB::table('oficio_tramitacaos');
             // joins
-            $tramitacoes = $tramitacoes->leftJoin('funcionarios', 'funcionarios.id', '=', 'memorando_tramitacaos.funcionario_id');
-            $tramitacoes = $tramitacoes->leftJoin('setors', 'setors.id', '=', 'memorando_tramitacaos.setor_id');
-            $tramitacoes = $tramitacoes->join('users', 'users.id', '=', 'memorando_tramitacaos.user_id');
+            $tramitacoes = $tramitacoes->leftJoin('funcionarios', 'funcionarios.id', '=', 'oficio_tramitacaos.funcionario_id');
+            $tramitacoes = $tramitacoes->leftJoin('setors', 'setors.id', '=', 'oficio_tramitacaos.setor_id');
+            $tramitacoes = $tramitacoes->join('users', 'users.id', '=', 'oficio_tramitacaos.user_id');
             // select
-            $tramitacoes = $tramitacoes->select(DB::raw('DATE_FORMAT(memorando_tramitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorando_tramitacaos.created_at, \'%H:%i\') AS hora'), 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo', 'users.name as operador', 'memorando_tramitacaos.descricao as observacoes');
+            $tramitacoes = $tramitacoes->select(DB::raw('DATE_FORMAT(oficio_tramitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficio_tramitacaos.created_at, \'%H:%i\') AS hora'), 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo', 'users.name as operador', 'oficio_tramitacaos.descricao as observacoes');
             // filter
-            $tramitacoes = $tramitacoes->where('memorando_tramitacaos.memorando_id', '=', $memorando->numeroRH);
+            $tramitacoes = $tramitacoes->where('oficio_tramitacaos.oficio_id', '=', $oficio->numeroRH);
             // ordena
-            $tramitacoes = $tramitacoes->orderBy('memorando_tramitacaos.id', 'desc');
+            $tramitacoes = $tramitacoes->orderBy('oficio_tramitacaos.id', 'desc');
             // get
             $tramitacoes = $tramitacoes->get();
             if (count($tramitacoes)){
@@ -508,7 +505,7 @@ class MemorandoController extends Controller
             $this->pdf->Ln(2);
         }
 
-        $this->pdf->Output('D', 'Memorandos_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        $this->pdf->Output('D', 'Ofícios_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
     }
 
@@ -520,22 +517,22 @@ class MemorandoController extends Controller
      */
     public function exportpdfindividual($id)
     {
-        if (Gate::denies('memorando.export')) {
+        if (Gate::denies('oficio.export')) {
             abort(403, 'Acesso negado.');
         }
 
-        $memorando = DB::table('memorandos');
+        $oficio = DB::table('oficios');
         // joins
-        $memorando = $memorando->join('memorando_tipos', 'memorando_tipos.id', '=', 'memorandos.memorando_tipo_id');
-        $memorando = $memorando->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
-        $memorando = $memorando->join('users', 'users.id', '=', 'memorandos.user_id');
+        $oficio = $oficio->join('oficio_tipos', 'oficio_tipos.id', '=', 'oficios.oficio_tipo_id');
+        $oficio = $oficio->join('oficio_situacaos', 'oficio_situacaos.id', '=', 'oficios.oficio_situacao_id');
+        $oficio = $oficio->join('users', 'users.id', '=', 'oficios.user_id');
         // select
-        $memorando = $memorando->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador', 'memorandos.chave');
+        $oficio = $oficio->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador', 'oficios.chave');
         // filtros
         //filtros
-        $memorando = $memorando->where('memorandos.id', '=', $id);
+        $oficio = $oficio->where('oficios.id', '=', $id);
         // get
-        $memorando = $memorando->get()->first();
+        $oficio = $oficio->get()->first();
 
         // configurações do relatório
         $this->pdf->AliasNbPages();   
@@ -547,38 +544,39 @@ class MemorandoController extends Controller
         $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
         $this->pdf->Cell(90, 6, utf8_decode('Operador'), 1, 0,'L');
         $this->pdf->Ln();
-        $this->pdf->Cell(40, 6, utf8_decode($memorando->numeroRH), 1, 0,'R');
-        $this->pdf->Cell(30, 6, utf8_decode($memorando->data), 1, 0,'L');
-        $this->pdf->Cell(26, 6, utf8_decode($memorando->hora), 1, 0,'L');
-        $this->pdf->Cell(90, 6, utf8_decode($memorando->operador), 1, 0,'L');
+        $this->pdf->Cell(40, 6, utf8_decode($oficio->numeroRH), 1, 0,'R');
+        $this->pdf->Cell(30, 6, utf8_decode($oficio->data), 1, 0,'L');
+        $this->pdf->Cell(26, 6, utf8_decode($oficio->hora), 1, 0,'L');
+        $this->pdf->Cell(90, 6, utf8_decode($oficio->operador), 1, 0,'L');
         $this->pdf->Ln();
         $this->pdf->Cell(186, 6, utf8_decode('Remetente(s)/Assunto'), 1, 0,'L');
         $this->pdf->Ln();
-        $this->pdf->MultiCell(186, 6, utf8_decode($memorando->remetente), 1, 'L', false);
+        $this->pdf->MultiCell(186, 6, utf8_decode($oficio->remetente), 1, 'L', false);
         $this->pdf->Cell(93, 6, utf8_decode('Tipo'), 1, 0,'L');
         $this->pdf->Cell(93, 6, utf8_decode('Situacao'), 1, 0,'L');
         $this->pdf->Ln();
-        $this->pdf->Cell(93, 6, utf8_decode($memorando->tipo_memorando), 1, 0,'L');
-        $this->pdf->Cell(93, 6, utf8_decode($memorando->situacao_memorando), 1, 0,'L');
+        $this->pdf->Cell(93, 6, utf8_decode($oficio->tipo_oficio), 1, 0,'L');
+        $this->pdf->Cell(93, 6, utf8_decode($oficio->situacao_oficio), 1, 0,'L');
         $this->pdf->Ln();
-        if ($memorando->observacao != ''){
+        if ($oficio->observacao != ''){
             $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
             $this->pdf->Ln();
-            $this->pdf->MultiCell(186, 6, utf8_decode($memorando->observacao), 1, 'L', false);
+            $this->pdf->MultiCell(186, 6, utf8_decode($oficio->observacao), 1, 'L', false);
         }
+        
         // tramitações
         // consulta secundariatramitacoes
-        $tramitacoes = DB::table('memorando_tramitacaos');
+        $tramitacoes = DB::table('oficio_tramitacaos');
         // joins
-        $tramitacoes = $tramitacoes->leftJoin('funcionarios', 'funcionarios.id', '=', 'memorando_tramitacaos.funcionario_id');
-        $tramitacoes = $tramitacoes->leftJoin('setors', 'setors.id', '=', 'memorando_tramitacaos.setor_id');
-        $tramitacoes = $tramitacoes->join('users', 'users.id', '=', 'memorando_tramitacaos.user_id');
+        $tramitacoes = $tramitacoes->leftJoin('funcionarios', 'funcionarios.id', '=', 'oficio_tramitacaos.funcionario_id');
+        $tramitacoes = $tramitacoes->leftJoin('setors', 'setors.id', '=', 'oficio_tramitacaos.setor_id');
+        $tramitacoes = $tramitacoes->join('users', 'users.id', '=', 'oficio_tramitacaos.user_id');
         // select
-        $tramitacoes = $tramitacoes->select(DB::raw('DATE_FORMAT(memorando_tramitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorando_tramitacaos.created_at, \'%H:%i\') AS hora'), 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo', 'users.name as operador', 'memorando_tramitacaos.descricao as observacoes');
+        $tramitacoes = $tramitacoes->select(DB::raw('DATE_FORMAT(oficio_tramitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficio_tramitacaos.created_at, \'%H:%i\') AS hora'), 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo', 'users.name as operador', 'oficio_tramitacaos.descricao as observacoes');
         // filter
-        $tramitacoes = $tramitacoes->where('memorando_tramitacaos.memorando_id', '=', $memorando->numeroRH);
+        $tramitacoes = $tramitacoes->where('oficio_tramitacaos.oficio_id', '=', $oficio->numeroRH);
         // ordena
-        $tramitacoes = $tramitacoes->orderBy('memorando_tramitacaos.id', 'desc');
+        $tramitacoes = $tramitacoes->orderBy('oficio_tramitacaos.id', 'desc');
         // get
         $tramitacoes = $tramitacoes->get();
         if (count($tramitacoes)){
@@ -608,13 +606,13 @@ class MemorandoController extends Controller
         $this->pdf->Ln(2);
 
         // imprime o barcode
-        $urlLinkPublic = 'qrcodes/' . $memorando->chave . '.png';
+        $urlLinkPublic = 'qrcodes/' . $oficio->chave . '.png';
 
         $this->pdf->Image($urlLinkPublic, null, null, 0, 0, 'PNG');
 
         $this->pdf->Ln(2);
 
-        $this->pdf->Output('D', 'Memorando_num' . $id . '_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        $this->pdf->Output('D', 'Ofício_num' . $id . '_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
-    }                   
+    }          
 }

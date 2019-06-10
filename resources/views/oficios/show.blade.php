@@ -1,63 +1,52 @@
-@extends('layouts.public')
+@extends('layouts.app')
 
 @section('content')
 <div class="container-fluid">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item">Memorando RH SMS</li>
-      <li class="breadcrumb-item active" aria-current="page">Exibir Memorando</li>
+      <li class="breadcrumb-item"><a href="{{ route('oficios.index') }}">Lista de Ofícios</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Exibir Registro</li>
     </ol>
   </nav>
 </div>
 <div class="container">
-  <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>Atenção!</strong> Para sua segurança <strong>não</strong> compartilhe, salve ou envie por e-mail esse link (endereço de página).
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-</div>  
-<div class="container">
   <form>
     <div class="form-row">
       <div class="form-group col-md-3">
-        <div class="p-3 bg-primary text-white text-right h2">Nº(RH) {{ $memorando->id }}</div>    
+        <div class="p-3 bg-primary text-white text-right h2">Nº {{ $oficio->id }}</div>    
       </div>
       <div class="form-group col-md-2">
         <label for="dia">Data</label>
-        <input type="text" class="form-control" name="dia" value="{{ $memorando->created_at->format('d/m/Y') }}" readonly>
+        <input type="text" class="form-control" name="dia" value="{{ $oficio->created_at->format('d/m/Y') }}" readonly>
       </div>
       <div class="form-group col-md-2">
         <label for="hora">Hora</label>
-        <input type="text" class="form-control" name="hora" value="{{ $memorando->created_at->format('H:i') }}" readonly>
+        <input type="text" class="form-control" name="hora" value="{{ $oficio->created_at->format('H:i') }}" readonly>
       </div>
       <div class="form-group col-md-5">
         <label for="setor">Operador</label>
-        <input type="text" class="form-control" name="setor" value="{{ $memorando->user->name }}" readonly>
+        <input type="text" class="form-control" name="setor" value="{{ $oficio->user->name }}" readonly>
       </div>
     </div>
-
     <div class="form-group">
       <label for="remetente">Remetente(s)/Assunto</label>
-      <textarea class="form-control" name="remetente" rows="3" readonly>{{ $memorando->remetente }}</textarea>      
+      <textarea class="form-control" name="remetente" rows="3" readonly>{{ $oficio->remetente }}</textarea>      
     </div>
-
     <div class="form-row">
       <div class="form-group col-md-6">
-        <label for="protocolo_tipo">Tipo do Memorando</label>
-        <input type="text" class="form-control" name="protocolo_tipo" value="{{ $memorando->memorandoTipo->descricao }}" readonly>
+        <label for="memorando_tipo">Tipo do Memorando</label>
+        <input type="text" class="form-control" name="memorando_tipo" value="{{ $oficio->oficioTipo->descricao }}" readonly>
       </div>
       <div class="form-group col-md-6">
-        <label for="protocolo_situacao">Situação do Memorando</label>
-        <input type="text" class="form-control font-weight-bold" name="protocolo_situacao" value="{{ $memorando->memorandoSituacao->descricao }}" readonly>
+        <label for="memorando_situacao">Situação do Memorando</label>
+        <input type="text" class="form-control" name="memorando_situacao" value="{{ $oficio->oficioSituacao->descricao }}" readonly>
       </div>      
     </div>
     <div class="form-group">
       <label for="observacao">Observações</label>
-      <textarea class="form-control" name="observacao" rows="3" readonly>{{ $memorando->observacao }}</textarea>      
+      <textarea class="form-control" name="observacao" rows="3" readonly>{{ $oficio->observacao }}</textarea>      
     </div>
   </form>
-
   @if (count($tramitacoes))
   <br>
   <div class="container bg-primary text-white">
@@ -92,6 +81,16 @@
     </table>
   </div>
   @endif
+  <br>
+  <div class="container">
+    <form method="post" action="{{route('oficios.destroy', $oficio->id)}}">
+      @csrf
+      @method('DELETE')
+      <a href="{{ route('oficios.index') }}" class="btn btn-primary" role="button"><i class="fas fa-long-arrow-alt-left"></i> Voltar</i></a>
+      <a href="{{ route('oficios.export.pdf.individual', $oficio->id) }}" class="btn btn-primary" role="button"><i class="fas fa-print"></i> Exportar para PDF</a>
+      <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Excluir</button>
+    </form>
+  </div>
 </div>
 
 @endsection

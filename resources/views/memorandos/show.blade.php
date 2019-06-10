@@ -47,6 +47,40 @@
       <textarea class="form-control" name="observacao" rows="3" readonly>{{ $memorando->observacao }}</textarea>      
     </div>
   </form>
+  @if (count($tramitacoes))
+  <br>
+  <div class="container bg-primary text-white">
+    <p class="text-center">Tramitações</p>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+          <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Hora</th>
+              <th scope="col">Funcionario</th>
+              <th scope="col">Matrícula</th>
+              <th scope="col">Setor</th>
+              <th scope="col">Código</th>
+              <th scope="col">Observações</th>
+          </tr>
+      </thead>
+      <tbody>
+          @foreach($tramitacoes as $tramitacao)
+          <tr>
+              <td>{{ $tramitacao->created_at->format('d/m/Y')  }}</td>
+              <td>{{ $tramitacao->created_at->format('H:i') }}</td>
+              <td>{{ isset($tramitacao->funcionario_id) ?  $tramitacao->funcionario->nome : '-' }}</td>
+              <td>{{ isset($tramitacao->funcionario_id) ?  $tramitacao->funcionario->matricula : '-' }}</td>
+              <td>{{ isset($tramitacao->setor_id) ?  $tramitacao->setor->descricao : '-' }}</td>
+              <td>{{ isset($tramitacao->setor_id) ?  $tramitacao->setor->codigo : '-' }}</td>
+              <td>{{ $tramitacao->descricao }}</td>
+          </tr>    
+          @endforeach                                                 
+      </tbody>
+    </table>
+  </div>
+  @endif
   <br>
   <div class="container">
     <form method="post" action="{{route('memorandos.destroy', $memorando->id)}}">

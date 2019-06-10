@@ -107,7 +107,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Tramitacoes do operador
+     * Tramitacoes do memorando
      *
      * @var MemorandoTramitacao
      */
@@ -115,4 +115,25 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\MemorandoTramitacao');
     }
+
+    /**
+     * oficios do operador
+     *
+     * @var Role
+     */
+    public function oficios()
+    {
+        return $this->hasMany('App\Oficio');
+    }
+
+    /**
+     * Tramitacoes do oficios
+     *
+     * @var MemorandoTramitacao
+     */
+    public function oficioTramitacaos()
+    {
+        return $this->hasMany('App\OficioTramitacao');
+    }
+
 }

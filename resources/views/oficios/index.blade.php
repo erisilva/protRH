@@ -8,29 +8,29 @@
 <div class="container-fluid">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('memorandos.index') }}">Lista de Memorandos</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('oficios.index') }}">Lista de Ofícios</a></li>
     </ol>
   </nav>
   {{-- avisa se um usuario foi excluido --}}
-  @if(Session::has('deleted_memorando'))
+  @if(Session::has('deleted_oficio'))
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>Info!</strong>  {{ session('deleted_memorando') }}
+    <strong>Info!</strong>  {{ session('deleted_oficio') }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   @endif
   {{-- avisa quando um usuário foi modificado --}}
-  @if(Session::has('create_memorando'))
+  @if(Session::has('create_oficio'))
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>Info!</strong>  {{ session('create_memorando') }}
+    <strong>Info!</strong>  {{ session('create_oficio') }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   @endif
   <div class="btn-group py-1" role="group" aria-label="Opções">
-    <a href="{{ route('memorandos.create') }}" class="btn btn-secondary btn-sm" role="button"><i class="fas fa-plus-square"></i> Novo Registro</a>
+    <a href="{{ route('oficios.create') }}" class="btn btn-secondary btn-sm" role="button"><i class="fas fa-plus-square"></i> Novo Registro</a>
     <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#modalFilter"><i class="fas fa-filter"></i> Filtrar</button>
     <div class="btn-group" role="group">
       <button id="btnGroupDropOptions" type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -57,20 +57,20 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($memorandos as $memorando)
+            @foreach($oficios as $oficio)
             <tr>
-                <td><strong>{{$memorando->id}}</strong></td>
-                <td>{{$memorando->created_at->format('d/m/Y')}}</td>
-                <td>{{$memorando->created_at->format('H:i')}}</td>
-                <td>{{$memorando->remetente}}</td>
-                <td>{{$memorando->memorandoTipo->descricao}}</td>
-                <td>{{$memorando->memorandoSituacao->descricao}}</td>
-                <td>{{$memorando->user->name}}</td>
+                <td><strong>{{$oficio->id}}</strong></td>
+                <td>{{$oficio->created_at->format('d/m/Y')}}</td>
+                <td>{{$oficio->created_at->format('H:i')}}</td>
+                <td>{{$oficio->remetente}}</td>
+                <td>{{$oficio->oficioTipo->descricao}}</td>
+                <td>{{$oficio->oficioSituacao->descricao}}</td>
+                <td>{{$oficio->user->name}}</td>
                 <td>
                   <div class="btn-group" role="group">
-                    <a href="{{route('memorandos.edit', $memorando->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
-                    <a href="{{route('memorandos.show', $memorando->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-eye"></i></a>
-                    <a href="{{ route('memorandos.export.pdf.individual', $memorando->id) }}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-print"></i></a>
+                    <a href="{{route('oficios.edit', $oficio->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
+                    <a href="{{route('oficios.show', $oficio->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-eye"></i></a>
+                    <a href="{{ route('oficios.export.pdf.individual', $oficio->id) }}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-print"></i></a>
                   </div>
                 </td>
             </tr>    
@@ -78,9 +78,9 @@
         </tbody>
     </table>
   </div>
-  <p class="text-center">Página {{ $memorandos->currentPage() }} de {{ $memorandos->lastPage() }}. Total de registros: {{ $memorandos->total() }}.</p>
+  <p class="text-center">Página {{ $oficios->currentPage() }} de {{ $oficios->lastPage() }}. Total de registros: {{ $oficios->total() }}.</p>
   <div class="container-fluid">
-      {{ $memorandos->links() }}
+      {{ $oficios->links() }}
   </div>
   <!-- Janela de filtragem da consulta -->
   <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="JanelaFiltro" aria-hidden="true">
@@ -94,15 +94,15 @@
         </div>
         <div class="modal-body">
           <!-- Filtragem dos dados -->
-          <form method="GET" action="{{ route('memorandos.index') }}">
+          <form method="GET" action="{{ route('oficios.index') }}">
             <div class="form-group">
               <label for="remetente">Remetente</label>
                 <input type="text" class="form-control" id="remetente" name="remetente" value="{{request()->input('remetente')}}">
             </div>  
             <div class="form-row">
               <div class="form-group col-md-4">
-                <label for="numeromemorando">Nº</label>
-                <input type="text" class="form-control" id="numeromemorando" name="numeromemorando" value="{{request()->input('numeromemorando')}}">
+                <label for="numero">Nº</label>
+                <input type="text" class="form-control" id="numero" name="numero" value="{{request()->input('numero')}}">
               </div>
               <div class="form-group col-md-4">
                 <label for="dtainicio">Data inicial</label>
@@ -119,26 +119,26 @@
                 <input type="text" class="form-control" id="operador" name="operador" value="{{request()->input('operador')}}">
               </div>
               <div class="form-group col-md-4">
-                <label for="memorando_tipo_id">Tipo do Memorando</label>
-                <select class="form-control" name="memorando_tipo_id" id="memorando_tipo_id">
+                <label for="oficio_tipo_id">Tipo do Ofício</label>
+                <select class="form-control" name="oficio_tipo_id" id="oficio_tipo_id">
                   <option value="">Mostrar todos</option>    
-                  @foreach($memorandotipos as $memorandotipo)
-                  <option value="{{$memorandotipo->id}}" {{ ($memorandotipo->id == request()->input('memorando_tipo_id')) ? ' selected' : '' }} >{{$memorandotipo->descricao}}</option>
+                  @foreach($oficiotipos as $oficiotipo)
+                  <option value="{{$oficiotipo->id}}" {{ ($oficiotipo->id == request()->input('oficio_tipo_id')) ? ' selected' : '' }} >{{$oficiotipo->descricao}}</option>
                   @endforeach
                 </select>
               </div>
               <div class="form-group col-md-4">
-                <label for="memorando_situacao_id">Situação do Memorando</label>
-                <select class="form-control" name="memorando_situacao_id" id="memorando_situacao_id">
+                <label for="oficio_situacao_id">Situação do Ofício</label>
+                <select class="form-control" name="oficio_situacao_id" id="oficio_situacao_id">
                   <option value="">Mostrar todos</option>
-                  @foreach($memorandosituacoes as $memorandosituacao)
-                  <option value="{{$memorandosituacao->id}}" {{ ($memorandosituacao->id == request()->input('memorando_situacao_id')) ? ' selected' : '' }} >{{$memorandosituacao->descricao}}</option>
+                  @foreach($oficiosituacoes as $oficiosituacao)
+                  <option value="{{$oficiosituacao->id}}" {{ ($oficiosituacao->id == request()->input('oficio_situacao_id')) ? ' selected' : '' }} >{{$oficiosituacao->descricao}}</option>
                   @endforeach
                 </select>
               </div>  
             </div>
             <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Pesquisar</button>
-            <a href="{{ route('memorandos.index') }}" class="btn btn-primary btn-sm" role="button">Limpar</a>
+            <a href="{{ route('oficios.index') }}" class="btn btn-primary btn-sm" role="button">Limpar</a>
           </form>
           <br>  
           <!-- Seleção de número de resultados por página -->
@@ -167,12 +167,12 @@ $(document).ready(function(){
     $('#perpage').on('change', function() {
         perpage = $(this).find(":selected").val(); 
         
-        window.open("{{ route('memorandos.index') }}" + "?perpage=" + perpage,"_self");
+        window.open("{{ route('oficios.index') }}" + "?perpage=" + perpage,"_self");
     });
 
     $('#btnExportarCSV').on('click', function(){
         var filtro_remetente = $('input[name="remetente"]').val();
-        var filtro_numeromemorando = $('input[name="numeromemorando"]').val();
+        var filtro_numero = $('input[name="numero"]').val();
         var filtro_operador = $('input[name="operador"]').val();
         var filtro_memorando_tipo_id = $('select[name="memorando_tipo_id"]').val();
         if (typeof filtro_memorando_tipo_id === "undefined") {
@@ -185,12 +185,12 @@ $(document).ready(function(){
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('memorandos.export.csv') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('oficios.export.csv') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
     });
 
     $('#btnExportarPDF').on('click', function(){
         var filtro_remetente = $('input[name="remetente"]').val();
-        var filtro_numeromemorando = $('input[name="numeromemorando"]').val();
+        var filtro_numero = $('input[name="numero"]').val();
         var filtro_operador = $('input[name="operador"]').val();
         var filtro_memorando_tipo_id = $('select[name="memorando_tipo_id"]').val();
         if (typeof filtro_memorando_tipo_id === "undefined") {
@@ -203,7 +203,7 @@ $(document).ready(function(){
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('memorandos.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('oficios.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
     });
 
     $('#dtainicio').datepicker({

@@ -48,6 +48,9 @@
                           <div class="dropdown-divider"></div>
                           <a class="dropdown-item" href="{{ route('memorandotipos.index') }}"><i class="fas fa-table"></i> Tipos de Memorando</a>
                           <a class="dropdown-item" href="{{ route('memorandosituacoes.index') }}"><i class="fas fa-table"></i> Situações do Memorando</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="{{ route('oficiotipos.index') }}"><i class="fas fa-table"></i> Tipos de Ofício</a>
+                          <a class="dropdown-item" href="{{ route('oficiosituacoes.index') }}"><i class="fas fa-table"></i> Situações do Ofício</a>
                         </div>
                       </li>
                     <li class="nav-item">
@@ -57,11 +60,14 @@
                         <a class="nav-link" href="{{ route('memorandos.index') }}">Memorandos</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('oficios.index') }}">Ofícios</a>
+                    </li>                     
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('funcionarios.index') }}">Funcionários</a>
                     </li> 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('setores.index') }}">Setores</a>
-                    </li>  
+                    </li>
                     @endif
                 </ul>
 

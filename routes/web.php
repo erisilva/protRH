@@ -105,3 +105,23 @@ Route::resource('/memorandos', 'MemorandoController');
 
 /*TRAMITAÇÕES DOS MEMORANDOS*/
 Route::resource('/memorandotramitacoes', 'MemorandoTramitacaoController')->only(['store', 'destroy',]);
+
+/* Tipificação dos ofícios */
+Route::get('/oficiotipos/export/csv', 'OficioTipoController@exportcsv')->name('oficiotipos.export.csv');
+Route::get('/oficiotipos/export/pdf', 'OficioTipoController@exportpdf')->name('oficiotipos.export.pdf');
+Route::resource('/oficiotipos', 'OficioTipoController');
+
+/* Situacões ou status dos ofícios */
+Route::get('/oficiosituacoes/export/csv', 'OficioSituacaoController@exportcsv')->name('oficiosituacoes.export.csv');
+Route::get('/oficiosituacoes/export/pdf', 'OficioSituacaoController@exportpdf')->name('oficiosituacoes.export.pdf');
+Route::resource('/oficiosituacoes', 'OficioSituacaoController');
+
+/* OFÍCIOS */
+Route::get('/oficios/export/csv', 'OficioController@exportcsv')->name('oficios.export.csv');
+Route::get('/oficios/export/pdf', 'OficioController@exportpdf')->name('oficios.export.pdf');
+Route::get('/oficios/export/pdf/{id}/individual', 'OficioController@exportpdfindividual')->name('oficios.export.pdf.individual');
+Route::get('/oficios/{chave}/buscar', 'OficioPublicoController@buscar')->name('oficios.chave.buscar');
+Route::resource('/oficios', 'OficioController');
+
+/*TRAMITAÇÕES DOS OFÍCIOS*/
+Route::resource('/oficiotramitacoes', 'OficioTramitacaoController')->only(['store', 'destroy',]);

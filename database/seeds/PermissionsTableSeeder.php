@@ -363,6 +363,94 @@ class PermissionsTableSeeder extends Seeder
             'description' => 'Excluir tramitação do memorando',
         ]);
 
+        //Tipo de Ofício
+        DB::table('permissions')->insert([
+            'name' => 'oficiotipo.index',
+            'description' => 'Lista de tipos de ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiotipo.create',
+            'description' => 'Registrar novo tipo de ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiotipo.edit',
+            'description' => 'Alterar dados do tipo de ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiotipo.delete',
+            'description' => 'Excluir tipo de ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiotipo.show',
+            'description' => 'Mostrar dados do tipo de ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiotipo.export',
+            'description' => 'Exportação de dados dos tipos de ofício',
+        ]);
+
+        //Situação do memorando
+        DB::table('permissions')->insert([
+            'name' => 'oficiosituacao.index',
+            'description' => 'Lista de situações do ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiosituacao.create',
+            'description' => 'Registrar nova situação do ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiosituacao.edit',
+            'description' => 'Alterar dados da situação do ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiosituacao.delete',
+            'description' => 'Excluir situação do ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiosituacao.show',
+            'description' => 'Mostrar dados do situação do ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficiosituacao.export',
+            'description' => 'Exportação de dados das situações do ofício',
+        ]);
+
+        //Ofícios
+        DB::table('permissions')->insert([
+            'name' => 'oficio.index',
+            'description' => 'Lista de ofícios',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.create',
+            'description' => 'Registrar novo ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.edit',
+            'description' => 'Alterar dados do ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.delete',
+            'description' => 'Excluir ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.show',
+            'description' => 'Mostrar dados do ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.export',
+            'description' => 'Exportação de dados dos ofícios',
+        ]);
+
+        //Permissões para tramitações dos ofícios
+        DB::table('permissions')->insert([
+            'name' => 'oficio.tramitacao.create',
+            'description' => 'Registrar nova tramitação no ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.tramitacao.delete',
+            'description' => 'Excluir tramitação do ofício',
+        ]);        
+
 
     }
 }

@@ -53,7 +53,7 @@
       </div>
       <div class="form-group col-md-4">
         <label for="protocolo_situacao">Situação do Protocolo</label>
-        <input type="text" class="form-control" name="protocolo_situacao" value="{{ $protocolo->protocoloSituacao->descricao }}" readonly>
+        <input type="text" class="form-controlfont-weight-bold" name="protocolo_situacao" value="{{ $protocolo->protocoloSituacao->descricao }}" readonly>
       </div>      
     </div>
     <div class="form-group">

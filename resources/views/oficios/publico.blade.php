@@ -4,8 +4,8 @@
 <div class="container-fluid">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item">Memorando RH SMS</li>
-      <li class="breadcrumb-item active" aria-current="page">Exibir Memorando</li>
+      <li class="breadcrumb-item">Ofício RH SMS</li>
+      <li class="breadcrumb-item active" aria-current="page">Exibir Ofício</li>
     </ol>
   </nav>
 </div>
@@ -21,40 +21,40 @@
   <form>
     <div class="form-row">
       <div class="form-group col-md-3">
-        <div class="p-3 bg-primary text-white text-right h2">Nº(RH) {{ $memorando->id }}</div>    
+        <div class="p-3 bg-primary text-white text-right h2">Nº {{ $oficio->id }}</div>    
       </div>
       <div class="form-group col-md-2">
         <label for="dia">Data</label>
-        <input type="text" class="form-control" name="dia" value="{{ $memorando->created_at->format('d/m/Y') }}" readonly>
+        <input type="text" class="form-control" name="dia" value="{{ $oficio->created_at->format('d/m/Y') }}" readonly>
       </div>
       <div class="form-group col-md-2">
         <label for="hora">Hora</label>
-        <input type="text" class="form-control" name="hora" value="{{ $memorando->created_at->format('H:i') }}" readonly>
+        <input type="text" class="form-control" name="hora" value="{{ $oficio->created_at->format('H:i') }}" readonly>
       </div>
       <div class="form-group col-md-5">
         <label for="setor">Operador</label>
-        <input type="text" class="form-control" name="setor" value="{{ $memorando->user->name }}" readonly>
+        <input type="text" class="form-control" name="setor" value="{{ $oficio->user->name }}" readonly>
       </div>
     </div>
 
     <div class="form-group">
       <label for="remetente">Remetente(s)/Assunto</label>
-      <textarea class="form-control" name="remetente" rows="3" readonly>{{ $memorando->remetente }}</textarea>      
+      <textarea class="form-control" name="remetente" rows="3" readonly>{{ $oficio->remetente }}</textarea>      
     </div>
 
     <div class="form-row">
       <div class="form-group col-md-6">
-        <label for="protocolo_tipo">Tipo do Memorando</label>
-        <input type="text" class="form-control" name="protocolo_tipo" value="{{ $memorando->memorandoTipo->descricao }}" readonly>
+        <label for="protocolo_tipo">Tipo de Ofício</label>
+        <input type="text" class="form-control" name="protocolo_tipo" value="{{ $oficio->oficioTipo->descricao }}" readonly>
       </div>
       <div class="form-group col-md-6">
-        <label for="protocolo_situacao">Situação do Memorando</label>
-        <input type="text" class="form-control font-weight-bold" name="protocolo_situacao" value="{{ $memorando->memorandoSituacao->descricao }}" readonly>
+        <label for="protocolo_situacao">Situação de Ofício</label>
+        <input type="text" class="form-control font-weight-bold" name="protocolo_situacao" value="{{ $oficio->oficioSituacao->descricao }}" readonly>
       </div>      
     </div>
     <div class="form-group">
       <label for="observacao">Observações</label>
-      <textarea class="form-control" name="observacao" rows="3" readonly>{{ $memorando->observacao }}</textarea>      
+      <textarea class="form-control" name="observacao" rows="3" readonly>{{ $oficio->observacao }}</textarea>      
     </div>
   </form>
 
