@@ -197,7 +197,7 @@ class OficioController extends Controller
 
         #mudar aqui
 
-        Session::flash('create_memorando', 'Ofício Nº ' . $oficio->id . ' cadastrado com sucesso!');
+        Session::flash('create_oficio', 'Ofício Nº ' . $oficio->id . ' cadastrado com sucesso!');
 
         return Redirect::route('oficios.edit', $oficio->id);
     }

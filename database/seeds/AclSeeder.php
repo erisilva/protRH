@@ -159,7 +159,20 @@ class AclSeeder extends Seeder
 		// ofícios (tramitacões)
 		$oficio_tramitacao_create = Permission::where('name', '=', 'oficio.tramitacao.create')->get()->first(); 
 		$oficio_tramitacao_delete = Permission::where('name', '=', 'oficio.tramitacao.delete')->get()->first();
-
+		// para tipos de solicitação
+		$solicitacaotipo_index = Permission::where('name', '=', 'solicitacaotipo.index')->get()->first(); 
+		$solicitacaotipo_create = Permission::where('name', '=', 'solicitacaotipo.create')->get()->first();
+		$solicitacaotipo_edit = Permission::where('name', '=', 'solicitacaotipo.edit')->get()->first();  
+		$solicitacaotipo_delete = Permission::where('name', '=', 'solicitacaotipo.delete')->get()->first();
+		$solicitacaotipo_show = Permission::where('name', '=', 'solicitacaotipo.show')->get()->first();  
+		$solicitacaotipo_export = Permission::where('name', '=', 'solicitacaotipo.export')->get()->first();
+		// para situações da solicitação
+		$solicitacaosituacao_index = Permission::where('name', '=', 'solicitacaosituacao.index')->get()->first(); 
+		$solicitacaosituacao_create = Permission::where('name', '=', 'solicitacaosituacao.create')->get()->first();
+		$solicitacaosituacao_edit = Permission::where('name', '=', 'solicitacaosituacao.edit')->get()->first();  
+		$solicitacaosituacao_delete = Permission::where('name', '=', 'solicitacaosituacao.delete')->get()->first();
+		$solicitacaosituacao_show = Permission::where('name', '=', 'solicitacaosituacao.show')->get()->first();  
+		$solicitacaosituacao_export = Permission::where('name', '=', 'solicitacaosituacao.export')->get()->first();
 
 
 
@@ -259,7 +272,7 @@ class AclSeeder extends Seeder
 		#permissões memorandos (tramitações)
 		$administrador_perfil->permissions()->attach($memorando_tramitacao_create);
 		$administrador_perfil->permissions()->attach($memorando_tramitacao_delete);
-		#permissões para tipos de memorando
+		#permissões para tipos de ofícios
 		$administrador_perfil->permissions()->attach($oficiotipo_index);
 		$administrador_perfil->permissions()->attach($oficiotipo_create);
 		$administrador_perfil->permissions()->attach($oficiotipo_edit);
@@ -283,6 +296,20 @@ class AclSeeder extends Seeder
 		#permissões ofícios (tramitações)
 		$administrador_perfil->permissions()->attach($oficio_tramitacao_create);
 		$administrador_perfil->permissions()->attach($oficio_tramitacao_delete);
+		#permissões para tipos de solicitações
+		$administrador_perfil->permissions()->attach($solicitacaotipo_index);
+		$administrador_perfil->permissions()->attach($solicitacaotipo_create);
+		$administrador_perfil->permissions()->attach($solicitacaotipo_edit);
+		$administrador_perfil->permissions()->attach($solicitacaotipo_delete);
+		$administrador_perfil->permissions()->attach($solicitacaotipo_show);
+		$administrador_perfil->permissions()->attach($solicitacaotipo_export);
+		#permissões para situações das solicitacaos
+		$administrador_perfil->permissions()->attach($solicitacaosituacao_index);
+		$administrador_perfil->permissions()->attach($solicitacaosituacao_create);
+		$administrador_perfil->permissions()->attach($solicitacaosituacao_edit);
+		$administrador_perfil->permissions()->attach($solicitacaosituacao_delete);
+		$administrador_perfil->permissions()->attach($solicitacaosituacao_show);
+		$administrador_perfil->permissions()->attach($solicitacaosituacao_export);
 
 
 
@@ -380,6 +407,20 @@ class AclSeeder extends Seeder
 		#permissões ofícios (tramitações)
 		$gerente_perfil->permissions()->attach($oficio_tramitacao_create);
 		$gerente_perfil->permissions()->attach($oficio_tramitacao_delete);
+		#permissões para tipos de solicitações
+		$gerente_perfil->permissions()->attach($solicitacaotipo_index);
+		$gerente_perfil->permissions()->attach($solicitacaotipo_create);
+		$gerente_perfil->permissions()->attach($solicitacaotipo_edit);
+		$gerente_perfil->permissions()->attach($solicitacaotipo_show);
+		$gerente_perfil->permissions()->attach($solicitacaotipo_export);
+		#permissões para situações dos ofício
+		$gerente_perfil->permissions()->attach($solicitacaosituacao_index);
+		$gerente_perfil->permissions()->attach($solicitacaosituacao_create);
+		$gerente_perfil->permissions()->attach($solicitacaosituacao_edit);
+		$gerente_perfil->permissions()->attach($solicitacaosituacao_show);
+		$gerente_perfil->permissions()->attach($solicitacaosituacao_export);
+
+
 
 
 
@@ -456,6 +497,14 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($oficio_export);
 		#permissões ofícios (tramitações)
 		$operador_perfil->permissions()->attach($oficio_tramitacao_create);
+		#permissões para tipos de solicitações
+		$operador_perfil->permissions()->attach($solicitacaotipo_index);
+		$operador_perfil->permissions()->attach($solicitacaotipo_show);
+		$operador_perfil->permissions()->attach($solicitacaotipo_export);
+		#permissões para situações das solicitações
+		$operador_perfil->permissions()->attach($solicitacaosituacao_index);
+		$operador_perfil->permissions()->attach($solicitacaosituacao_show);
+		$operador_perfil->permissions()->attach($solicitacaosituacao_export);
 
 
 
@@ -504,6 +553,12 @@ class AclSeeder extends Seeder
 		#permissões para os ofício
 		$leitor_perfil->permissions()->attach($oficio_index);
 		$leitor_perfil->permissions()->attach($oficio_show);
+		#permissões para tipos de solicitações
+		$leitor_perfil->permissions()->attach($solicitacaotipo_index);
+		$leitor_perfil->permissions()->attach($solicitacaotipo_show);
+		#permissões para situações dos ofício
+		$leitor_perfil->permissions()->attach($solicitacaosituacao_index);
+		$leitor_perfil->permissions()->attach($solicitacaosituacao_show);
 
 
 		echo "usuário Administrador: adm@mail.br senha:123456  \n";		

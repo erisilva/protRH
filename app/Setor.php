@@ -28,5 +28,10 @@ class Setor extends Model
     public function oficioTramitacaos()
     {
         return $this->hasMany('App\OficioTramitacao');
-    } 
+    }
+
+    public function solicitacaoTramitacaos()
+    {
+        return $this->hasMany('App\SolicitacaoTramitacao');
+    }
 }

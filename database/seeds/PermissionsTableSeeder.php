@@ -451,6 +451,56 @@ class PermissionsTableSeeder extends Seeder
             'description' => 'Excluir tramitação do ofício',
         ]);        
 
+        //Tipo de Solicitação
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaotipo.index',
+            'description' => 'Lista de tipos de solicitações',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaotipo.create',
+            'description' => 'Registrar novo tipo de solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaotipo.edit',
+            'description' => 'Alterar dados do tipo de solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaotipo.delete',
+            'description' => 'Excluir tipo de solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaotipo.show',
+            'description' => 'Mostrar dados do tipo de solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaotipo.export',
+            'description' => 'Exportação de dados dos tipos de solicitação',
+        ]);
 
+        //Situação da solicitacao
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaosituacao.index',
+            'description' => 'Lista de situações da solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaosituacao.create',
+            'description' => 'Registrar nova situação da solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaosituacao.edit',
+            'description' => 'Alterar dados da situação da solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaosituacao.delete',
+            'description' => 'Excluir situação da solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaosituacao.show',
+            'description' => 'Mostrar dados do situação da solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacaosituacao.export',
+            'description' => 'Exportação de dados das situações da solicitação',
+        ]);
     }
 }

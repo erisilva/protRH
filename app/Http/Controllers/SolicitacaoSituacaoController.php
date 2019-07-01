@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\OficioTipo;
+use App\SolicitacaoSituacao;
 use App\Perpage;
 
 use Response;
@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Gate;
 
 use Illuminate\Support\Facades\DB;
 
-class OficioTipoController extends Controller
-{    
+class SolicitacaoSituacaoController extends Controller
+{
     protected $pdf;
 
-    /**
+     /**
      * Construtor.
      *
      * precisa estar logado ao sistema
@@ -26,7 +26,7 @@ class OficioTipoController extends Controller
      *
      * @return 
      */
-    public function __construct(\App\Reports\OficioTipoReport $pdf)
+    public function __construct(\App\Reports\SolicitacaoSituacaoReport $pdf)
     {
         $this->middleware(['middleware' => 'auth']);
         $this->middleware(['middleware' => 'hasaccess']);
@@ -41,14 +41,14 @@ class OficioTipoController extends Controller
      */
     public function index()
     {
-        if (Gate::denies('oficiotipo.index')) {
+        if (Gate::denies('solicitacaosituacao.index')) {
             abort(403, 'Acesso negado.');
         }
 
-        $oficiotipos = new OficioTipo;
+        $solicitacaosituacoes = new SolicitacaoSituacao;
 
         // ordena
-        $oficiotipos = $oficiotipos->orderBy('descricao', 'asc');
+        $solicitacaosituacoes = $solicitacaosituacoes->orderBy('descricao', 'asc');
 
         // se a requisição tiver um novo valor para a quantidade
         // de páginas por visualização ele altera aqui
@@ -61,9 +61,9 @@ class OficioTipoController extends Controller
         $perpages = Perpage::orderBy('valor')->get();
 
         // paginação
-        $oficiotipos = $oficiotipos->paginate(session('perPage', '5'));
+        $solicitacaosituacoes = $solicitacaosituacoes->paginate(session('perPage', '5'));
 
-        return view('oficiotipos.index', compact('oficiotipos', 'perpages'));
+        return view('solicitacaosituacoes.index', compact('solicitacaosituacoes', 'perpages'));
     }
 
     /**
@@ -73,10 +73,10 @@ class OficioTipoController extends Controller
      */
     public function create()
     {
-        if (Gate::denies('oficiotipo.create')) {
+        if (Gate::denies('solicitacaosituacao.create')) {
             abort(403, 'Acesso negado.');
-        } 
-        return view('oficiotipos.create');
+        }   
+        return view('solicitacaosituacoes.create');
     }
 
     /**
@@ -91,13 +91,13 @@ class OficioTipoController extends Controller
           'descricao' => 'required',
         ]);
 
-        $oficioTipo = $request->all();
+        $solicitacaoSituacao = $request->all();
 
-        OficioTipo::create($oficioTipo); //salva
+        SolicitacaoSituacao::create($solicitacaoSituacao); //salva
 
-        Session::flash('create_oficiotipo', 'Tipo de ofício cadastrado com sucesso!');
+        Session::flash('create_solicitacaosituacao', 'Situação da solicitação cadastrado com sucesso!');
 
-        return redirect(route('oficiotipos.index'));  
+        return redirect(route('solicitacaosituacoes.index'));
     }
 
     /**
@@ -108,13 +108,13 @@ class OficioTipoController extends Controller
      */
     public function show($id)
     {
-        if (Gate::denies('oficiotipo.show')) {
+        if (Gate::denies('solicitacaosituacao.show')) {
             abort(403, 'Acesso negado.');
         }
 
-        $oficiotipos = OficioTipo::findOrFail($id);
+        $solicitacaosituacoes = SolicitacaoSituacao::findOrFail($id);
 
-        return view('oficiotipos.show', compact('oficiotipos'));
+        return view('solicitacaosituacoes.show', compact('solicitacaosituacoes'));
     }
 
     /**
@@ -125,13 +125,13 @@ class OficioTipoController extends Controller
      */
     public function edit($id)
     {
-        if (Gate::denies('oficiotipo.edit')) {
+        if (Gate::denies('solicitacaosituacao.edit')) {
             abort(403, 'Acesso negado.');
         }
 
-        $oficiotipo = OficioTipo::findOrFail($id);
+        $solicitacaosituacao = SolicitacaoSituacao::findOrFail($id);
 
-        return view('oficiotipos.edit', compact('oficiotipo'));
+        return view('solicitacaosituacoes.edit', compact('solicitacaosituacao'));
     }
 
     /**
@@ -147,13 +147,13 @@ class OficioTipoController extends Controller
           'descricao' => 'required',
         ]);
 
-        $oficiotipo = OficioTipo::findOrFail($id);
+        $solicitacaosituacao = SolicitacaoSituacao::findOrFail($id);
             
-        $oficiotipo->update($request->all());
+        $solicitacaosituacao->update($request->all());
         
-        Session::flash('edited_oficiotipo', 'Tipo de ofício alterado com sucesso!');
+        Session::flash('edited_solicitacaosituacao', 'Situação da solicitação alterada com sucesso!');
 
-        return redirect(route('oficiotipos.edit', $id));
+        return redirect(route('solicitacaosituacoes.edit', $id));
     }
 
     /**
@@ -164,15 +164,15 @@ class OficioTipoController extends Controller
      */
     public function destroy($id)
     {
-        if (Gate::denies('oficiotipo.delete')) {
+        if (Gate::denies('solicitacaosituacao.delete')) {
             abort(403, 'Acesso negado.');
         }
 
-        OficioTipo::findOrFail($id)->delete();
+        SolicitacaoSituacao::findOrFail($id)->delete();
 
-        Session::flash('deleted_oficiotipo', 'Tipo de ofício excluído com sucesso!');
+        Session::flash('deleted_solicitacaosituacao', 'Situação da solicitação excluída com sucesso!');
 
-        return redirect(route('oficiotipos.index'));
+        return redirect(route('solicitacaosituacoes.index'));   
     }
 
 
@@ -184,25 +184,25 @@ class OficioTipoController extends Controller
      */
     public function exportcsv()
     {
-        if (Gate::denies('oficiotipo.export')) {
+        if (Gate::denies('solicitacaosituacao.export')) {
             abort(403, 'Acesso negado.');
         }
 
-       $headers = [
+        $headers = [
                 'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
             ,   'Content-type'        => 'text/csv'
-            ,   'Content-Disposition' => 'attachment; filename=TiposOficios_' .  date("Y-m-d H:i:s") . '.csv'
+            ,   'Content-Disposition' => 'attachment; filename=SituacoesSolicitacoes_' .  date("Y-m-d H:i:s") . '.csv'
             ,   'Expires'             => '0'
             ,   'Pragma'              => 'public'
         ];
 
-        $oficiotipos = DB::table('oficio_tipos');
+        $solicitacaosituacoes = DB::table('solicitacao_situacaos');
 
-        $oficiotipos = $oficiotipos->select('descricao');
+        $solicitacaosituacoes = $solicitacaosituacoes->select('descricao');
 
-        $oficiotipos = $oficiotipos->orderBy('descricao', 'asc');
+        $solicitacaosituacoes = $solicitacaosituacoes->orderBy('descricao', 'asc');
 
-        $list = $oficiotipos->get()->toArray();
+        $list = $solicitacaosituacoes->get()->toArray();
 
         # converte os objetos para uma array
         $list = json_decode(json_encode($list), true);
@@ -221,7 +221,7 @@ class OficioTipoController extends Controller
         };
 
         return Response::stream($callback, 200, $headers);
-    } 
+    }
 
     /**
      * Exportação para pdf
@@ -231,7 +231,7 @@ class OficioTipoController extends Controller
      */
     public function exportpdf()
     {
-        if (Gate::denies('oficiotipo.export')) {
+        if (Gate::denies('solicitacaosituacao.export')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -240,21 +240,20 @@ class OficioTipoController extends Controller
         $this->pdf->SetFont('Arial', '', 12);
         $this->pdf->AddPage();
 
-        $oficiotipos = DB::table('oficio_tipos');
+        $solicitacaosituacoes = DB::table('solicitacao_situacaos');
 
-        $oficiotipos = $oficiotipos->select('descricao');
+        $solicitacaosituacoes = $solicitacaosituacoes->select('descricao');
 
-        $oficiotipos = $oficiotipos->orderBy('descricao', 'asc');    
+        $solicitacaosituacoes = $solicitacaosituacoes->orderBy('descricao', 'asc');    
 
-        $oficiotipos = $oficiotipos->get();
+        $solicitacaosituacoes = $solicitacaosituacoes->get();
 
-        foreach ($oficiotipos as $oficiotipo) {
-            $this->pdf->Cell(186, 6, utf8_decode($oficiotipo->descricao), 0, 0,'L');
+        foreach ($solicitacaosituacoes as $solicitacaosituacao) {
+            $this->pdf->Cell(186, 6, utf8_decode($solicitacaosituacao->descricao), 0, 0,'L');
             $this->pdf->Ln();
         }
 
-        $this->pdf->Output('D', 'OficioTipos_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        $this->pdf->Output('D', 'OficioSituacao_' .  date("Y-m-d H:i:s") . '.pdf', true);
         exit;
-
-    }
+    }       
 }

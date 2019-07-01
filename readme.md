@@ -2,7 +2,7 @@
 
 ## Sobre
 
-Sistema de gestão e controle de protocolos, memorandos, ofícios e requerimentos para SMS (Secretaria Municipal de Saúde) de Contagem-MG.
+Sistema de gestão e controle e tramitação de protocolos, memorandos, ofícios e solicitações para SMS (Secretaria Municipal de Saúde) de Contagem-MG.
 
 O ProtRH foi constuído com a framework [Laravel](https://laravel.com/), na versão 5.7 e usa como front-end [Bootstrap 4.3](https://getbootstrap.com/).
 
@@ -39,6 +39,16 @@ Login: adm@mail.com senha:123456, acesso total.
 Login: gerente@mail.com senha:123456, acesso restrito.
 Login: operador@mail.com senha:123456, acesso restrito, não pode excluir registros.
 Login: leitor@mail.com senha: 123456, somente consulta.
+
+## Funcionalidades
+
+- Funcionários
+- Setores
+- Protocolos
+- Memorandos
+- Ofícios
+- Solicitações
+- Tramitação dos documentos
 
 ## Prefeitura Municipal de Contagem
 

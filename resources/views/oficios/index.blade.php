@@ -49,7 +49,7 @@
                 <th scope="col">Nº</th>
                 <th scope="col">Dia</th>
                 <th scope="col">Hora</th>
-                <th scope="col">Remetente</th>
+                <th scope="col">Remetente(s)/Assunto</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Situação</th>
                 <th scope="col">Operador</th>
@@ -174,36 +174,36 @@ $(document).ready(function(){
         var filtro_remetente = $('input[name="remetente"]').val();
         var filtro_numero = $('input[name="numero"]').val();
         var filtro_operador = $('input[name="operador"]').val();
-        var filtro_memorando_tipo_id = $('select[name="memorando_tipo_id"]').val();
-        if (typeof filtro_memorando_tipo_id === "undefined") {
-          filtro_memorando_tipo_id = "";
+        var filtro_oficio_tipo_id = $('select[name="oficio_tipo_id"]').val();
+        if (typeof filtro_oficio_tipo_id === "undefined") {
+          filtro_oficio_tipo_id = "";
         }
-        var filtro_memorando_situacao_id = $('select[name="memorando_situacao_id"]').val();
-        if (typeof filtro_memorando_situacao_id === "undefined") {
-          filtro_memorando_situacao_id = "";
+        var filtro_oficio_situacao_id = $('select[name="oficio_situacao_id"]').val();
+        if (typeof filtro_oficio_situacao_id === "undefined") {
+          filtro_oficio_situacao_id = "";
         }        
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('oficios.export.csv') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('oficios.export.csv') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&oficio_tipo_id=" + filtro_oficio_tipo_id + "&oficio_situacao_id=" + filtro_oficio_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
     });
 
     $('#btnExportarPDF').on('click', function(){
         var filtro_remetente = $('input[name="remetente"]').val();
         var filtro_numero = $('input[name="numero"]').val();
         var filtro_operador = $('input[name="operador"]').val();
-        var filtro_memorando_tipo_id = $('select[name="memorando_tipo_id"]').val();
-        if (typeof filtro_memorando_tipo_id === "undefined") {
-          filtro_memorando_tipo_id = "";
+        var filtro_oficio_tipo_id = $('select[name="oficio_tipo_id"]').val();
+        if (typeof filtro_oficio_tipo_id === "undefined") {
+          filtro_oficio_tipo_id = "";
         }
-        var filtro_memorando_situacao_id = $('select[name="memorando_situacao_id"]').val();
-        if (typeof filtro_memorando_situacao_id === "undefined") {
-          filtro_memorando_situacao_id = "";
+        var filtro_oficio_situacao_id = $('select[name="oficio_situacao_id"]').val();
+        if (typeof filtro_oficio_situacao_id === "undefined") {
+          filtro_oficio_situacao_id = "";
         }        
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('oficios.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('oficios.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&oficio_tipo_id=" + filtro_oficio_tipo_id + "&oficio_situacao_id=" + filtro_oficio_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
     });
 
     $('#dtainicio').datepicker({

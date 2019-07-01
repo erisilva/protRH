@@ -136,4 +136,18 @@ class User extends Authenticatable
         return $this->hasMany('App\OficioTramitacao');
     }
 
+    /**
+     * solicitacoes do operador
+     *
+     * @var Role
+     */
+    public function solicitacaos()
+    {
+        return $this->hasMany('App\Solicitacao');
+    }
+
+    public function solicitacaoTramitacaos()
+    {
+        return $this->hasMany('App\SolicitacaoTramitacao');
+    }
 }

@@ -125,3 +125,23 @@ Route::resource('/oficios', 'OficioController');
 
 /*TRAMITAÇÕES DOS OFÍCIOS*/
 Route::resource('/oficiotramitacoes', 'OficioTramitacaoController')->only(['store', 'destroy',]);
+
+/* Tipificação das solicitações */
+Route::get('/solicitacaotipos/export/csv', 'SolicitacaoTipoController@exportcsv')->name('solicitacaotipos.export.csv');
+Route::get('/solicitacaotipos/export/pdf', 'SolicitacaoTipoController@exportpdf')->name('solicitacaotipos.export.pdf');
+Route::resource('/solicitacaotipos', 'SolicitacaoTipoController');
+
+/* Situacões ou status das solicitações */
+Route::get('/solicitacaosituacoes/export/csv', 'SolicitacaoSituacaoController@exportcsv')->name('solicitacaosituacoes.export.csv');
+Route::get('/solicitacaosituacoes/export/pdf', 'SolicitacaoSituacaoController@exportpdf')->name('solicitacaosituacoes.export.pdf');
+Route::resource('/solicitacaosituacoes', 'SolicitacaoSituacaoController');
+
+/* SOLICITAÇÕES */
+Route::get('/solicitacoes/export/csv', 'SolicitacaoController@exportcsv')->name('solicitacoes.export.csv');
+Route::get('/solicitacoes/export/pdf', 'SolicitacaoController@exportpdf')->name('solicitacoes.export.pdf');
+Route::get('/solicitacoes/export/pdf/{id}/individual', 'SolicitacaoController@exportpdfindividual')->name('solicitacoes.export.pdf.individual');
+Route::get('/solicitacoes/{chave}/buscar', 'SolicitacaoPublicoController@buscar')->name('solicitacoes.chave.buscar');
+Route::resource('/solicitacoes', 'SolicitacaoController');
+
+/*TRAMITAÇÕES DOS SOLICITAÇÕES*/
+Route::resource('/solicitacaotramitacoes', 'SolicitacaoTramitacaoController')->only(['store', 'destroy',]);

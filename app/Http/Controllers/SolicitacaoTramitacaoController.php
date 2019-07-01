@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\OficioTramitacao;
-use App\Oficio;
-use App\OficioSituacao;
-use App\OficioTipo;
+use App\SolicitacaoTramitacao;
+use App\Solicitacao;
+use App\SolicitacaoSituacao;
+use App\SolicitacaoTipo;
 
 use Response;
 
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Redirect; // para poder usar o redirect
 
 use Auth; // receber o id do operador logado no sistema
 
-class OficioTramitacaoController extends Controller
+class SolicitacaoTramitacaoController extends Controller
 {
     /**
      * Construtor.
@@ -32,7 +32,7 @@ class OficioTramitacaoController extends Controller
     {
         $this->middleware(['middleware' => 'auth']);
         $this->middleware(['middleware' => 'hasaccess']);
-    }
+    }    
 
     /**
      * Store a newly created resource in storage.
@@ -57,11 +57,11 @@ class OficioTramitacaoController extends Controller
         $input_tramitacao['setor_id'] = $input_tramitacao['setor_tramitacao_id'];
         $input_tramitacao['funcionario_id'] = $input_tramitacao['funcionario_tramitacao_id'];
 
-        OficioTramitacao::create($input_tramitacao); //salva
+        SolicitacaoTramitacao::create($input_tramitacao); //salva
 
-        Session::flash('create_oficiotramitacao', 'Tramitação inserida com sucesso!');
+        Session::flash('create_solicitacaotramitacao', 'Tramitação inserida com sucesso!');
 
-        return Redirect::route('oficios.edit', $input_tramitacao['oficio_id']);
+        return Redirect::route('solicitacoes.edit', $input_tramitacao['solicitacao_id']);
     }
 
     /**
@@ -76,14 +76,14 @@ class OficioTramitacaoController extends Controller
             abort(403, 'Acesso negado.');
         }
         
-        $tramitacao = oficioTramitacao::findOrFail($id);
+        $tramitacao = SolicitacaoTramitacao::findOrFail($id);
 
-        $num_oficio = $tramitacao->oficio_id;
+        $num_solicitacao = $tramitacao->solicitacao_id;
 
         $tramitacao->delete();        
 
-        Session::flash('delete_oficiotramitacao', 'Tramitação excluída com sucesso!');
+        Session::flash('delete_solicitacaotramitacao', 'Tramitação excluída com sucesso!');
 
-        return Redirect::route('oficios.edit', $num_oficio);
+        return Redirect::route('solicitacoes.edit', $num_solicitacao);
     }
 }
