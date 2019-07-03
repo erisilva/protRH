@@ -54,7 +54,7 @@ class SolicitacaoController extends Controller
      */
     public function index()
     {
-        if (Gate::denies('oficio.index')) {
+        if (Gate::denies('solicitacao.index')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -142,7 +142,7 @@ class SolicitacaoController extends Controller
      */
     public function create()
     {
-        if (Gate::denies('oficio.create')) {
+        if (Gate::denies('solicitacao.create')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -211,7 +211,7 @@ class SolicitacaoController extends Controller
      */
     public function show($id)
     {
-        if (Gate::denies('oficio.show')) {
+        if (Gate::denies('solicitacao.show')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -230,7 +230,7 @@ class SolicitacaoController extends Controller
      */
     public function edit($id)
     {
-        if (Gate::denies('oficio.edit')) {
+        if (Gate::denies('solicitacao.edit')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -282,7 +282,7 @@ class SolicitacaoController extends Controller
      */
     public function destroy($id)
     {
-        if (Gate::denies('oficio.delete')) {
+        if (Gate::denies('solicitacao.delete')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -301,7 +301,7 @@ class SolicitacaoController extends Controller
      */
     public function exportcsv()
     {
-        if (Gate::denies('oficio.export')) {
+        if (Gate::denies('solicitacao.export')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -316,10 +316,10 @@ class SolicitacaoController extends Controller
         $solicitacoes = DB::table('solicitacaos');
         // joins
         $solicitacoes = $solicitacoes->join('solicitacao_tipos', 'solicitacao_tipos.id', '=', 'solicitacaos.solicitacao_tipo_id');
-        $solicitacoes = $solicitacoes->join('oficio_situacaos', 'oficio_situacaos.id', '=', 'solicitacaos.solicitacao_situacao_id');
-        $oficios = $solicitacoes->join('users', 'users.id', '=', 'solicitacaos.user_id');
+        $solicitacoes = $solicitacoes->join('solicitacao_situacaos', 'solicitacao_situacaos.id', '=', 'solicitacaos.solicitacao_situacao_id');
+        $solicitacoes = $solicitacoes->join('users', 'users.id', '=', 'solicitacaos.user_id');
         // select
-        $solicitacoes = $solicitacoes->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente', 'solicitacaos.identificacao','solicitacao_tipos.descricao as tipo_solicitacao', 'oficio_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador');
+        $solicitacoes = $solicitacoes->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente', 'solicitacaos.identificacao','solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador');
         // filtros
         if (request()->has('numeromemorando')){
             $solicitacoes = $solicitacoes->where('solicitacaos.id', 'like', '%' . request('numeromemorando') . '%');
@@ -374,5 +374,252 @@ class SolicitacaoController extends Controller
         };
 
         return Response::stream($callback, 200, $headers);
-    }    
+    }
+
+    /**
+     * Exportação para pdf
+     *
+     * @param  
+     * @return 
+     */
+    public function exportpdf()
+    {
+        if (Gate::denies('solicitacao.export')) {
+            abort(403, 'Acesso negado.');
+        }
+
+        $solicitacaos = DB::table('solicitacaos');
+        // joins
+        $solicitacaos = $solicitacaos->join('solicitacao_tipos', 'solicitacao_tipos.id', '=', 'solicitacaos.solicitacao_tipo_id');
+        $solicitacaos = $solicitacaos->join('solicitacao_situacaos', 'solicitacao_situacaos.id', '=', 'solicitacaos.solicitacao_situacao_id');
+        $solicitacaos = $solicitacaos->join('users', 'users.id', '=', 'solicitacaos.user_id');
+        // select
+        $solicitacaos = $solicitacaos->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente','solicitacaos.identificacao', 'solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador');
+        // filtros
+        if (request()->has('numeromemorando')){
+            $solicitacaos = $solicitacaos->where('solicitacaos.id', 'like', '%' . request('numeromemorando') . '%');
+        }
+        if (request()->has('remetente')){
+            $solicitacaos = $solicitacaos->where('solicitacaos.remetente', 'like', '%' . request('remetente') . '%');
+        }
+        if (request()->has('operador')){
+            $solicitacaos = $solicitacaos->where('users.name', 'like', '%' . request('operador') . '%');
+        }
+        if (request()->has('solicitacao_tipo_id')){
+            if (request('solicitacao_tipo_id') != ""){
+                $solicitacaos = $solicitacaos->where('solicitacaos.solicitacao_tipo_id', '=', request('solicitacao_tipo_id'));
+            }
+        }
+        if (request()->has('solicitacao_situacao_id')){
+            if (request('solicitacao_situacao_id') != ""){
+                $solicitacaos = $solicitacaos->where('solicitacaos.solicitacao_situacao_id', '=', request('solicitacao_situacao_id'));
+            }
+        } 
+        if (request()->has('dtainicio')){
+             if (request('dtainicio') != ""){
+                $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
+                $solicitacaos = $solicitacaos->where('solicitacaos.created_at', '>=', $dataFormatadaMysql);                
+             }
+        }
+        if (request()->has('dtafinal')){
+             if (request('dtafinal') != ""){
+                // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
+                $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtafinal'))->format('Y-m-d 23:59:59');         
+                $solicitacaos = $solicitacaos->where('solicitacaos.created_at', '<=', $dataFormatadaMysql);                
+             }
+        }
+        $solicitacaos = $solicitacaos->orderBy('solicitacaos.id', 'desc');
+
+        $solicitacaos = $solicitacaos->get();
+
+        // configurações do relatório
+        $this->pdf->AliasNbPages();   
+        $this->pdf->SetMargins(12, 10, 12);
+        $this->pdf->SetFont('Arial', '', 12);
+        $this->pdf->AddPage();
+
+        foreach ($solicitacaos as $solicitacao) {
+            $this->pdf->Cell(40, 6, utf8_decode('Nº(RH)'), 1, 0,'R');
+            $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+            $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
+            $this->pdf->Cell(90, 6, utf8_decode('Operador'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->Cell(40, 6, utf8_decode($solicitacao->numeroRH), 1, 0,'R');
+            $this->pdf->Cell(30, 6, utf8_decode($solicitacao->data), 1, 0,'L');
+            $this->pdf->Cell(26, 6, utf8_decode($solicitacao->hora), 1, 0,'L');
+            $this->pdf->Cell(90, 6, utf8_decode($solicitacao->operador), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->Cell(186, 6, utf8_decode('Remetente'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->MultiCell(186, 6, utf8_decode($solicitacao->remetente), 1, 'L', false);
+            $this->pdf->Cell(40, 6, utf8_decode('Identificação'), 1, 0,'L');
+            $this->pdf->Cell(73, 6, utf8_decode('Tipo'), 1, 0,'L');
+            $this->pdf->Cell(73, 6, utf8_decode('Situacao'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->Cell(40, 6, utf8_decode($solicitacao->identificacao), 1, 0,'L');
+            $this->pdf->Cell(73, 6, utf8_decode($solicitacao->tipo_solicitacao), 1, 0,'L');
+            $this->pdf->Cell(73, 6, utf8_decode($solicitacao->situacao_solicitacao), 1, 0,'L');
+            $this->pdf->Ln();
+            if ($solicitacao->observacao != ''){
+                $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->MultiCell(186, 6, utf8_decode($solicitacao->observacao), 1, 'L', false);
+            }
+
+            // tramitações
+            // consulta secundariatramitacoes
+            $tramitacoes = DB::table('solicitacao_tramitacaos');
+            // joins
+            $tramitacoes = $tramitacoes->leftJoin('funcionarios', 'funcionarios.id', '=', 'solicitacao_tramitacaos.funcionario_id');
+            $tramitacoes = $tramitacoes->leftJoin('setors', 'setors.id', '=', 'solicitacao_tramitacaos.setor_id');
+            $tramitacoes = $tramitacoes->join('users', 'users.id', '=', 'solicitacao_tramitacaos.user_id');
+            // select
+            $tramitacoes = $tramitacoes->select(DB::raw('DATE_FORMAT(solicitacao_tramitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacao_tramitacaos.created_at, \'%H:%i\') AS hora'), 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo', 'users.name as operador', 'solicitacao_tramitacaos.descricao as observacoes');
+            // filter
+            $tramitacoes = $tramitacoes->where('solicitacao_tramitacaos.solicitacao_id', '=', $solicitacao->numeroRH);
+            // ordena
+            $tramitacoes = $tramitacoes->orderBy('solicitacao_tramitacaos.id', 'desc');
+            // get
+            $tramitacoes = $tramitacoes->get();
+            if (count($tramitacoes)){
+                $this->pdf->Cell(186, 6, utf8_decode('Tramitações'), 'B', 0,'L');
+                $this->pdf->Ln();
+                // diminui a fonte
+                $this->pdf->SetFont('Arial', '', 10);
+                foreach ($tramitacoes as $tramitacao) {
+                    $this->pdf->Cell(36, 5, utf8_decode('Data: ' . $tramitacao->data), 1, 0,'L');
+                    $this->pdf->Cell(20, 5, utf8_decode('Hora: ' . $tramitacao->hora), 1, 0,'L');
+                    $this->pdf->Cell(130, 5, utf8_decode('Operador: ' . $tramitacao->operador), 1, 0,'L');
+                    $this->pdf->Ln();
+                    $this->pdf->Cell(56, 5, utf8_decode('Matrícula: ' . $tramitacao->matricula), 1, 0,'L');
+                    $this->pdf->Cell(130, 5, utf8_decode('Funcionário: ' . $tramitacao->funcionario), 1, 0,'L');
+                    $this->pdf->Ln();
+                    $this->pdf->Cell(56, 5, utf8_decode('Código: ' . $tramitacao->codigo), 1, 0,'L');
+                    $this->pdf->Cell(130, 5, utf8_decode('Setor: ' . $tramitacao->setor), 1, 0,'L');
+                    $this->pdf->Ln();
+                    if ($tramitacao->observacoes != ''){
+                        $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $tramitacao->observacoes), 1, 'L', false);
+                    }
+
+                    $this->pdf->Ln(2);
+                }
+            }
+
+            $this->pdf->SetFont('Arial', '', 12);
+
+            $this->pdf->Ln(2);
+        }
+
+        $this->pdf->Output('D', 'Solicitações_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        exit;
+    }
+
+    /**
+     * Exportação para pdf por protocolo
+     *
+     * @param  $id, id do protocolo
+     * @return pdf
+     */
+    public function exportpdfindividual($id)
+    {
+        if (Gate::denies('solicitacao.export')) {
+            abort(403, 'Acesso negado.');
+        }
+
+        $solicitacao = DB::table('solicitacaos');
+        // joins
+        $solicitacao = $solicitacao->join('solicitacao_tipos', 'solicitacao_tipos.id', '=', 'solicitacaos.solicitacao_tipo_id');
+        $solicitacao = $solicitacao->join('solicitacao_situacaos', 'solicitacao_situacaos.id', '=', 'solicitacaos.solicitacao_situacao_id');
+        $solicitacao = $solicitacao->join('users', 'users.id', '=', 'solicitacaos.user_id');
+        // select
+        $solicitacao = $solicitacao->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente','solicitacaos.identificacao', 'solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador', 'solicitacaos.chave');
+        // filtros
+        //filtros
+        $solicitacao = $solicitacao->where('solicitacaos.id', '=', $id);
+        // get
+        $solicitacao = $solicitacao->get()->first();
+
+        // configurações do relatório
+        $this->pdf->AliasNbPages();   
+        $this->pdf->SetMargins(12, 10, 12);
+        $this->pdf->SetFont('Arial', '', 12);
+        $this->pdf->AddPage();
+        $this->pdf->Cell(40, 6, utf8_decode('Nº(RH)'), 1, 0,'R');
+        $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+        $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
+        $this->pdf->Cell(90, 6, utf8_decode('Operador'), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(40, 6, utf8_decode($solicitacao->numeroRH), 1, 0,'R');
+        $this->pdf->Cell(30, 6, utf8_decode($solicitacao->data), 1, 0,'L');
+        $this->pdf->Cell(26, 6, utf8_decode($solicitacao->hora), 1, 0,'L');
+        $this->pdf->Cell(90, 6, utf8_decode($solicitacao->operador), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(186, 6, utf8_decode('Remetente(s)/Assunto'), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->MultiCell(186, 6, utf8_decode($solicitacao->remetente), 1, 'L', false);
+        $this->pdf->Cell(40, 6, utf8_decode('identificação'), 1, 0,'L');
+        $this->pdf->Cell(73, 6, utf8_decode('Tipo'), 1, 0,'L');
+        $this->pdf->Cell(73, 6, utf8_decode('Situacao'), 1, 0,'L');
+        $this->pdf->Ln();
+        $this->pdf->Cell(40, 6, utf8_decode($solicitacao->identificacao), 1, 0,'L');
+        $this->pdf->Cell(73, 6, utf8_decode($solicitacao->tipo_solicitacao), 1, 0,'L');
+        $this->pdf->Cell(73, 6, utf8_decode($solicitacao->situacao_solicitacao), 1, 0,'L');
+        $this->pdf->Ln();
+        if ($solicitacao->observacao != ''){
+            $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->MultiCell(186, 6, utf8_decode($solicitacao->observacao), 1, 'L', false);
+        }
+        
+        // tramitações
+        // consulta secundariatramitacoes
+        $tramitacoes = DB::table('solicitacao_tramitacaos');
+        // joins
+        $tramitacoes = $tramitacoes->leftJoin('funcionarios', 'funcionarios.id', '=', 'solicitacao_tramitacaos.funcionario_id');
+        $tramitacoes = $tramitacoes->leftJoin('setors', 'setors.id', '=', 'solicitacao_tramitacaos.setor_id');
+        $tramitacoes = $tramitacoes->join('users', 'users.id', '=', 'solicitacao_tramitacaos.user_id');
+        // select
+        $tramitacoes = $tramitacoes->select(DB::raw('DATE_FORMAT(solicitacao_tramitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacao_tramitacaos.created_at, \'%H:%i\') AS hora'), 'funcionarios.nome as funcionario', 'funcionarios.matricula as matricula', 'setors.descricao as setor', 'setors.codigo as codigo', 'users.name as operador', 'solicitacao_tramitacaos.descricao as observacoes');
+        // filter
+        $tramitacoes = $tramitacoes->where('solicitacao_tramitacaos.solicitacao_id', '=', $solicitacao->numeroRH);
+        // ordena
+        $tramitacoes = $tramitacoes->orderBy('solicitacao_tramitacaos.id', 'desc');
+        // get
+        $tramitacoes = $tramitacoes->get();
+        if (count($tramitacoes)){
+            $this->pdf->Cell(186, 6, utf8_decode('Tramitações'), 'B', 0,'L');
+            $this->pdf->Ln();
+            // diminui a fonte
+            $this->pdf->SetFont('Arial', '', 10);
+            foreach ($tramitacoes as $tramitacao) {
+                $this->pdf->Cell(36, 5, utf8_decode('Data: ' . $tramitacao->data), 1, 0,'L');
+                $this->pdf->Cell(20, 5, utf8_decode('Hora: ' . $tramitacao->hora), 1, 0,'L');
+                $this->pdf->Cell(130, 5, utf8_decode('Operador: ' . $tramitacao->operador), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->Cell(56, 5, utf8_decode('Matrícula: ' . $tramitacao->matricula), 1, 0,'L');
+                $this->pdf->Cell(130, 5, utf8_decode('Funcionário: ' . $tramitacao->funcionario), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->Cell(56, 5, utf8_decode('Código: ' . $tramitacao->codigo), 1, 0,'L');
+                $this->pdf->Cell(130, 5, utf8_decode('Setor: ' . $tramitacao->setor), 1, 0,'L');
+                $this->pdf->Ln();
+                if ($tramitacao->observacoes != ''){
+                    $this->pdf->MultiCell(186, 6, utf8_decode('observações: ' . $tramitacao->observacoes), 1, 'L', false);
+                }
+
+                $this->pdf->Ln(2);
+            }
+        }
+
+        $this->pdf->Ln(2);
+
+        // imprime o barcode
+        $urlLinkPublic = 'qrcodes/' . $solicitacao->chave . '.png';
+
+        $this->pdf->Image($urlLinkPublic, null, null, 0, 0, 'PNG');
+
+        $this->pdf->Ln(2);
+
+        $this->pdf->Output('D', 'Solicitação_num' . $id . '_' .  date("Y-m-d H:i:s") . '.pdf', true);
+        exit;
+    }          
 }

@@ -505,6 +505,8 @@ class MemorandoController extends Controller
                 }
             }
 
+            $this->pdf->SetFont('Arial', '', 12);
+
             $this->pdf->Ln(2);
         }
 

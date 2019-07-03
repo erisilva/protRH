@@ -502,5 +502,31 @@ class PermissionsTableSeeder extends Seeder
             'name' => 'solicitacaosituacao.export',
             'description' => 'Exportação de dados das situações da solicitação',
         ]);
+
+        //solicitacao
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.index',
+            'description' => 'Lista de situações',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.create',
+            'description' => 'Registrar nova solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.edit',
+            'description' => 'Alterar dados da solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.delete',
+            'description' => 'Excluir solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.show',
+            'description' => 'Mostrar dados da solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.export',
+            'description' => 'Exportação de dados das solicitações',
+        ]);
     }
 }
