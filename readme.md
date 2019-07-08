@@ -49,6 +49,7 @@ Login: leitor@mail.com senha: 123456, somente consulta.
 - Ofícios
 - Solicitações
 - Tramitação dos documentos
+- Anexação de arquivos
 
 ## Prefeitura Municipal de Contagem
 

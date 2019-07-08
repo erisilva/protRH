@@ -189,6 +189,73 @@
     </table>
   </div> 
 </div>
+<div class="container bg-primary text-white">
+  <p class="text-center">Anexos</p>
+</div>
+<div class="container">
+  <form method="POST" action="{{ route('memorandoanexos.store') }}" class="form-inline" enctype="multipart/form-data">
+    @csrf
+    <input type="hidden" id="memorando_id" name="memorando_id" value="{{ $memorando->id }}">
+    <div class="form-group">
+      <label for="arquivo">Escolha o arquivo</label>
+      <input type="file" class="form-control-file  {{ $errors->has('arquivo') ? ' is-invalid' : '' }}" id="arquivo" name="arquivo">
+      @if ($errors->has('arquivo'))
+      <div class="invalid-feedback">
+      {{ $errors->first('arquivo') }}
+      </div>
+      @endif
+    </div>
+    <button type="submit" class="btn btn-primary"><i class="fas fa-paperclip"></i> Anexar Arquivo</button>
+  </form>  
+</div>
+<div class="container">
+  @if(Session::has('create_anexo'))
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Info!</strong>  {{ session('create_anexo') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  @endif
+  @if(Session::has('delete_anexo'))
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Info!</strong>  {{ session('delete_anexo') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  @endif
+  <div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Data</th>
+                <th scope="col">Hora</th>
+                <th scope="col">Operador</th>
+                <th scope="col">Arquivo</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($anexos as $anexo)
+            <tr>
+                <td>{{ $anexo->created_at->format('d/m/Y')  }}</td>
+                <td>{{ $anexo->created_at->format('H:i') }}</td>
+                <td>{{ $anexo->user->name }}</td>
+                <td><a href="{{ $anexo->arquivoUrl }}" target="_blank">{{ $anexo->arquivoNome }}</a></td>
+                <td>
+                  <form method="post" action="{{route('memorandoanexos.destroy', $anexo->id)}}"  onsubmit="return confirm('Você tem certeza que quer excluir esse arquivo?');">
+                    @csrf
+                    @method('DELETE')  
+                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                  </form>
+                </td>
+            </tr>    
+            @endforeach                                                 
+        </tbody>
+    </table>
+  </div> 
+</div>
 <br>
 <div class="container">
   <div class="float-right">

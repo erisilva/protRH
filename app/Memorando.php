@@ -29,4 +29,12 @@ class Memorando extends Model
     {
         return $this->hasMany('App\MemorandoTramitacao');
     }
+
+    /**
+     * Pega todos anexos de um protocolo
+     */
+    public function anexos()
+    {
+        return $this->morphMany('App\Anexo', 'anexoable');
+    }    
 }

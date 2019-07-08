@@ -275,6 +275,16 @@ class PermissionsTableSeeder extends Seeder
             'description' => 'Excluir tramitação do protocolo',
         ]);
 
+        //Permissões para anexos dos protocolos
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.anexo.create',
+            'description' => 'Salvar um arquivo em anexo no protocolo',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.anexo.delete',
+            'description' => 'Excluir um arquivo em anexo no protocolo',
+        ]);
+
         //Tipo de memorando
         DB::table('permissions')->insert([
             'name' => 'memorandotipo.index',
@@ -361,6 +371,16 @@ class PermissionsTableSeeder extends Seeder
         DB::table('permissions')->insert([
             'name' => 'memorando.tramitacao.delete',
             'description' => 'Excluir tramitação do memorando',
+        ]);
+
+        //Permissões para anexos dos memorandos
+        DB::table('permissions')->insert([
+            'name' => 'memorando.anexo.create',
+            'description' => 'Salvar um arquivo em anexo no memorando',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.anexo.delete',
+            'description' => 'Excluir um arquivo em anexo no memorando',
         ]);
 
         //Tipo de Ofício

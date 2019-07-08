@@ -86,6 +86,9 @@ Route::resource('/periodos', 'PeriodoController')->only(['store', 'destroy',]);
 /*TRAMITAÇÕES DOS PROTOCOLOS*/
 Route::resource('/tramitacoes', 'TramitacaoController')->only(['store', 'destroy',]);
 
+/*ANEXOS DOS PROTOCOLOS*/
+Route::resource('/protocoloanexos', 'ProtocoloAnexoController')->only(['store', 'destroy',]);
+
 /* Tipificação dos memorandos */
 Route::get('/memorandotipos/export/csv', 'MemorandoTipoController@exportcsv')->name('memorandotipos.export.csv');
 Route::get('/memorandotipos/export/pdf', 'MemorandoTipoController@exportpdf')->name('memorandotipos.export.pdf');
@@ -105,6 +108,9 @@ Route::resource('/memorandos', 'MemorandoController');
 
 /*TRAMITAÇÕES DOS MEMORANDOS*/
 Route::resource('/memorandotramitacoes', 'MemorandoTramitacaoController')->only(['store', 'destroy',]);
+
+/*ANEXOS DOS MEMORANDO*/
+Route::resource('/memorandoanexos', 'MemorandoAnexoController')->only(['store', 'destroy',]);
 
 /* Tipificação dos ofícios */
 Route::get('/oficiotipos/export/csv', 'OficioTipoController@exportcsv')->name('oficiotipos.export.csv');

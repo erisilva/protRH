@@ -266,13 +266,15 @@ class ProtocoloController extends Controller
 
         $periodos = Periodo::where('protocolo_id', '=', $id)->orderBy('id', 'asc')->get();
 
+        $anexos = $protocolo->anexos()->orderBy('id', 'desc')->get();
+
         $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
 
         $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get(); 
 
-        $periodotipos = PeriodoTipo::orderBy('descricao', 'asc')->get();        
+        $periodotipos = PeriodoTipo::orderBy('descricao', 'asc')->get();      
 
-        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos', 'tramitacoes'));
+        return view('protocolos.edit', compact('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos', 'tramitacoes', 'anexos'));
 
         //return Redirect::route('protocolos.edit', $protocolo->id)->with('protocolo', 'protocolosituacoes', 'protocolotipos', 'periodotipos', 'periodos');
     }

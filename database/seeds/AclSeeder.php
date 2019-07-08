@@ -111,6 +111,9 @@ class AclSeeder extends Seeder
 		// para protocolos (tramitacões)
 		$tramitacao_create = Permission::where('name', '=', 'tramitacao.create')->get()->first(); 
 		$tramitacao_delete = Permission::where('name', '=', 'tramitacao.delete')->get()->first();
+		// para protocolos (anexos)
+		$protocolo_anexo_create = Permission::where('name', '=', 'protocolo.anexo.create')->get()->first(); 
+		$protocolo_anexo_delete = Permission::where('name', '=', 'protocolo.anexo.delete')->get()->first();
 		// para tipos de memorando
 		$memorandotipo_index = Permission::where('name', '=', 'memorandotipo.index')->get()->first(); 
 		$memorandotipo_create = Permission::where('name', '=', 'memorandotipo.create')->get()->first();
@@ -255,6 +258,9 @@ class AclSeeder extends Seeder
 		#permissões protocolos (tramitações)
 		$administrador_perfil->permissions()->attach($tramitacao_create);
 		$administrador_perfil->permissions()->attach($tramitacao_delete);
+		#permissões protocolos (anexos)
+		$administrador_perfil->permissions()->attach($protocolo_anexo_create);
+		$administrador_perfil->permissions()->attach($protocolo_anexo_delete);
 		#permissões para tipos de memorando
 		$administrador_perfil->permissions()->attach($memorandotipo_index);
 		$administrador_perfil->permissions()->attach($memorandotipo_create);
@@ -377,6 +383,9 @@ class AclSeeder extends Seeder
 		#permissões para protocolos (tramitações)
 		$gerente_perfil->permissions()->attach($tramitacao_create);
 		$gerente_perfil->permissions()->attach($tramitacao_delete);
+		#permissões para protocolos (anexos)
+		$gerente_perfil->permissions()->attach($protocolo_anexo_create);
+		$gerente_perfil->permissions()->attach($protocolo_anexo_delete);
 		#permissões para tipos de memorando
 		$gerente_perfil->permissions()->attach($memorandotipo_index);
 		$gerente_perfil->permissions()->attach($memorandotipo_create);
@@ -485,6 +494,8 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($periodo_delete); // na dúvida aqui
 		#permissões para protocolos (tramitações)
 		$operador_perfil->permissions()->attach($tramitacao_create);
+		#permissões para protocolos (anexos)
+		$operador_perfil->permissions()->attach($protocolo_anexo_create);
 		// melhor não $operador_perfil->permissions()->attach($tramitacao_delete);
 		#permissões para tipos de memorando
 		$operador_perfil->permissions()->attach($memorandotipo_index);

@@ -240,11 +240,13 @@ class MemorandoController extends Controller
 
         $memorandotramitacoes = MemorandoTramitacao::where('memorando_id', '=', $id)->orderBy('id', 'desc')->get();
 
+        $anexos = $memorando->anexos()->orderBy('id', 'desc')->get();
+
         $memorandotipos = MemorandoTipo::orderBy('descricao', 'asc')->get();
 
         $memorandosituacoes = MemorandoSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('memorandos.edit', compact('memorando', 'memorandotipos', 'memorandotipos', 'memorandosituacoes', 'memorandotramitacoes'));
+        return view('memorandos.edit', compact('memorando', 'memorandotipos', 'memorandotipos', 'memorandosituacoes', 'memorandotramitacoes', 'anexos'));
     }
 
     /**

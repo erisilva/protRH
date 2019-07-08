@@ -48,4 +48,12 @@ class Protocolo extends Model
     {
         return $this->belongsToMany('App\Tramitacao');
     }
+
+    /**
+     * Pega todos anexos de um protocolo
+     */
+    public function anexos()
+    {
+        return $this->morphMany('App\Anexo', 'anexoable');
+    }
 }
