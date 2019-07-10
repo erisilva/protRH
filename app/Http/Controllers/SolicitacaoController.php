@@ -238,11 +238,13 @@ class SolicitacaoController extends Controller
 
         $solicitacaotramitacoes = SolicitacaoTramitacao::where('solicitacao_id', '=', $id)->orderBy('id', 'desc')->get();
 
+        $anexos = $solicitacao->anexos()->orderBy('id', 'desc')->get();
+
         $solicitacaotipos = SolicitacaoTipo::orderBy('descricao', 'asc')->get();
 
         $solicitacaosituacoes = SolicitacaoSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('solicitacoes.edit', compact('solicitacao', 'solicitacaotipos', 'solicitacaosituacoes', 'solicitacaotramitacoes'));
+        return view('solicitacoes.edit', compact('solicitacao', 'solicitacaotipos', 'solicitacaosituacoes', 'solicitacaotramitacoes', 'anexos'));
     }
 
     /**

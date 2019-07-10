@@ -237,11 +237,13 @@ class OficioController extends Controller
 
         $oficiotramitacoes = OficioTramitacao::where('oficio_id', '=', $id)->orderBy('id', 'desc')->get();
 
+        $anexos = $oficio->anexos()->orderBy('id', 'desc')->get();
+
         $oficiotipos = OficioTipo::orderBy('descricao', 'asc')->get();
 
         $oficiosituacoes = OficioSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('oficios.edit', compact('oficio', 'oficiotipos', 'oficiosituacoes', 'oficiotramitacoes'));
+        return view('oficios.edit', compact('oficio', 'oficiotipos', 'oficiosituacoes', 'oficiotramitacoes', 'anexos'));
     }
 
     /**

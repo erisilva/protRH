@@ -42,7 +42,7 @@ class SolicitacaoTramitacaoController extends Controller
      */
     public function store(Request $request)
     {
-        if (Gate::denies('oficio.tramitacao.create')) {
+        if (Gate::denies('solicitacao.tramitacao.create')) {
             abort(403, 'Acesso negado.');
         }
 
@@ -72,7 +72,7 @@ class SolicitacaoTramitacaoController extends Controller
      */
     public function destroy($id)
     {
-        if (Gate::denies('oficio.tramitacao.delete')) {
+        if (Gate::denies('solicitacao.tramitacao.delete')) {
             abort(403, 'Acesso negado.');
         }
         

@@ -469,7 +469,17 @@ class PermissionsTableSeeder extends Seeder
         DB::table('permissions')->insert([
             'name' => 'oficio.tramitacao.delete',
             'description' => 'Excluir tramitação do ofício',
-        ]);        
+        ]);
+
+        //Permissões para anexos dos oficios
+        DB::table('permissions')->insert([
+            'name' => 'oficio.anexo.create',
+            'description' => 'Salvar um arquivo em anexo no ofício',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.anexo.delete',
+            'description' => 'Excluir um arquivo em anexo no ofício',
+        ]);       
 
         //Tipo de Solicitação
         DB::table('permissions')->insert([
@@ -547,6 +557,26 @@ class PermissionsTableSeeder extends Seeder
         DB::table('permissions')->insert([
             'name' => 'solicitacao.export',
             'description' => 'Exportação de dados das solicitações',
+        ]);
+
+        //Permissões para tramitações das solicitações
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.tramitacao.create',
+            'description' => 'Registrar nova tramitação na Solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.tramitacao.delete',
+            'description' => 'Excluir tramitação da Solicitação',
+        ]);
+
+        //Permissões para anexos das solicitações
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.anexo.create',
+            'description' => 'Salvar um arquivo em anexo na Solicitação',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.anexo.delete',
+            'description' => 'Excluir um arquivo em anexo na solicitação',
         ]);
     }
 }

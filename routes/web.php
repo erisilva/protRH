@@ -132,6 +132,9 @@ Route::resource('/oficios', 'OficioController');
 /*TRAMITAÇÕES DOS OFÍCIOS*/
 Route::resource('/oficiotramitacoes', 'OficioTramitacaoController')->only(['store', 'destroy',]);
 
+/*TRAMITAÇÕES DOS ANEXOS*/
+Route::resource('/oficioanexos', 'OficioAnexoController')->only(['store', 'destroy',]);
+
 /* Tipificação das solicitações */
 Route::get('/solicitacaotipos/export/csv', 'SolicitacaoTipoController@exportcsv')->name('solicitacaotipos.export.csv');
 Route::get('/solicitacaotipos/export/pdf', 'SolicitacaoTipoController@exportpdf')->name('solicitacaotipos.export.pdf');
@@ -151,3 +154,6 @@ Route::resource('/solicitacoes', 'SolicitacaoController');
 
 /*TRAMITAÇÕES DOS SOLICITAÇÕES*/
 Route::resource('/solicitacaotramitacoes', 'SolicitacaoTramitacaoController')->only(['store', 'destroy',]);
+
+/*TRAMITAÇÕES DOS ANEXOS*/
+Route::resource('/solicitacaoanexos', 'SolicitacaoAnexoController')->only(['store', 'destroy',]);

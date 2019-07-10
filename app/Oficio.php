@@ -24,4 +24,12 @@ class Oficio extends Model
     {
         return $this->belongsTo('App\OficioSituacao');
     }
+
+    /**
+     * Pega todos anexos de um protocolo
+     */
+    public function anexos()
+    {
+        return $this->morphMany('App\Anexo', 'anexoable');
+    }     
 }

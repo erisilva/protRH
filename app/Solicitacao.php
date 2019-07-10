@@ -29,4 +29,12 @@ class Solicitacao extends Model
     {
         return $this->hasMany('App\SolicitacaoTramitacao');
     }
+
+    /**
+     * Pega todos anexos de um protocolo
+     */
+    public function anexos()
+    {
+        return $this->morphMany('App\Anexo', 'anexoable');
+    }     
 }
