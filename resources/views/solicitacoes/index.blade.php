@@ -103,7 +103,7 @@
             </div>  
             <div class="form-row">
               <div class="form-group col-md-4">
-                <label for="numero">Nº</label>
+                <label for="numero">Número</label>
                 <input type="text" class="form-control" id="numero" name="numero" value="{{request()->input('numero')}}">
               </div>
               <div class="form-group col-md-4">

@@ -443,7 +443,7 @@ class MemorandoController extends Controller
         $this->pdf->AddPage();
 
         foreach ($memorandos as $memorando) {
-            $this->pdf->Cell(40, 6, utf8_decode('Nº(RH)'), 1, 0,'R');
+            $this->pdf->Cell(40, 6, utf8_decode('Nº'), 1, 0,'R');
             $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
             $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
             $this->pdf->Cell(90, 6, utf8_decode('Operador'), 1, 0,'L');
@@ -546,7 +546,7 @@ class MemorandoController extends Controller
         $this->pdf->SetMargins(12, 10, 12);
         $this->pdf->SetFont('Arial', '', 12);
         $this->pdf->AddPage();
-        $this->pdf->Cell(40, 6, utf8_decode('Nº(RH)'), 1, 0,'R');
+        $this->pdf->Cell(40, 6, utf8_decode('Nº'), 1, 0,'R');
         $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
         $this->pdf->Cell(26, 6, utf8_decode('Hora'), 1, 0,'L');
         $this->pdf->Cell(90, 6, utf8_decode('Operador'), 1, 0,'L');
