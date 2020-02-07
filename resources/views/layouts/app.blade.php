@@ -73,6 +73,9 @@
                           <div class="dropdown-divider"></div>
                           <a class="dropdown-item" href="{{ route('solicitacaotipos.index') }}"><i class="fas fa-table"></i> Tipos de Solicitação</a>
                           <a class="dropdown-item" href="{{ route('solicitacaosituacoes.index') }}"><i class="fas fa-table"></i> Situações da Solicitação</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="{{ route('grupos.index') }}"><i class="fas fa-table"></i> Grupos de Trabalho</a>
+                          <a class="dropdown-item" href="{{ route('respostas.index') }}"><i class="fas fa-table"></i> Respostas aos Pedidos</a>
                         </div>
                     </li>                    
                     @endif

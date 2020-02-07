@@ -302,10 +302,28 @@ class SetorController extends Controller
      */
     public function autocomplete(Request $request)
     {
-        $setores = 
-         Setor::select(DB::raw('concat(descricao, " ",codigo) as text, id as value'))
-                    ->where("descricao","LIKE","%{$request->input('query')}%")
-                    ->get();
-        return response()->json($setores);
+        // $setores = 
+        //  Setor::select(DB::raw('concat(descricao, " ",codigo) as text, id as value'))
+        //             ->where("descricao","LIKE","%{$request->input('query')}%")
+        //             ->get();
+        // return response()->json($setores);
+
+        $setores = DB::table('setors');
+
+        // select
+        $setores = $setores->select(
+          'setors.descricao as text', 
+          'setors.id as value', 
+          'setors.codigo as codigo'
+        );
+        
+        //where
+        $setores = $setores->where("setors.descricao","LIKE","%{$request->input('query')}%");
+
+        //get
+        $setores = $setores->get();
+
+
+        return response()->json($setores, 200, ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
     }    
 }

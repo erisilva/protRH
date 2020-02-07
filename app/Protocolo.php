@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Protocolo extends Model
 {
     protected $fillable = [
-        'descricao', 'setor_id', 'funcionario_id', 'protocolo_tipo_id', 'protocolo_situacao_id', 'user_id', 'chave'
+        'descricao', 'setor_id', 'funcionario_id', 'protocolo_tipo_id', 'protocolo_situacao_id', 'user_id', 'chave', 'grupo_id', 'concluido_mensagem', 'concluido', 'concluido_em', 'resposta_id', 'encaminhado_em'
     ];
 
+    protected $dates = ['created_at', 'concluido_em', 'encaminhado_em'];
 
     public function user()
     {
@@ -24,6 +25,11 @@ class Protocolo extends Model
     public function setor()
     {
         return $this->belongsTo('App\Setor');
+    }
+
+    public function grupo()
+    {
+        return $this->belongsTo('App\Grupo');
     }
 
     // Nota Mental : No caso de Modelos com nomes compostos
@@ -55,5 +61,10 @@ class Protocolo extends Model
     public function anexos()
     {
         return $this->morphMany('App\Anexo', 'anexoable');
+    }
+
+    public function resposta()
+    {
+        return $this->belongsTo('App\Resposta');
     }
 }

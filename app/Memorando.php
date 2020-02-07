@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Memorando extends Model
 {
     protected $fillable = [
-        'remetente', 'observacao', 'chave', 'memorando_tipo_id', 'memorando_situacao_id', 'user_id'
+        'remetente', 'observacao', 'chave', 'memorando_tipo_id', 'memorando_situacao_id', 'user_id', 'grupo_id', 'concluido_mensagem', 'concluido', 'concluido_em', 'resposta_id', 'encaminhado_em'
     ];
 
+    protected $dates = ['created_at', 'concluido_em', 'encaminhado_em'];
+    
     public function user()
     {
         return $this->belongsTo('App\User');
@@ -36,5 +38,15 @@ class Memorando extends Model
     public function anexos()
     {
         return $this->morphMany('App\Anexo', 'anexoable');
-    }    
+    } 
+
+    public function resposta()
+    {
+        return $this->belongsTo('App\Resposta');
+    }
+
+    public function grupo()
+    {
+        return $this->belongsTo('App\Grupo');
+    }   
 }

@@ -254,6 +254,14 @@ class PermissionsTableSeeder extends Seeder
             'name' => 'protocolo.export',
             'description' => 'Exportação de dados dos protocolos',
         ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.encaminhar',
+            'description' => 'Fazer o encaminhamento do protocolo a grupos de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'protocolo.concluir',
+            'description' => 'Concluir ou finalizar um protocolo',
+        ]);
 
         //Permissões para periodos do protocolos
         DB::table('permissions')->insert([
@@ -578,5 +586,59 @@ class PermissionsTableSeeder extends Seeder
             'name' => 'solicitacao.anexo.delete',
             'description' => 'Excluir um arquivo em anexo na solicitação',
         ]);
+
+
+        // Grupos de Trabalho
+        DB::table('permissions')->insert([
+            'name' => 'grupo.index',
+            'description' => 'Lista de grupos de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'grupo.create',
+            'description' => 'Registrar novo grupo de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'grupo.edit',
+            'description' => 'Alterar dados de um grupo de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'grupo.delete',
+            'description' => 'Excluir grupo de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'grupo.show',
+            'description' => 'Mostrar dados dos grupos de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'grupo.export',
+            'description' => 'Exportação de dados dos grupos de trabalho',
+        ]);  
+
+
+        // Respostas
+        DB::table('permissions')->insert([
+            'name' => 'resposta.index',
+            'description' => 'Lista de respostas',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'resposta.create',
+            'description' => 'Registrar nova resposta',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'resposta.edit',
+            'description' => 'Alterar dados de uma resposta',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'resposta.delete',
+            'description' => 'Excluir resposta',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'resposta.show',
+            'description' => 'Mostrar dados das respostas',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'resposta.export',
+            'description' => 'Exportação de dados das respostas',
+        ]);       
     }
 }

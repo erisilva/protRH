@@ -72,13 +72,26 @@ Route::get('/periodotipos/export/csv', 'PeriodoTipoController@exportcsv')->name(
 Route::get('/periodotipos/export/pdf', 'PeriodoTipoController@exportpdf')->name('periodotipos.export.pdf');
 Route::resource('/periodotipos', 'PeriodoTipoController');
 
+/* grupos (de trabalho) */
+Route::get('/grupos/export/csv', 'GrupoController@exportcsv')->name('grupos.export.csv');
+Route::get('/grupos/export/pdf', 'GrupoController@exportpdf')->name('grupos.export.pdf');
+Route::resource('/grupos', 'GrupoController');
+
+/* Respostas aos pedidos (protocolos, memorandos, solicitações e ofícios) */
+Route::get('/respostas/export/csv', 'RespostaController@exportcsv')->name('respostas.export.csv');
+Route::get('/respostas/export/pdf', 'RespostaController@exportpdf')->name('respostas.export.pdf');
+Route::resource('/respostas', 'RespostaController');
+
 /* PROTOCOLOS */
 Route::get('/protocolos/export/csv', 'ProtocoloController@exportcsv')->name('protocolos.export.csv');
 Route::get('/protocolos/export/pdf', 'ProtocoloController@exportpdf')->name('protocolos.export.pdf');
 Route::get('/protocolos/export/pdf/porsetor', 'ProtocoloController@exportpdfporsetor')->name('protocolos.export.porsetor.pdf');
 Route::get('/protocolos/export/pdf/porsetor/simples', 'ProtocoloController@exportpdfporsetorsimples')->name('protocolos.export.porsetor.simples.pdf');
 Route::get('/protocolos/export/pdf/{id}/individual', 'ProtocoloController@exportpdfindividual')->name('protocolos.export.pdf.individual');
+Route::get('/protocolos/export/pdf/encaminhamento', 'ProtocoloController@exportpdfencaminhamento')->name('protocolos.export.encaminhamento.pdf');
 Route::get('/protocolos/{chave}/buscar', 'ProtocoloPublicoController@buscar')->name('protocolos.chave.buscar');
+Route::post('/protocolos/concluir/{id}', 'ProtocoloController@concluir')->name('protocolos.concluir');
+Route::post('/protocolos/encaminhar/{id}', 'ProtocoloController@encaminhar')->name('protocolos.encaminhar');
 Route::resource('/protocolos', 'ProtocoloController');
 
 /*PERIODOS*/

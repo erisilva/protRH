@@ -105,6 +105,8 @@ class AclSeeder extends Seeder
 		$protocolo_delete = Permission::where('name', '=', 'protocolo.delete')->get()->first();
 		$protocolo_show = Permission::where('name', '=', 'protocolo.show')->get()->first();  
 		$protocolo_export = Permission::where('name', '=', 'protocolo.export')->get()->first();
+		$protocolo_encaminhar = Permission::where('name', '=', 'protocolo.encaminhar')->get()->first();
+		$protocolo_concluir = Permission::where('name', '=', 'protocolo.concluir')->get()->first();
 		// para protocolos (periodos)
 		$periodo_create = Permission::where('name', '=', 'periodo.create')->get()->first(); 
 		$periodo_delete = Permission::where('name', '=', 'periodo.delete')->get()->first();
@@ -195,7 +197,20 @@ class AclSeeder extends Seeder
 		// Solicitações (anexos)
 		$solicitacao_anexo_create = Permission::where('name', '=', 'solicitacao.anexo.create')->get()->first(); 
 		$solicitacao_anexo_delete = Permission::where('name', '=', 'solicitacao.anexo.delete')->get()->first();
-
+		// para grupos de trabalho
+		$grupo_index = Permission::where('name', '=', 'grupo.index')->get()->first(); 
+		$grupo_create = Permission::where('name', '=', 'grupo.create')->get()->first();
+		$grupo_edit = Permission::where('name', '=', 'grupo.edit')->get()->first();  
+		$grupo_delete = Permission::where('name', '=', 'grupo.delete')->get()->first();
+		$grupo_show = Permission::where('name', '=', 'grupo.show')->get()->first();  
+		$grupo_export = Permission::where('name', '=', 'grupo.export')->get()->first();
+		// para respostas
+		$resposta_index = Permission::where('name', '=', 'resposta.index')->get()->first(); 
+		$resposta_create = Permission::where('name', '=', 'resposta.create')->get()->first();
+		$resposta_edit = Permission::where('name', '=', 'resposta.edit')->get()->first();  
+		$resposta_delete = Permission::where('name', '=', 'resposta.delete')->get()->first();
+		$resposta_show = Permission::where('name', '=', 'resposta.show')->get()->first();  
+		$resposta_export = Permission::where('name', '=', 'resposta.export')->get()->first();
 
 
 
@@ -263,6 +278,8 @@ class AclSeeder extends Seeder
 		$administrador_perfil->permissions()->attach($protocolo_delete);
 		$administrador_perfil->permissions()->attach($protocolo_show);
 		$administrador_perfil->permissions()->attach($protocolo_export);
+		$administrador_perfil->permissions()->attach($protocolo_encaminhar);
+		$administrador_perfil->permissions()->attach($protocolo_concluir);
 		#permissões protocolos (periodos)
 		$administrador_perfil->permissions()->attach($periodo_create);
 		$administrador_perfil->permissions()->attach($periodo_delete);
@@ -353,6 +370,21 @@ class AclSeeder extends Seeder
 		#permissões solicitações (anexos)
 		$administrador_perfil->permissions()->attach($solicitacao_anexo_create);
 		$administrador_perfil->permissions()->attach($solicitacao_anexo_delete);
+		# Grupos de trabalho
+		$administrador_perfil->permissions()->attach($grupo_index);
+		$administrador_perfil->permissions()->attach($grupo_create);
+		$administrador_perfil->permissions()->attach($grupo_edit);
+		$administrador_perfil->permissions()->attach($grupo_delete);
+		$administrador_perfil->permissions()->attach($grupo_show);
+		$administrador_perfil->permissions()->attach($grupo_export);
+		# Respostas
+		$administrador_perfil->permissions()->attach($resposta_index);
+		$administrador_perfil->permissions()->attach($resposta_create);
+		$administrador_perfil->permissions()->attach($resposta_edit);
+		$administrador_perfil->permissions()->attach($resposta_delete);
+		$administrador_perfil->permissions()->attach($resposta_show);
+		$administrador_perfil->permissions()->attach($resposta_export);
+
 
 
 
@@ -400,6 +432,8 @@ class AclSeeder extends Seeder
 		$gerente_perfil->permissions()->attach($protocolo_show);
 		$gerente_perfil->permissions()->attach($protocolo_export);
 		$gerente_perfil->permissions()->attach($protocolo_delete); // gerente pode excluir os protocolos
+		$gerente_perfil->permissions()->attach($protocolo_encaminhar);
+		$gerente_perfil->permissions()->attach($protocolo_concluir);
 		#permissões para protocolos (periodos)
 		$gerente_perfil->permissions()->attach($periodo_create);
 		$gerente_perfil->permissions()->attach($periodo_delete);
@@ -484,6 +518,18 @@ class AclSeeder extends Seeder
 		#permissões solicitações (anexos)
 		$gerente_perfil->permissions()->attach($solicitacao_anexo_create);
 		$gerente_perfil->permissions()->attach($solicitacao_anexo_delete);
+		# grupos de trabalho
+		$gerente_perfil->permissions()->attach($grupo_index);
+		$gerente_perfil->permissions()->attach($grupo_create);
+		$gerente_perfil->permissions()->attach($grupo_edit);
+		$gerente_perfil->permissions()->attach($grupo_show);
+		$gerente_perfil->permissions()->attach($grupo_export);
+		# respostas
+		$gerente_perfil->permissions()->attach($resposta_index);
+		$gerente_perfil->permissions()->attach($resposta_create);
+		$gerente_perfil->permissions()->attach($resposta_edit);
+		$gerente_perfil->permissions()->attach($resposta_show);
+		$gerente_perfil->permissions()->attach($resposta_export);
 
 
 
@@ -524,6 +570,8 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($protocolo_edit);		
 		$operador_perfil->permissions()->attach($protocolo_show);
 		$operador_perfil->permissions()->attach($protocolo_export);
+		$operador_perfil->permissions()->attach($protocolo_encaminhar);
+		$operador_perfil->permissions()->attach($protocolo_concluir);
 		#permissões para protocolos (periodos)
 		$operador_perfil->permissions()->attach($periodo_create);
 		$operador_perfil->permissions()->attach($periodo_delete); // na dúvida aqui
@@ -590,6 +638,14 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($solicitacao_tramitacao_create);
 		#permissões para solicitações (anexos)
 		$operador_perfil->permissions()->attach($solicitacao_anexo_create);
+		# grupos de trabalho
+		$operador_perfil->permissions()->attach($grupo_index);
+		$operador_perfil->permissions()->attach($grupo_show);
+		$operador_perfil->permissions()->attach($grupo_export);
+		# respostas
+		$operador_perfil->permissions()->attach($resposta_index);
+		$operador_perfil->permissions()->attach($resposta_show);
+		$operador_perfil->permissions()->attach($resposta_export);
 
 
 
@@ -647,6 +703,12 @@ class AclSeeder extends Seeder
 		#permissões para as solicitações
 		$leitor_perfil->permissions()->attach($solicitacao_index);
 		$leitor_perfil->permissions()->attach($solicitacao_show);
+		# grupos de trabalho
+		$leitor_perfil->permissions()->attach($grupo_index);
+		$leitor_perfil->permissions()->attach($grupo_show);
+		# resposta
+		$leitor_perfil->permissions()->attach($grupo_index);
+		$leitor_perfil->permissions()->attach($grupo_show);
 
 
 		echo "usuário Administrador: adm@mail.br senha:123456  \n";		

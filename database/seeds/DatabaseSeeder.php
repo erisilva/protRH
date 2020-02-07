@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
         $this->call(OficioSituacoesTableSeeder::class);
         $this->call(SolicitacaoTiposTableSeeder::class);
         $this->call(SolicitacaoSituacoesTableSeeder::class);
+        $this->call(GruposTableSeeder::class);
+        $this->call(RespostasTableSeeder::class);
 
         $this->call(AclSeeder::class);
         

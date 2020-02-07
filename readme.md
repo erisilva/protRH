@@ -48,6 +48,7 @@ Login: leitor@mail.com senha: 123456, somente consulta.
 - Memorandos
 - Ofícios
 - Solicitações
+- Encaminhamento a grupos de trabalho
 - Tramitação dos documentos
 - Anexação de arquivos
 
@@ -59,6 +60,52 @@ Login: leitor@mail.com senha: 123456, somente consulta.
 
 Caso queira contribuir com melhorias para esse sistema basta enviar um e-mail para erivelton.silva@contagem.mg.gov.br com suas solicitações, ficarei grato com sua ajuda.
 
+## Guia de intalação
+
+Requer:
+
+- Servidor apache com banco de dados MySQL instalado, se aplicável, conforme requisitos mínimos
+- [Composer](https://getcomposer.org/download/) instalado
+- [Git client](https://git-scm.com/downloads) instalado
+
+Dica: [CMDER](https://cmder.net/) é um substituto do console (prompt) de comandos do windows que já vem com o git client dentre muitas outras funcionalidades
+
+### clonar o reposítório
+
+git clone https://github.com/erisilva/protrh.git
+
+### criar o banco de dados
+
+para mysql
+
+CREATE DATABASE protrh CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+### configurações iniciais
+
+criar o arquivo .env de configurações:
+
+php -r "copy('.env.example', '.env');"
+
+editar o arquivo .env com os dados de configuração com o banco.
+
+gerando a key de segurança:
+
+php artisan key:generate
+
+iniciando o store para os anexos:
+
+php artisan storage:link
+
+### migrações
+
+php artisan migrate --seed
+
+### executando
+
+php artisan serve
+
 ## Licenças
 
 O sistema de protocolos é código aberto licenciado sob a [licença MIT](https://opensource.org/licenses/MIT).
+
+

@@ -302,10 +302,29 @@ class FuncionarioController extends Controller
      */
     public function autocomplete(Request $request)
     {
-        $funcionarios = 
-         Funcionario::select(DB::raw('concat(nome, " ",matricula) as text, id as value'))
-                    ->where("nome","LIKE","%{$request->input('query')}%")
-                    ->get();
-        return response()->json($funcionarios);
+        // $funcionarios = 
+        //  Funcionario::select(DB::raw('concat(nome, " ",matricula) as text, id as value'))
+        //             ->where("nome","LIKE","%{$request->input('query')}%")
+        //             ->get();
+        // return response()->json($funcionarios);
+
+
+        $funcionarios = DB::table('funcionarios');
+
+        // select
+        $funcionarios = $funcionarios->select(
+          'funcionarios.nome as text', 
+          'funcionarios.id as value', 
+          'funcionarios.matricula as matricula'
+        );
+        
+        //where
+        $funcionarios = $funcionarios->where("funcionarios.nome","LIKE","%{$request->input('query')}%");
+
+        //get
+        $funcionarios = $funcionarios->get();
+
+
+        return response()->json($funcionarios, 200, ['Content-type'=> 'application/json; charset=utf-8'], JSON_UNESCAPED_UNICODE);
     }
 }

@@ -12,23 +12,24 @@ class ProtocoloSituacoesTableSeeder extends Seeder
     public function run()
     {
         DB::table('protocolo_situacaos')->insert([
+            'id' => 1,
             'descricao' => 'Aberto',
         ]);
 
         DB::table('protocolo_situacaos')->insert([
+            'id' => 2,
+            'descricao' => 'Encaminhado',
+        ]);
+
+        DB::table('protocolo_situacaos')->insert([
+            'id' => 3,
             'descricao' => 'Em Tramitação',
         ]);
 
         DB::table('protocolo_situacaos')->insert([
-            'descricao' => 'Deferido',
-        ]);
-
-        DB::table('protocolo_situacaos')->insert([
+            'id' => 4,
             'descricao' => 'Concluido',
         ]);
 
-        DB::table('protocolo_situacaos')->insert([
-            'descricao' => 'Cancelado',
-        ]);
     }
 }
