@@ -370,8 +370,16 @@ class PermissionsTableSeeder extends Seeder
             'name' => 'memorando.export',
             'description' => 'Exportação de dados dos memorandos',
         ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.encaminhar',
+            'description' => 'Fazer o encaminhamento do memorando a grupos de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'memorando.concluir',
+            'description' => 'Concluir ou finalizar um memorando',
+        ]);
 
-        //Permissões para tramitações dos protocolos
+        //Permissões para tramitações dos memorandos
         DB::table('permissions')->insert([
             'name' => 'memorando.tramitacao.create',
             'description' => 'Registrar nova tramitação no memorando',
@@ -417,7 +425,7 @@ class PermissionsTableSeeder extends Seeder
             'description' => 'Exportação de dados dos tipos de ofício',
         ]);
 
-        //Situação do memorando
+        //Situação do oficio
         DB::table('permissions')->insert([
             'name' => 'oficiosituacao.index',
             'description' => 'Lista de situações do ofício',
@@ -467,6 +475,14 @@ class PermissionsTableSeeder extends Seeder
         DB::table('permissions')->insert([
             'name' => 'oficio.export',
             'description' => 'Exportação de dados dos ofícios',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.encaminhar',
+            'description' => 'Fazer o encaminhamento do ofício a grupos de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'oficio.concluir',
+            'description' => 'Concluir ou finalizar um ofício',
         ]);
 
         //Permissões para tramitações dos ofícios
@@ -565,6 +581,14 @@ class PermissionsTableSeeder extends Seeder
         DB::table('permissions')->insert([
             'name' => 'solicitacao.export',
             'description' => 'Exportação de dados das solicitações',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.encaminhar',
+            'description' => 'Fazer o encaminhamento da solicitação a grupos de trabalho',
+        ]);
+        DB::table('permissions')->insert([
+            'name' => 'solicitacao.concluir',
+            'description' => 'Concluir ou finalizar uma solicitação',
         ]);
 
         //Permissões para tramitações das solicitações

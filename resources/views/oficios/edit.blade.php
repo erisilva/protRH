@@ -33,7 +33,6 @@
   </nav>
 </div>
 <div class="container">
-  {{-- avisa se uma permissão foi alterada --}}
   @if(Session::has('edited_oficio'))
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
     <strong>Info!</strong>  {{ session('edited_oficio') }}
@@ -45,6 +44,22 @@
   @if(Session::has('create_oficio'))
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
     <strong>Info!</strong>  {{ session('create_oficio') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  @endif
+  @if ($errors->has('resposta_id'))
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Erro!</strong>  {{ $errors->first('resposta_id') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  @endif 
+  @if ($errors->has('grupo_id'))
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Erro!</strong>  {{ $errors->first('grupo_id') }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -80,8 +95,8 @@
       @endif  
     </div>
     <div class="form-row">
-      <div class="form-group col-md-6">
-        <label for="oficio_tipo_id">Tipo de Memorando</label>
+      <div class="form-group col-md-8">
+        <label for="oficio_tipo_id">Tipo de Ofício</label>
         <select class="form-control" name="oficio_tipo_id" id="oficio_tipo_id">
           <option value="{{ $oficio->oficio_tipo_id }}" selected="true"> &rarr; {{ $oficio->oficioTipo->descricao }}</option>        
           @foreach($oficiotipos as $oficiotipo)
@@ -89,22 +104,59 @@
           @endforeach
         </select>
       </div>
-      <div class="form-group col-md-6">
-        <label for="oficio_situacao_id">Situação de Memorando</label>
-        <select class="form-control" name="oficio_situacao_id" id="oficio_situacao_id">
-          <option value="{{$oficio->oficio_situacao_id}}" selected="true"> &rarr; {{ $oficio->oficioSituacao->descricao }}</option>
-          @foreach($oficiosituacoes as $oficiosituacao)
-          <option value="{{$oficiosituacao->id}}">{{$oficiosituacao->descricao}}</option>
-          @endforeach
-        </select>
-      </div>      
+      <div class="form-group col-md-4">
+        <label for="oficio_situacao">Situação do Ofício</label>
+        <input type="text" class="form-control" name="oficio_situacao" value="{{ $oficio->oficioSituacao->descricao }}" readonly>
+      </div>    
     </div>
     <div class="form-group">
       <label for="observacao">Observações</label>
       <textarea class="form-control" name="observacao" rows="3">{{ old('observacao') ?? $oficio->observacao }}</textarea>      
     </div>
-    <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Alterar Dados do Ofício</button>
-    <a href="{{ route('oficios.export.pdf.individual', $oficio->id) }}" class="btn btn-primary" role="button"><i class="fas fa-print"></i> exportar para PDF</i></a>
+    @if ($oficio->grupo_id > 1)
+    <div class="form-row">
+      <div class="form-group col-md-8">
+        <label for="encaminhado">Encaminhado para:</label>
+          <input type="text" class="form-control" name="encaminhado" value="{{ $oficio->grupo->descricao }}" readonly>  
+      </div>
+      <div class="form-group col-md-2">
+        <label for="dia_encaminhamento">Data</label>
+        <input type="text" class="form-control" name="dia_encaminhamento" value="{{ $oficio->encaminhado_em->format('d/m/Y') }}" readonly>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="hora_encaminhamento">Hora</label>
+        <input type="text" class="form-control" name="hora_encaminhamento" value="{{ $oficio->encaminhado_em->format('H:i') }}" readonly>
+      </div>
+    </div>  
+    @endif
+    @if ($oficio->concluido == 's')
+    <div class="form-row">
+      <div class="form-group col-md-8">
+        <label for="resposta">Resposta da conclusão:</label>
+          <input type="text" class="form-control" name="resposta" value="{{ $oficio->resposta->descricao }}" readonly>  
+      </div>
+      <div class="form-group col-md-2">
+        <label for="dia_resposta">Data</label>
+        <input type="text" class="form-control" name="dia_resposta" value="{{ $oficio->concluido_em->format('d/m/Y') }}" readonly>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="hora_resposta">Hora</label>
+        <input type="text" class="form-control" name="hora_resposta" value="{{ $oficio->concluido_em->format('H:i') }}" readonly>
+      </div>
+    </div>  
+    <div class="form-group">
+      <label for="mensagem_conclusao">Mensagem de conclusão</label>
+      <textarea class="form-control" name="mensagem_conclusao" rows="3">{{ $oficio->concluido_mensagem }}</textarea>      
+    </div>    
+    @endif
+    <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Alterar</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalEncaminhar">
+      <i class="fas fa-hand-point-right"></i> Encaminhar
+    </button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalConcluir">
+      <i class="fas fa-thumbs-up"></i> Concluir
+    </button>
+    <a href="{{ route('oficios.export.pdf.individual', $oficio->id) }}" class="btn btn-primary" role="button"><i class="fas fa-print"></i> exportar para PDF</i></a>  
   </form>
 </div>
 <br>
@@ -116,15 +168,23 @@
     @csrf
     <input type="hidden" id="oficio_id" name="oficio_id" value="{{ $oficio->id }}">
     <div class="form-row">
-      <div class="form-group col-md-6">
+      <div class="form-group col-md-4">
         <label for="funcionario_tramitacao">Funcionário</label>
         <input type="text" class="form-control typeahead" name="funcionario_tramitacao" id="funcionario_tramitacao" value="{{ old('funcionario_tramitacao') ?? '' }}" autocomplete="off">
         <input type="hidden" id="funcionario_tramitacao_id" name="funcionario_tramitacao_id" value="{{ old('funcionario_tramitacao_id') ?? '' }}">
       </div>
-      <div class="form-group col-md-6">
+      <div class="form-group col-md-2">
+        <label for="funcionario_tramitacao_matricula">Matrícula</label>
+        <input type="text" class="form-control" name="funcionario_tramitacao_matricula" id="funcionario_tramitacao_matricula" value="" readonly tabIndex="-1" placeholder="">
+      </div>
+      <div class="form-group col-md-4">
         <label for="setor_tramitacao">Setor</label>
         <input type="text" class="form-control" name="setor_tramitacao" id="setor_tramitacao" value="{{ old('setor_tramitacao') ?? '' }}" autocomplete="off">
         <input type="hidden" id="setor_tramitacao_id" name="setor_tramitacao_id" value="{{ old('setor_tramitacao_id') ?? '' }}">
+      </div>
+      <div class="form-group col-md-2">
+        <label for="setor_tramitacao_codigo">Código</label>
+        <input type="text" class="form-control" name="setor_tramitacao_codigo" id="setor_tramitacao_codigo" value="" readonly tabIndex="-1" placeholder="">
       </div>
     </div>
     <div class="form-group">
@@ -262,6 +322,77 @@
     <a href="{{ route('oficios.index') }}" class="btn btn-secondary btn-sm" role="button"><i class="fas fa-long-arrow-alt-left"></i> Voltar</i></a>
   </div>
 </div>
+
+<div class="modal fade" id="modalEncaminhar" tabindex="-1" role="dialog" aria-labelledby="JanelaEncaminhar" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle"><i class="fas fa-hand-point-right"></i> Encaminhar Ofício</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{{ route('oficios.encaminhar', $oficio->id) }}">
+          @csrf      
+          <div class="form-group">
+            <label for="grupo_id">Selecione o Grupo de Trabalho</label>
+            <select class="form-control" name="grupo_id" id="grupo_id">
+              <option value="" selected="true">Selecione ...</option>        
+              @foreach($grupos as $grupo)
+              <option value="{{$grupo->id}}">{{$grupo->descricao}}</option>
+              @endforeach
+            </select>  
+          </div>
+          <div class="form-group">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-hand-point-right"></i> Encaminhar?</button>
+          </div>
+        </form>
+      </div>     
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-window-close"></i> Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalConcluir" tabindex="-1" role="dialog" aria-labelledby="JanelaConcluir" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle"><i class="fas fa-thumbs-up"></i> Concluir Ofício</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{{ route('oficios.concluir', $oficio->id) }}">
+          @csrf
+          <div class="form-group">
+            <label for="resposta_id">Selecione a resposta de conclusão desse ofício</label>
+            <select class="form-control" name="resposta_id" id="resposta_id">
+              <option value="" selected="true">Selecione ...</option>        
+              @foreach($respostas as $resposta)
+              <option value="{{$resposta->id}}">{{$resposta->descricao}}</option>
+              @endforeach
+            </select>  
+          </div>
+          <div class="form-group">
+            <label for="concluido_mensagem">Mensagem de conclusão(opcional):</label>
+            <textarea class="form-control" name="concluido_mensagem" rows="3"></textarea>      
+          </div>
+          <div class="form-group">
+              <button type="submit" class="btn btn-primary"><i class="fas fa-hand-point-right"></i> Concluir?</button>
+          </div>
+        </form>
+      </div>     
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-window-close"></i> Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @section('script-footer')
@@ -287,18 +418,28 @@ $(document).ready(function(){
     },
     {
         name: "funcionarios",
-        displayKey: "text",
-        source: funcionarios.ttAdapter()
+                displayKey: "text",
+                source: funcionarios.ttAdapter(),
+                templates: {
+                  empty: [
+                    '<div class="empty-message">',
+                      '<p class="text-center font-weight-bold text-warning">Não foi encontrado nenhum funcionário com o texto digitado.</p>',
+                    '</div>'
+                  ].join('\n'),
+                  suggestion: function(data) {
+                      return '<div><div>' + data.text + ' - <strong>Matrícula:</strong> ' + data.matricula + '</div></div>';
+                    }
+                }
         }).on("typeahead:selected", function(obj, datum, name) {
             console.log(datum);
             $(this).data("seletectedId", datum.value);
             $('#funcionario_tramitacao_id').val(datum.value);
-            console.log(datum.value);
+            $('#funcionario_tramitacao_matricula').val(datum.matricula);
         }).on('typeahead:autocompleted', function (e, datum) {
             console.log(datum);
             $(this).data("seletectedId", datum.value);
             $('#funcionario_tramitacao_id').val(datum.value);
-            console.log(datum.value);
+            $('#funcionario_tramitacao_matricula').val(datum.matricula);
     });
 
     var setores = new Bloodhound({
@@ -320,17 +461,27 @@ $(document).ready(function(){
     {
         name: "setores",
         displayKey: "text",
-        source: setores.ttAdapter()
+        source: setores.ttAdapter(),
+        templates: {
+          empty: [
+            '<div class="empty-message">',
+              '<p class="text-center font-weight-bold text-warning">Não foi encontrado nenhum setor com o texto digitado.</p>',
+            '</div>'
+          ].join('\n'),
+          suggestion: function(data) {
+              return '<div><div>' + data.text + ' - <strong>Código:</strong> ' + data.codigo + '</div></div>';
+            }
+        }
         }).on("typeahead:selected", function(obj, datum, name) {
             console.log(datum);
             $(this).data("seletectedId", datum.value);
             $('#setor_tramitacao_id').val(datum.value);
-            console.log(datum.value);
+            $('#setor_tramitacao_codigo').val(datum.codigo);
         }).on('typeahead:autocompleted', function (e, datum) {
             console.log(datum);
             $(this).data("seletectedId", datum.value);
             $('#setor_tramitacao_id').val(datum.value);
-            console.log(datum.value);
+            $('#setor_tramitacao_codigo').val(datum.codigo);
     });
 });
 </script>

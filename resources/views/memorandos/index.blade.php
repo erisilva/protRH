@@ -11,7 +11,6 @@
       <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('memorandos.index') }}">Lista de Memorandos</a></li>
     </ol>
   </nav>
-  {{-- avisa se um usuario foi excluido --}}
   @if(Session::has('deleted_memorando'))
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
     <strong>Info!</strong>  {{ session('deleted_memorando') }}
@@ -20,7 +19,6 @@
     </button>
   </div>
   @endif
-  {{-- avisa quando um usuário foi modificado --}}
   @if(Session::has('create_memorando'))
   <div class="alert alert-warning alert-dismissible fade show" role="alert">
     <strong>Info!</strong>  {{ session('create_memorando') }}
@@ -52,7 +50,7 @@
                 <th scope="col">Remetente(s)/Assunto</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Situação</th>
-                <th scope="col">Operador</th>
+                <th scope="col">Grupo</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -65,7 +63,7 @@
                 <td>{{$memorando->remetente}}</td>
                 <td>{{$memorando->memorandoTipo->descricao}}</td>
                 <td>{{$memorando->memorandoSituacao->descricao}}</td>
-                <td>{{$memorando->user->name}}</td>
+                <td>{{$memorando->grupo->descricao}}</td>
                 <td>
                   <div class="btn-group" role="group">
                     <a href="{{route('memorandos.edit', $memorando->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
@@ -95,9 +93,20 @@
         <div class="modal-body">
           <!-- Filtragem dos dados -->
           <form method="GET" action="{{ route('memorandos.index') }}">
-            <div class="form-group">
-              <label for="remetente">Remetente</label>
-                <input type="text" class="form-control" id="remetente" name="remetente" value="{{request()->input('remetente')}}">
+            <div class="form-row">
+              
+              <div class="form-group col-md-9">
+                <label for="remetente">Remetente</label>
+                  <input type="text" class="form-control" id="remetente" name="remetente" value="{{request()->input('remetente')}}">
+              </div>
+
+
+              <div class="form-group col-md-3">
+                <label for="operador">Operador</label>
+                <input type="text" class="form-control" id="operador" name="operador" value="{{request()->input('operador')}}">
+              </div>
+
+
             </div>  
             <div class="form-row">
               <div class="form-group col-md-4">
@@ -115,10 +124,6 @@
             </div>
             <div class="form-row">
               <div class="form-group col-md-4">
-                <label for="operador">Operador</label>
-                <input type="text" class="form-control" id="operador" name="operador" value="{{request()->input('operador')}}">
-              </div>
-              <div class="form-group col-md-4">
                 <label for="memorando_tipo_id">Tipo do Memorando</label>
                 <select class="form-control" name="memorando_tipo_id" id="memorando_tipo_id">
                   <option value="">Mostrar todos</option>    
@@ -135,7 +140,19 @@
                   <option value="{{$memorandosituacao->id}}" {{ ($memorandosituacao->id == request()->input('memorando_situacao_id')) ? ' selected' : '' }} >{{$memorandosituacao->descricao}}</option>
                   @endforeach
                 </select>
-              </div>  
+              </div>
+
+              <div class="form-group col-md-4">
+                <label for="memorando_grupo_id">Grupo de Trabalho</label>
+                <select class="form-control" name="memorando_grupo_id" id="memorando_grupo_id">
+                  <option value="">Mostrar todos</option>
+                  @foreach($memorandogrupos as $memorandogrupo)
+                  <option value="{{$memorandogrupo->id}}" {{ ($memorandogrupo->id == request()->input('memorando_grupo_id')) ? ' selected' : '' }} >{{$memorandogrupo->descricao}}</option>
+                  @endforeach
+                </select>
+              </div>
+
+
             </div>
             <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Pesquisar</button>
             <a href="{{ route('memorandos.index') }}" class="btn btn-primary btn-sm" role="button">Limpar</a>
@@ -181,11 +198,15 @@ $(document).ready(function(){
         var filtro_memorando_situacao_id = $('select[name="memorando_situacao_id"]').val();
         if (typeof filtro_memorando_situacao_id === "undefined") {
           filtro_memorando_situacao_id = "";
-        }        
+        }
+        var filtro_memorando_grupo_id = $('select[name="memorando_grupo_id"]').val();
+        if (typeof filtro_memorando_grupo_id === "undefined") {
+          filtro_memorando_grupo_id = "";
+        }      
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('memorandos.export.csv') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('memorandos.export.csv') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal + "&memorando_grupo_id=" + filtro_memorando_grupo_id,"_self");
     });
 
     $('#btnExportarPDF').on('click', function(){
@@ -199,11 +220,15 @@ $(document).ready(function(){
         var filtro_memorando_situacao_id = $('select[name="memorando_situacao_id"]').val();
         if (typeof filtro_memorando_situacao_id === "undefined") {
           filtro_memorando_situacao_id = "";
-        }        
+        }
+        var filtro_memorando_grupo_id = $('select[name="memorando_grupo_id"]').val();
+        if (typeof filtro_memorando_grupo_id === "undefined") {
+          filtro_memorando_grupo_id = "";
+        }      
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('memorandos.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('memorandos.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numeromemorando=" + filtro_numeromemorando + "&operador=" + filtro_operador + "&memorando_tipo_id=" + filtro_memorando_tipo_id + "&memorando_situacao_id=" + filtro_memorando_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal + "&memorando_grupo_id=" + filtro_memorando_grupo_id,"_self");
     });
 
     $('#dtainicio').datepicker({

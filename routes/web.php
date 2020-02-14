@@ -118,6 +118,8 @@ Route::get('/memorandos/export/csv', 'MemorandoController@exportcsv')->name('mem
 Route::get('/memorandos/export/pdf', 'MemorandoController@exportpdf')->name('memorandos.export.pdf');
 Route::get('/memorandos/export/pdf/{id}/individual', 'MemorandoController@exportpdfindividual')->name('memorandos.export.pdf.individual');
 Route::get('/memorandos/{chave}/buscar', 'MemorandoPublicoController@buscar')->name('memorandos.chave.buscar');
+Route::post('/memorandos/concluir/{id}', 'MemorandoController@concluir')->name('memorandos.concluir');
+Route::post('/memorandos/encaminhar/{id}', 'MemorandoController@encaminhar')->name('memorandos.encaminhar');
 Route::resource('/memorandos', 'MemorandoController');
 
 /*TRAMITAÇÕES DOS MEMORANDOS*/
@@ -141,6 +143,8 @@ Route::get('/oficios/export/csv', 'OficioController@exportcsv')->name('oficios.e
 Route::get('/oficios/export/pdf', 'OficioController@exportpdf')->name('oficios.export.pdf');
 Route::get('/oficios/export/pdf/{id}/individual', 'OficioController@exportpdfindividual')->name('oficios.export.pdf.individual');
 Route::get('/oficios/{chave}/buscar', 'OficioPublicoController@buscar')->name('oficios.chave.buscar');
+Route::post('/oficios/concluir/{id}', 'OficioController@concluir')->name('oficios.concluir');
+Route::post('/oficios/encaminhar/{id}', 'OficioController@encaminhar')->name('oficios.encaminhar');
 Route::resource('/oficios', 'OficioController');
 
 /*TRAMITAÇÕES DOS OFÍCIOS*/

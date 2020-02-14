@@ -168,11 +168,9 @@ class ProtocoloController extends Controller
             abort(403, 'Acesso negado.');
         }
 
-        $protocolosituacoes = ProtocoloSituacao::orderBy('id', 'asc')->get();
-
         $protocolotipos = ProtocoloTipo::orderBy('descricao', 'asc')->get();
 
-        return view('protocolos.create', compact('protocolosituacoes', 'protocolotipos'));
+        return view('protocolos.create', compact('protocolotipos'));
     }
 
     /**

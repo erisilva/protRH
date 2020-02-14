@@ -7,6 +7,8 @@ use App\OficioTipo;
 use App\OficioSituacao;
 use App\OficioTramitacao;
 use App\Perpage;
+use App\Grupo;
+use App\Resposta;
 
 use Response;
 
@@ -147,9 +149,7 @@ class OficioController extends Controller
 
         $oficiotipos = OficioTipo::orderBy('descricao', 'asc')->get();
 
-        $oficiosituacoes = OficioSituacao::orderBy('descricao', 'asc')->get();
-
-        return view('oficios.create', compact('oficiotipos', 'oficiosituacoes'));
+        return view('oficios.create', compact('oficiotipos'));
     }
 
     /**
@@ -170,6 +170,16 @@ class OficioController extends Controller
         // gera uma chave aleatória de 20 caracteres
         $oficio_input['chave'] = generateRandomString(20);
 
+        // grupo de trabalho padrão
+        $oficio_input['grupo_id'] = 1; // não encaminhado para nenhuma grupo
+
+        // dados da conclusão
+        $oficio_input['concluido'] = 'n'; // ainda não foi concluido
+        $oficio_input['resposta_id'] = 1; // ainda não disponível
+
+        // situação do ofício
+        $oficio_input['oficio_situacao_id'] = 1;
+
         // recebi o usuário logado no sistema
         $user = Auth::user();
 
@@ -178,15 +188,13 @@ class OficioController extends Controller
         $this->validate($request, [
           'remetente' => 'required',
           'oficio_tipo_id' => 'required',
-          'oficio_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
             'oficio_tipo_id.required' => 'Selecione o tipo de ofício',
-            'oficio_situacao_id.required' => 'Selecione a situação de ofício',
         ]);
 
-                // salvar o barcode
+        // salvar o barcode
         $urlImageFile = public_path() . '\qrcodes\\' . $oficio_input['chave'] . '.png';
         $urlLinkPublic = $request->url() . '/' . $oficio_input['chave'] . '/buscar';
 
@@ -243,7 +251,11 @@ class OficioController extends Controller
 
         $oficiosituacoes = OficioSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('oficios.edit', compact('oficio', 'oficiotipos', 'oficiosituacoes', 'oficiotramitacoes', 'anexos'));
+        $grupos = Grupo::orderBy('descricao', 'asc')->get();      
+        
+        $respostas = Resposta::orderBy('descricao', 'asc')->get();
+
+        return view('oficios.edit', compact('oficio', 'oficiotipos', 'oficiosituacoes', 'oficiotramitacoes', 'anexos', 'grupos', 'respostas'));
     }
 
     /**
@@ -293,6 +305,79 @@ class OficioController extends Controller
 
         return redirect(route('oficios.index'));
     }
+
+    /**
+     * Preenche a vaga com o funcionario selecionado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function concluir(Request $request, $id)
+    {
+      if (Gate::denies('oficio.concluir')) {
+            abort(403, 'Acesso negado.');
+      }
+
+      $this->validate($request, [
+          'resposta_id' => 'required',
+        ],
+        [
+            'resposta_id.required' => 'Selecione a resposta da conclusão do ofício',
+        ]);
+
+      $oficio_input = $request->all();
+
+      $oficio = Oficio::findOrFail($id);
+
+      $oficio->concluido_mensagem = $oficio_input['concluido_mensagem'];
+
+      $oficio->concluido = 's';
+
+      $oficio->concluido_em = Carbon::now()->toDateTimeString();
+
+      $oficio->resposta_id = $oficio_input['resposta_id'];
+
+      $oficio->oficio_situacao_id = 4; // concluido
+
+      $oficio->save();
+
+      return redirect(route('oficios.edit', $id));
+    }
+
+
+    /**
+     * Preenche a vaga com o funcionario selecionado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function encaminhar(Request $request, $id)
+    {
+      if (Gate::denies('oficio.encaminhar')) {
+            abort(403, 'Acesso negado.');
+      }
+
+      $this->validate($request, [
+          'grupo_id' => 'required',
+        ],
+        [
+            'grupo_id.required' => 'Selecione o grupo a ser encaminhado o ofício',
+        ]);
+
+      $óficio_input = $request->all();
+
+      $oficio = Oficio::findOrFail($id);
+
+      $oficio->grupo_id = $óficio_input['grupo_id'];
+
+      $oficio->oficio_situacao_id = 2; // encaminhado
+
+      $oficio->encaminhado_em = Carbon::now()->toDateTimeString();
+
+      $oficio->save();
+
+      return redirect(route('oficios.edit', $id));
+    }      
 
     /**
      * Exportação para planilha (csv)

@@ -12,23 +12,23 @@ class OficioSituacoesTableSeeder extends Seeder
     public function run()
     {
         DB::table('oficio_situacaos')->insert([
+            'id' => 1,
             'descricao' => 'Aberto',
         ]);
 
         DB::table('oficio_situacaos')->insert([
+            'id' => 2,
+            'descricao' => 'Encaminhado',
+        ]);
+
+        DB::table('oficio_situacaos')->insert([
+            'id' => 3,
             'descricao' => 'Em Tramitação',
         ]);
 
         DB::table('oficio_situacaos')->insert([
-            'descricao' => 'Deferido',
-        ]);
-
-        DB::table('oficio_situacaos')->insert([
+            'id' => 4,
             'descricao' => 'Concluido',
-        ]);
-
-        DB::table('oficio_situacaos')->insert([
-            'descricao' => 'Cancelado',
         ]);
     }
 }

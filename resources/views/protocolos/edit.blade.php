@@ -116,7 +116,6 @@
       <label for="descricao">Observações</label>
       <textarea class="form-control" name="descricao" rows="3">{{ $protocolo->descricao }}</textarea>      
     </div>
-
     @if ($protocolo->grupo_id > 1)
     <div class="form-row">
       <div class="form-group col-md-8">
@@ -133,8 +132,6 @@
       </div>
     </div>  
     @endif
-
-
     @if ($protocolo->concluido == 's')
     <div class="form-row">
       <div class="form-group col-md-8">
@@ -155,18 +152,13 @@
       <textarea class="form-control" name="mensagem_conclusao" rows="3">{{ $protocolo->concluido_mensagem }}</textarea>      
     </div>    
     @endif
-
-
     <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Alterar</button>
-
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalEncaminhar">
         <i class="fas fa-hand-point-right"></i> Encaminhar
     </button>
-
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalConcluir">
         <i class="fas fa-thumbs-up"></i> Concluir
     </button>  
-
     <a href="{{ route('protocolos.export.pdf.individual', $protocolo->id) }}" class="btn btn-primary" role="button"><i class="fas fa-print"></i> Imprimir</i></a>
   </form>
 </div>
@@ -263,34 +255,26 @@
   <form method="POST" action="{{ route('tramitacoes.store') }}">
     @csrf
     <input type="hidden" id="protocolo_id" name="protocolo_id" value="{{ $protocolo->id }}">
-    
     <div class="form-row">
       <div class="form-group col-md-4">
         <label for="funcionario_tramitacao">Funcionário</label>
         <input type="text" class="form-control typeahead" name="funcionario_tramitacao" id="funcionario_tramitacao" value="{{ old('funcionario_tramitacao') ?? '' }}" autocomplete="off">
         <input type="hidden" id="funcionario_tramitacao_id" name="funcionario_tramitacao_id" value="{{ old('funcionario_tramitacao_id') ?? '' }}">
       </div>
-      
       <div class="form-group col-md-2">
         <label for="funcionario_tramitacao_matricula">Matrícula</label>
         <input type="text" class="form-control" name="funcionario_tramitacao_matricula" id="funcionario_tramitacao_matricula" value="" readonly tabIndex="-1" placeholder="">
       </div>
-
       <div class="form-group col-md-4">
         <label for="setor_tramitacao">Setor</label>
         <input type="text" class="form-control" name="setor_tramitacao" id="setor_tramitacao" value="{{ old('setor_tramitacao') ?? '' }}" autocomplete="off">
         <input type="hidden" id="setor_tramitacao_id" name="setor_tramitacao_id" value="{{ old('setor_tramitacao_id') ?? '' }}">
       </div>
-
       <div class="form-group col-md-2">
         <label for="setor_tramitacao_codigo">Código</label>
         <input type="text" class="form-control" name="setor_tramitacao_codigo" id="setor_tramitacao_codigo" value="" readonly tabIndex="-1" placeholder="">
       </div>
-
     </div>
-
-
-
     <div class="form-group">
         <label for="descricao">Observações</label>
         <input type="text" class="form-control" name="descricao" id="descricao" value="{{ old('descricao') ?? '' }}" autocomplete="off">    
@@ -425,7 +409,6 @@
     <a href="{{ route('protocolos.index') }}" class="btn btn-secondary btn-sm" role="button"><i class="fas fa-long-arrow-alt-left"></i> Voltar</i></a>
   </div>
 </div>
-
 
 <div class="modal fade" id="modalEncaminhar" tabindex="-1" role="dialog" aria-labelledby="JanelaEncaminhar" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

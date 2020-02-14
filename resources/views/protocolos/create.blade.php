@@ -34,8 +34,6 @@
 <div class="container">
   <form method="POST" action="{{ route('protocolos.store') }}">
     @csrf
-
-    
     <div class="form-row">
       <div class="form-group col-md-4">
         <label for="funcionario">Funcionário</label>
@@ -56,8 +54,6 @@
         <input type="text" class="form-control" name="setor_codigo" id="setor_codigo" value="" readonly tabIndex="-1" placeholder="">
       </div>
     </div>
-
-
     <div class="form-group">
       <label for="protocolo_tipo_id">Tipo do Protocolo</label>
       <select class="form-control {{ $errors->has('protocolo_tipo_id') ? ' is-invalid' : '' }}" name="protocolo_tipo_id" id="protocolo_tipo_id">

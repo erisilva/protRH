@@ -11,24 +11,25 @@ class MemorandoSituacoesTableSeeder extends Seeder
      */
     public function run()
     {
+     
         DB::table('memorando_situacaos')->insert([
+            'id' => 1,
             'descricao' => 'Aberto',
         ]);
 
         DB::table('memorando_situacaos')->insert([
+            'id' => 2,
+            'descricao' => 'Encaminhado',
+        ]);
+
+        DB::table('memorando_situacaos')->insert([
+            'id' => 3,
             'descricao' => 'Em Tramitação',
         ]);
 
         DB::table('memorando_situacaos')->insert([
-            'descricao' => 'Deferido',
-        ]);
-
-        DB::table('memorando_situacaos')->insert([
+            'id' => 4,
             'descricao' => 'Concluido',
-        ]);
-
-        DB::table('memorando_situacaos')->insert([
-            'descricao' => 'Cancelado',
         ]);
     }
 }

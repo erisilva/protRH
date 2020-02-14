@@ -62,26 +62,24 @@
     </div>
     @if ($protocolo->concluido == 's')
     <div class="container bg-primary text-white py-3">
-
-    <div class="form-row">
-      <div class="form-group col-md-8">
-        <label for="resposta">Solução</label>
-          <input type="text" class="form-control font-weight-bold" name="resposta" value="{{ $protocolo->resposta->descricao }}" readonly>  
-      </div>
-      <div class="form-group col-md-2">
-        <label for="dia_resposta">Data</label>
-        <input type="text" class="form-control" name="dia_resposta" value="{{ $protocolo->concluido_em->format('d/m/Y') }}" readonly>
-      </div>
-      <div class="form-group col-md-2">
-        <label for="hora_resposta">Hora</label>
-        <input type="text" class="form-control" name="hora_resposta" value="{{ $protocolo->concluido_em->format('H:i') }}" readonly>
-      </div>
-    </div>  
-    <div class="form-group">
-      <label for="mensagem_conclusao">Mensagem</label>
-      <textarea class="form-control" name="mensagem_conclusao" rows="3">{{ $protocolo->concluido_mensagem }}</textarea>      
-    </div>    
-
+      <div class="form-row">
+        <div class="form-group col-md-8">
+          <label for="resposta">Solução</label>
+            <input type="text" class="form-control font-weight-bold" name="resposta" value="{{ $protocolo->resposta->descricao }}" readonly>  
+        </div>
+        <div class="form-group col-md-2">
+          <label for="dia_resposta">Data</label>
+          <input type="text" class="form-control" name="dia_resposta" value="{{ $protocolo->concluido_em->format('d/m/Y') }}" readonly>
+        </div>
+        <div class="form-group col-md-2">
+          <label for="hora_resposta">Hora</label>
+          <input type="text" class="form-control" name="hora_resposta" value="{{ $protocolo->concluido_em->format('H:i') }}" readonly>
+        </div>
+      </div>  
+      <div class="form-group">
+        <label for="mensagem_conclusao">Mensagem</label>
+        <textarea class="form-control" name="mensagem_conclusao" rows="3">{{ $protocolo->concluido_mensagem }}</textarea>      
+      </div>    
     </div>
     @endif
   </form>

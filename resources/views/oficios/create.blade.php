@@ -21,35 +21,19 @@
       </div>
       @endif     
     </div>
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        <label for="oficio_tipo_id">Tipo de Ofício</label>
-        <select class="form-control {{ $errors->has('oficio_tipo_id') ? ' is-invalid' : '' }}" name="oficio_tipo_id" id="oficio_tipo_id">
-          <option value="" selected="true">Selecione ...</option>        
-          @foreach($oficiotipos as $oficiotipo)
-          <option value="{{$oficiotipo->id}}">{{$oficiotipo->descricao}}</option>
-          @endforeach
-        </select>
-        @if ($errors->has('oficio_tipo_id'))
-        <div class="invalid-feedback">
-        {{ $errors->first('oficio_tipo_id') }}
-        </div>
-        @endif
+    <div class="form-group">
+      <label for="oficio_tipo_id">Tipo de Ofício</label>
+      <select class="form-control {{ $errors->has('oficio_tipo_id') ? ' is-invalid' : '' }}" name="oficio_tipo_id" id="oficio_tipo_id">
+        <option value="" selected="true">Selecione ...</option>        
+        @foreach($oficiotipos as $oficiotipo)
+        <option value="{{$oficiotipo->id}}">{{$oficiotipo->descricao}}</option>
+        @endforeach
+      </select>
+      @if ($errors->has('oficio_tipo_id'))
+      <div class="invalid-feedback">
+      {{ $errors->first('oficio_tipo_id') }}
       </div>
-      <div class="form-group col-md-6">
-        <label for="oficio_situacao_id">Situação de Ofício</label>
-        <select class="form-control {{ $errors->has('oficio_situacao_id') ? ' is-invalid' : '' }}" name="oficio_situacao_id" id="oficio_situacao_id">
-          <option value="" selected="true">Selecione ...</option>        
-          @foreach($oficiosituacoes as $oficiosituacao)
-          <option value="{{$oficiosituacao->id}}">{{$oficiosituacao->descricao}}</option>
-          @endforeach
-        </select>
-        @if ($errors->has('oficio_situacao_id'))
-        <div class="invalid-feedback">
-        {{ $errors->first('oficio_situacao_id') }}
-        </div>
-        @endif
-      </div>
+      @endif
     </div>
     <div class="form-group">
       <label for="observacao">Observações</label>

@@ -7,6 +7,8 @@ use App\MemorandoTipo;
 use App\MemorandoSituacao;
 use App\MemorandoTramitacao;
 use App\Perpage;
+use App\Grupo;
+use App\Resposta;
 
 use Response;
 
@@ -87,6 +89,12 @@ class MemorandoController extends Controller
             }
         }
 
+        if (request()->has('memorando_grupo_id')){
+            if (request('memorando_grupo_id') != ""){
+                $memorandos = $memorandos->where('grupo_id', '=', request('memorando_grupo_id'));
+            }
+        }
+
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
@@ -132,7 +140,10 @@ class MemorandoController extends Controller
 
         $memorandosituacoes = MemorandoSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('memorandos.index', compact('memorandos', 'perpages', 'memorandotipos', 'memorandosituacoes'));
+        // consulta a tabela dos tipos de protocolo
+        $memorandogrupos = Grupo::orderBy('descricao', 'asc')->get();
+
+        return view('memorandos.index', compact('memorandos', 'perpages', 'memorandotipos', 'memorandosituacoes', 'memorandogrupos'));
     }
 
     /**
@@ -148,9 +159,7 @@ class MemorandoController extends Controller
 
         $memorandotipos = MemorandoTipo::orderBy('descricao', 'asc')->get();
 
-        $memorandosituacoes = MemorandoSituacao::orderBy('descricao', 'asc')->get();
-
-        return view('memorandos.create', compact('memorandotipos', 'memorandosituacoes'));
+        return view('memorandos.create', compact('memorandotipos'));
     }
 
     /**
@@ -176,15 +185,23 @@ class MemorandoController extends Controller
 
         $memorando_input['user_id'] = $user->id;
 
+        // grupo de trabalho padrão
+        $memorando_input['grupo_id'] = 1; // não encaminhado para nenhuma grupo
+
+        // dados da conclusão
+        $memorando_input['concluido'] = 'n'; // ainda não foi concluido
+        $memorando_input['resposta_id'] = 1; // ainda não disponível
+
+        // situação do protocolo
+        $memorando_input['memorando_situacao_id'] = 1;
+
         $this->validate($request, [
           'remetente' => 'required',
           'memorando_tipo_id' => 'required',
-          'memorando_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
             'memorando_tipo_id.required' => 'Selecione o tipo do memorando',
-            'memorando_situacao_id.required' => 'Selecione a situação do memorando',
         ]);
 
                 // salvar o barcode
@@ -246,7 +263,11 @@ class MemorandoController extends Controller
 
         $memorandosituacoes = MemorandoSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('memorandos.edit', compact('memorando', 'memorandotipos', 'memorandotipos', 'memorandosituacoes', 'memorandotramitacoes', 'anexos'));
+        $grupos = Grupo::orderBy('descricao', 'asc')->get();      
+        
+        $respostas = Resposta::orderBy('descricao', 'asc')->get();  
+
+        return view('memorandos.edit', compact('memorando', 'memorandotipos', 'memorandotipos', 'memorandosituacoes', 'memorandotramitacoes', 'anexos', 'grupos', 'respostas'));
     }
 
     /**
@@ -297,6 +318,81 @@ class MemorandoController extends Controller
         return redirect(route('memorandos.index'));
     }
 
+
+    /**
+     * Preenche a vaga com o funcionario selecionado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function concluir(Request $request, $id)
+    {
+      if (Gate::denies('memorando.concluir')) {
+            abort(403, 'Acesso negado.');
+      }
+
+      $this->validate($request, [
+          'resposta_id' => 'required',
+        ],
+        [
+            'resposta_id.required' => 'Selecione a resposta da conclusão do memorando',
+        ]);
+
+      $memorando_input = $request->all();
+
+      $memorando = Memorando::findOrFail($id);
+
+      $memorando->concluido_mensagem = $memorando_input['concluido_mensagem'];
+
+      $memorando->concluido = 's';
+
+      $memorando->concluido_em = Carbon::now()->toDateTimeString();
+
+      $memorando->resposta_id = $memorando_input['resposta_id'];
+
+      $memorando->memorando_situacao_id = 4; // concluido
+
+      $memorando->save();
+
+      return redirect(route('memorandos.edit', $id));
+    }
+
+
+    /**
+     * Preenche a vaga com o funcionario selecionado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function encaminhar(Request $request, $id)
+    {
+      if (Gate::denies('memorando.encaminhar')) {
+            abort(403, 'Acesso negado.');
+      }
+
+      $this->validate($request, [
+          'grupo_id' => 'required',
+        ],
+        [
+            'grupo_id.required' => 'Selecione o grupo a ser encaminhado o memorando',
+        ]);
+
+      $memorando_input = $request->all();
+
+      $memorando = Memorando::findOrFail($id);
+
+      $memorando->grupo_id = $memorando_input['grupo_id'];
+
+      $memorando->memorando_situacao_id = 2; // encaminhado
+
+      $memorando->encaminhado_em = Carbon::now()->toDateTimeString();
+
+      $memorando->save();
+
+      return redirect(route('memorandos.edit', $id));
+    } 
+
+
     /**
      * Exportação para planilha (csv)
      *
@@ -322,8 +418,19 @@ class MemorandoController extends Controller
         $memorandos = $memorandos->join('memorando_tipos', 'memorando_tipos.id', '=', 'memorandos.memorando_tipo_id');
         $memorandos = $memorandos->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
         $memorandos = $memorandos->join('users', 'users.id', '=', 'memorandos.user_id');
+        $memorandos = $memorandos->leftjoin('grupos', 'grupos.id', '=', 'memorandos.grupo_id');
+        $memorandos = $memorandos->join('respostas', 'respostas.id', '=', 'memorandos.resposta_id');
         // select
-        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador');
+        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador', 
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(memorandos.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(memorandos.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'memorandos.concluido as concluido',
+          DB::raw('DATE_FORMAT(memorandos.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(memorandos.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'memorandos.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         if (request()->has('numeromemorando')){
             $memorandos = $memorandos->where('memorandos.id', 'like', '%' . request('numeromemorando') . '%');
@@ -344,6 +451,11 @@ class MemorandoController extends Controller
                 $memorandos = $memorandos->where('memorandos.memorando_situacao_id', '=', request('memorando_situacao_id'));
             }
         } 
+        if (request()->has('memorando_grupo_id')){
+            if (request('memorando_grupo_id') != ""){
+                $memorandos = $memorandos->where('memorandos.grupo_id', '=', request('memorando_grupo_id'));
+            }
+        }
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
@@ -397,8 +509,20 @@ class MemorandoController extends Controller
         $memorandos = $memorandos->join('memorando_tipos', 'memorando_tipos.id', '=', 'memorandos.memorando_tipo_id');
         $memorandos = $memorandos->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
         $memorandos = $memorandos->join('users', 'users.id', '=', 'memorandos.user_id');
+        $memorandos = $memorandos->leftjoin('grupos', 'grupos.id', '=', 'memorandos.grupo_id');
+        $memorandos = $memorandos->join('respostas', 'respostas.id', '=', 'memorandos.resposta_id');
         // select
-        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador');
+        $memorandos = $memorandos->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador', 
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(memorandos.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(memorandos.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'memorandos.concluido as concluido',
+          'memorandos.grupo_id as grupo_id',
+          DB::raw('DATE_FORMAT(memorandos.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(memorandos.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'memorandos.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         if (request()->has('numeromemorando')){
             $memorandos = $memorandos->where('memorandos.id', 'like', '%' . request('numeromemorando') . '%');
@@ -418,7 +542,12 @@ class MemorandoController extends Controller
             if (request('memorando_situacao_id') != ""){
                 $memorandos = $memorandos->where('memorandos.memorando_situacao_id', '=', request('memorando_situacao_id'));
             }
-        } 
+        }
+        if (request()->has('memorando_grupo_id')){
+            if (request('memorando_grupo_id') != ""){
+                $memorandos = $memorandos->where('memorandos.grupo_id', '=', request('memorando_grupo_id'));
+            }
+        }
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
@@ -467,7 +596,31 @@ class MemorandoController extends Controller
                 $this->pdf->Ln();
                 $this->pdf->MultiCell(186, 6, utf8_decode($memorando->observacao), 1, 'L', false);
             }
-
+            if ($memorando->grupo_id > 1){
+              $this->pdf->Cell(126, 6, utf8_decode('Encaminhado para'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+              $this->pdf->Ln();
+              $this->pdf->Cell(126, 6, utf8_decode($memorando->encaminhado_para), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($memorando->data_encaminhamento), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($memorando->hora_encaminhamento), 1, 0,'L');
+              $this->pdf->Ln();
+            }
+            if ($memorando->concluido == 's'){
+              $this->pdf->Cell(126, 6, utf8_decode('Resposta da conclusão'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+              $this->pdf->Ln();
+              $this->pdf->Cell(126, 6, utf8_decode($memorando->resposta), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($memorando->data_conclusao), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($memorando->hora_conclusao), 1, 0,'L');
+              $this->pdf->Ln();
+              if ($memorando->resposta_mensagem != ''){
+                $this->pdf->Cell(186, 6, utf8_decode('Mensagem de resposta'), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->MultiCell(186, 6, utf8_decode($memorando->resposta_mensagem), 1, 'L', false);
+              }
+            }
             // tramitações
             // consulta secundariatramitacoes
             $tramitacoes = DB::table('memorando_tramitacaos');
@@ -533,8 +686,20 @@ class MemorandoController extends Controller
         $memorando = $memorando->join('memorando_tipos', 'memorando_tipos.id', '=', 'memorandos.memorando_tipo_id');
         $memorando = $memorando->join('memorando_situacaos', 'memorando_situacaos.id', '=', 'memorandos.memorando_situacao_id');
         $memorando = $memorando->join('users', 'users.id', '=', 'memorandos.user_id');
+        $memorando = $memorando->leftjoin('grupos', 'grupos.id', '=', 'memorandos.grupo_id');
+        $memorando = $memorando->join('respostas', 'respostas.id', '=', 'memorandos.resposta_id');
         // select
-        $memorando = $memorando->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador', 'memorandos.chave');
+        $memorando = $memorando->select('memorandos.id as numeroRH', DB::raw('DATE_FORMAT(memorandos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(memorandos.created_at, \'%H:%i\') AS hora'),'memorandos.remetente', 'memorando_tipos.descricao as tipo_memorando', 'memorando_situacaos.descricao as situacao_memorando', 'memorandos.observacao', 'users.name as operador', 'memorandos.chave', 
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(memorandos.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(memorandos.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'memorandos.concluido as concluido',
+          'memorandos.grupo_id as grupo_id',
+          DB::raw('DATE_FORMAT(memorandos.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(memorandos.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'memorandos.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         //filtros
         $memorando = $memorando->where('memorandos.id', '=', $id);
@@ -570,6 +735,34 @@ class MemorandoController extends Controller
             $this->pdf->Ln();
             $this->pdf->MultiCell(186, 6, utf8_decode($memorando->observacao), 1, 'L', false);
         }
+
+        if ($memorando->grupo_id > 1){
+          $this->pdf->Cell(126, 6, utf8_decode('Encaminhado para'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+          $this->pdf->Ln();
+          $this->pdf->Cell(126, 6, utf8_decode($memorando->encaminhado_para), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($memorando->data_encaminhamento), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($memorando->hora_encaminhamento), 1, 0,'L');
+          $this->pdf->Ln();
+        }
+        if ($memorando->concluido == 's'){
+          $this->pdf->Cell(126, 6, utf8_decode('Resposta da conclusão'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+          $this->pdf->Ln();
+          $this->pdf->Cell(126, 6, utf8_decode($memorando->resposta), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($memorando->data_conclusao), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($memorando->hora_conclusao), 1, 0,'L');
+          $this->pdf->Ln();
+          if ($memorando->resposta_mensagem != ''){
+            $this->pdf->Cell(186, 6, utf8_decode('Mensagem de resposta'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->MultiCell(186, 6, utf8_decode($memorando->resposta_mensagem), 1, 'L', false);
+          }
+        }
+
+
         // tramitações
         // consulta secundariatramitacoes
         $tramitacoes = DB::table('memorando_tramitacaos');

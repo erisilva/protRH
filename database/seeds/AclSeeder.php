@@ -137,6 +137,8 @@ class AclSeeder extends Seeder
 		$memorando_delete = Permission::where('name', '=', 'memorando.delete')->get()->first();
 		$memorando_show = Permission::where('name', '=', 'memorando.show')->get()->first();  
 		$memorando_export = Permission::where('name', '=', 'memorando.export')->get()->first();
+		$memorando_encaminhar = Permission::where('name', '=', 'memorando.encaminhar')->get()->first();
+		$memorando_concluir = Permission::where('name', '=', 'memorando.concluir')->get()->first();
 		// memorando (tramitacões)
 		$memorando_tramitacao_create = Permission::where('name', '=', 'memorando.tramitacao.create')->get()->first(); 
 		$memorando_tramitacao_delete = Permission::where('name', '=', 'memorando.tramitacao.delete')->get()->first();
@@ -164,6 +166,8 @@ class AclSeeder extends Seeder
 		$oficio_delete = Permission::where('name', '=', 'oficio.delete')->get()->first();
 		$oficio_show = Permission::where('name', '=', 'oficio.show')->get()->first();  
 		$oficio_export = Permission::where('name', '=', 'oficio.export')->get()->first();
+		$oficio_encaminhar = Permission::where('name', '=', 'oficio.encaminhar')->get()->first();
+		$oficio_concluir = Permission::where('name', '=', 'oficio.concluir')->get()->first();
 		// ofícios (tramitacões)
 		$oficio_tramitacao_create = Permission::where('name', '=', 'oficio.tramitacao.create')->get()->first(); 
 		$oficio_tramitacao_delete = Permission::where('name', '=', 'oficio.tramitacao.delete')->get()->first();
@@ -191,6 +195,8 @@ class AclSeeder extends Seeder
 		$solicitacao_delete = Permission::where('name', '=', 'solicitacao.delete')->get()->first();
 		$solicitacao_show = Permission::where('name', '=', 'solicitacao.show')->get()->first();  
 		$solicitacao_export = Permission::where('name', '=', 'solicitacao.export')->get()->first();
+		$solicitacao_encaminhar = Permission::where('name', '=', 'solicitacao.encaminhar')->get()->first();
+		$solicitacao_concluir = Permission::where('name', '=', 'solicitacao.concluir')->get()->first();
 		// Solicitações (tramitacões)
 		$solicitacao_tramitacao_create = Permission::where('name', '=', 'solicitacao.tramitacao.create')->get()->first(); 
 		$solicitacao_tramitacao_delete = Permission::where('name', '=', 'solicitacao.tramitacao.delete')->get()->first();
@@ -310,6 +316,8 @@ class AclSeeder extends Seeder
 		$administrador_perfil->permissions()->attach($memorando_delete);
 		$administrador_perfil->permissions()->attach($memorando_show);
 		$administrador_perfil->permissions()->attach($memorando_export);
+		$administrador_perfil->permissions()->attach($memorando_encaminhar);
+		$administrador_perfil->permissions()->attach($memorando_concluir);
 		#permissões memorandos (tramitações)
 		$administrador_perfil->permissions()->attach($memorando_tramitacao_create);
 		$administrador_perfil->permissions()->attach($memorando_tramitacao_delete);
@@ -337,6 +345,8 @@ class AclSeeder extends Seeder
 		$administrador_perfil->permissions()->attach($oficio_delete);
 		$administrador_perfil->permissions()->attach($oficio_show);
 		$administrador_perfil->permissions()->attach($oficio_export);
+		$administrador_perfil->permissions()->attach($oficio_encaminhar);
+		$administrador_perfil->permissions()->attach($oficio_concluir);
 		#permissões ofícios (tramitações)
 		$administrador_perfil->permissions()->attach($oficio_tramitacao_create);
 		$administrador_perfil->permissions()->attach($oficio_tramitacao_delete);
@@ -364,6 +374,8 @@ class AclSeeder extends Seeder
 		$administrador_perfil->permissions()->attach($solicitacao_delete);
 		$administrador_perfil->permissions()->attach($solicitacao_show);
 		$administrador_perfil->permissions()->attach($solicitacao_export);
+		$administrador_perfil->permissions()->attach($solicitacao_encaminhar);
+		$administrador_perfil->permissions()->attach($solicitacao_concluir);
 		#permissões solicitações (tramitações)
 		$administrador_perfil->permissions()->attach($solicitacao_tramitacao_create);
 		$administrador_perfil->permissions()->attach($solicitacao_tramitacao_delete);
@@ -462,6 +474,8 @@ class AclSeeder extends Seeder
 		$gerente_perfil->permissions()->attach($memorando_show);
 		$gerente_perfil->permissions()->attach($memorando_export);
 		$gerente_perfil->permissions()->attach($memorando_delete);
+		$gerente_perfil->permissions()->attach($memorando_encaminhar);
+		$gerente_perfil->permissions()->attach($memorando_concluir);
 		#permissões memorandos (tramitações)
 		$gerente_perfil->permissions()->attach($memorando_tramitacao_create);
 		$gerente_perfil->permissions()->attach($memorando_tramitacao_delete);
@@ -487,6 +501,8 @@ class AclSeeder extends Seeder
 		$gerente_perfil->permissions()->attach($oficio_show);
 		$gerente_perfil->permissions()->attach($oficio_export);
 		$gerente_perfil->permissions()->attach($oficio_delete);
+		$gerente_perfil->permissions()->attach($oficio_encaminhar);
+		$gerente_perfil->permissions()->attach($oficio_concluir);
 		#permissões ofícios (tramitações)
 		$gerente_perfil->permissions()->attach($oficio_tramitacao_create);
 		$gerente_perfil->permissions()->attach($oficio_tramitacao_delete);
@@ -512,6 +528,8 @@ class AclSeeder extends Seeder
 		$gerente_perfil->permissions()->attach($solicitacao_show);
 		$gerente_perfil->permissions()->attach($solicitacao_export);
 		$gerente_perfil->permissions()->attach($solicitacao_delete);
+		$gerente_perfil->permissions()->attach($solicitacao_encaminhar);
+		$gerente_perfil->permissions()->attach($solicitacao_concluir);
 		#permissões solicitações (tramitações)
 		$gerente_perfil->permissions()->attach($solicitacao_tramitacao_create);
 		$gerente_perfil->permissions()->attach($solicitacao_tramitacao_delete);
@@ -594,6 +612,8 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($memorando_edit);		
 		$operador_perfil->permissions()->attach($memorando_show);
 		$operador_perfil->permissions()->attach($memorando_export);
+		$operador_perfil->permissions()->attach($memorando_encaminhar);
+		$operador_perfil->permissions()->attach($memorando_concluir);
 		#permissões memorandos (tramitações)
 		$operador_perfil->permissions()->attach($memorando_tramitacao_create);
 		#permissões memorandos (anexos)
@@ -612,6 +632,8 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($oficio_edit);		
 		$operador_perfil->permissions()->attach($oficio_show);
 		$operador_perfil->permissions()->attach($oficio_export);
+		$operador_perfil->permissions()->attach($oficio_encaminhar);
+		$operador_perfil->permissions()->attach($oficio_concluir);
 		#permissões ofícios (tramitações)
 		$operador_perfil->permissions()->attach($oficio_anexo_create);
 		#permissões para tipos de solicitações
@@ -634,6 +656,8 @@ class AclSeeder extends Seeder
 		$operador_perfil->permissions()->attach($solicitacao_edit);		
 		$operador_perfil->permissions()->attach($solicitacao_show);
 		$operador_perfil->permissions()->attach($solicitacao_export);
+		$operador_perfil->permissions()->attach($solicitacao_encaminhar);
+		$operador_perfil->permissions()->attach($solicitacao_concluir);
 		#permissões para solicitações (tramitações)
 		$operador_perfil->permissions()->attach($solicitacao_tramitacao_create);
 		#permissões para solicitações (anexos)

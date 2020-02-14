@@ -21,35 +21,19 @@
       </div>
       @endif     
     </div>
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        <label for="memorando_tipo_id">Tipo do Memorando</label>
-        <select class="form-control {{ $errors->has('memorando_tipo_id') ? ' is-invalid' : '' }}" name="memorando_tipo_id" id="memorando_tipo_id">
-          <option value="" selected="true">Selecione ...</option>        
-          @foreach($memorandotipos as $memorandotipo)
-          <option value="{{$memorandotipo->id}}">{{$memorandotipo->descricao}}</option>
-          @endforeach
-        </select>
-        @if ($errors->has('memorando_tipo_id'))
-        <div class="invalid-feedback">
-        {{ $errors->first('memorando_tipo_id') }}
-        </div>
-        @endif
+    <div class="fform-group ">
+      <label for="memorando_tipo_id">Tipo do Memorando</label>
+      <select class="form-control {{ $errors->has('memorando_tipo_id') ? ' is-invalid' : '' }}" name="memorando_tipo_id" id="memorando_tipo_id">
+        <option value="" selected="true">Selecione ...</option>        
+        @foreach($memorandotipos as $memorandotipo)
+        <option value="{{$memorandotipo->id}}">{{$memorandotipo->descricao}}</option>
+        @endforeach
+      </select>
+      @if ($errors->has('memorando_tipo_id'))
+      <div class="invalid-feedback">
+      {{ $errors->first('memorando_tipo_id') }}
       </div>
-      <div class="form-group col-md-6">
-        <label for="memorando_situacao_id">Situação do Memorando</label>
-        <select class="form-control {{ $errors->has('memorando_situacao_id') ? ' is-invalid' : '' }}" name="memorando_situacao_id" id="memorando_situacao_id">
-          <option value="" selected="true">Selecione ...</option>        
-          @foreach($memorandosituacoes as $memorandosituacao)
-          <option value="{{$memorandosituacao->id}}">{{$memorandosituacao->descricao}}</option>
-          @endforeach
-        </select>
-        @if ($errors->has('memorando_situacao_id'))
-        <div class="invalid-feedback">
-        {{ $errors->first('memorando_situacao_id') }}
-        </div>
-        @endif
-      </div>
+      @endif
     </div>
     <div class="form-group">
       <label for="observacao">Observações</label>

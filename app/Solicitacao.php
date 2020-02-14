@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Solicitacao extends Model
 {
     protected $fillable = [
-        'remetente', 'observacao', 'chave', 'identificacao', 'solicitacao_tipo_id', 'solicitacao_situacao_id', 'user_id'
+        'remetente', 'observacao', 'chave', 'identificacao', 'solicitacao_tipo_id', 'solicitacao_situacao_id', 'user_id', 'grupo_id', 'concluido_mensagem', 'concluido', 'concluido_em', 'resposta_id', 'encaminhado_em'
     ];
+
+    protected $dates = ['created_at', 'concluido_em', 'encaminhado_em'];
 
     public function user()
     {
@@ -36,5 +38,15 @@ class Solicitacao extends Model
     public function anexos()
     {
         return $this->morphMany('App\Anexo', 'anexoable');
-    }     
+    }
+
+    public function grupo()
+    {
+        return $this->belongsTo('App\Grupo');
+    }
+
+    public function resposta()
+    {
+        return $this->belongsTo('App\Resposta');
+    }
 }
