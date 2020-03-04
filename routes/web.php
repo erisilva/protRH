@@ -168,6 +168,8 @@ Route::get('/solicitacoes/export/csv', 'SolicitacaoController@exportcsv')->name(
 Route::get('/solicitacoes/export/pdf', 'SolicitacaoController@exportpdf')->name('solicitacoes.export.pdf');
 Route::get('/solicitacoes/export/pdf/{id}/individual', 'SolicitacaoController@exportpdfindividual')->name('solicitacoes.export.pdf.individual');
 Route::get('/solicitacoes/{chave}/buscar', 'SolicitacaoPublicoController@buscar')->name('solicitacoes.chave.buscar');
+Route::post('/solicitacoes/concluir/{id}', 'SolicitacaoController@concluir')->name('solicitacoes.concluir');
+Route::post('/solicitacoes/encaminhar/{id}', 'SolicitacaoController@encaminhar')->name('solicitacoes.encaminhar');
 Route::resource('/solicitacoes', 'SolicitacaoController');
 
 /*TRAMITAÇÕES DOS SOLICITAÇÕES*/

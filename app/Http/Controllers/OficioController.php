@@ -88,6 +88,12 @@ class OficioController extends Controller
             }
         }
 
+        if (request()->has('oficio_grupo_id')){
+            if (request('oficio_grupo_id') != ""){
+                $oficios = $oficios->where('grupo_id', '=', request('oficio_grupo_id'));
+            }
+        }
+
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
@@ -117,6 +123,9 @@ class OficioController extends Controller
         // quantidades de paginação
         $perpages = Perpage::orderBy('valor')->get();
 
+        // consulta a tabela dos tipos de protocolo
+        $oficiogrupos = Grupo::orderBy('descricao', 'asc')->get();
+
         // paginação
         $oficios = $oficios->paginate(session('perPage', '5'))->appends([          
             'remetente' => request('remetente'),
@@ -133,7 +142,7 @@ class OficioController extends Controller
 
         $oficiosituacoes = OficioSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('oficios.index', compact('oficios', 'perpages', 'oficiotipos', 'oficiosituacoes'));
+        return view('oficios.index', compact('oficios', 'perpages', 'oficiotipos', 'oficiosituacoes', 'oficiogrupos'));
     }
 
     /**
@@ -270,12 +279,10 @@ class OficioController extends Controller
         $this->validate($request, [
             'remetente' => 'required',
             'oficio_tipo_id' => 'required',
-            'oficio_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
             'oficio_tipo_id.required' => 'Selecione o tipo de ofício',
-            'oficio_situacao_id.required' => 'Selecione a situação de ofício',
         ]);
 
         $oficio = Oficio::findOrFail($id);
@@ -404,8 +411,19 @@ class OficioController extends Controller
         $oficios = $oficios->join('oficio_tipos', 'oficio_tipos.id', '=', 'oficios.oficio_tipo_id');
         $oficios = $oficios->join('oficio_situacaos', 'oficio_situacaos.id', '=', 'oficios.oficio_situacao_id');
         $oficios = $oficios->join('users', 'users.id', '=', 'oficios.user_id');
+        $oficios = $oficios->leftjoin('grupos', 'grupos.id', '=', 'oficios.grupo_id');
+        $oficios = $oficios->join('respostas', 'respostas.id', '=', 'oficios.resposta_id');
         // select
-        $oficios = $oficios->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador');
+        $oficios = $oficios->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador', 
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(oficios.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(oficios.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'oficios.concluido as concluido',
+          DB::raw('DATE_FORMAT(oficios.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(oficios.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'oficios.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         if (request()->has('numeromemorando')){
             $oficios = $oficios->where('oficios.id', 'like', '%' . request('numeromemorando') . '%');
@@ -424,6 +442,11 @@ class OficioController extends Controller
         if (request()->has('oficio_situacao_id')){
             if (request('oficio_situacao_id') != ""){
                 $oficios = $oficios->where('oficios.oficio_situacao_id', '=', request('oficio_situacao_id'));
+            }
+        }
+        if (request()->has('oficio_grupo_id')){
+            if (request('oficio_grupo_id') != ""){
+                $oficios = $oficios->where('oficios.grupo_id', '=', request('oficio_grupo_id'));
             }
         } 
         if (request()->has('dtainicio')){
@@ -479,8 +502,20 @@ class OficioController extends Controller
         $oficios = $oficios->join('oficio_tipos', 'oficio_tipos.id', '=', 'oficios.oficio_tipo_id');
         $oficios = $oficios->join('oficio_situacaos', 'oficio_situacaos.id', '=', 'oficios.oficio_situacao_id');
         $oficios = $oficios->join('users', 'users.id', '=', 'oficios.user_id');
+        $oficios = $oficios->leftjoin('grupos', 'grupos.id', '=', 'oficios.grupo_id');
+        $oficios = $oficios->join('respostas', 'respostas.id', '=', 'oficios.resposta_id');
         // select
-        $oficios = $oficios->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador');
+        $oficios = $oficios->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador',
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(oficios.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(oficios.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'oficios.concluido as concluido',
+          'oficios.grupo_id as grupo_id',
+          DB::raw('DATE_FORMAT(oficios.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(oficios.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'oficios.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         if (request()->has('numeromemorando')){
             $oficios = $oficios->where('oficios.id', 'like', '%' . request('numeromemorando') . '%');
@@ -499,6 +534,11 @@ class OficioController extends Controller
         if (request()->has('oficio_situacao_id')){
             if (request('oficio_situacao_id') != ""){
                 $oficios = $oficios->where('oficios.oficio_situacao_id', '=', request('oficio_situacao_id'));
+            }
+        }
+        if (request()->has('oficio_grupo_id')){
+            if (request('oficio_grupo_id') != ""){
+                $oficios = $oficios->where('oficios.grupo_id', '=', request('oficio_grupo_id'));
             }
         } 
         if (request()->has('dtainicio')){
@@ -548,6 +588,31 @@ class OficioController extends Controller
                 $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
                 $this->pdf->Ln();
                 $this->pdf->MultiCell(186, 6, utf8_decode($oficio->observacao), 1, 'L', false);
+            }
+            if ($oficio->grupo_id > 1){
+              $this->pdf->Cell(126, 6, utf8_decode('Encaminhado para'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+              $this->pdf->Ln();
+              $this->pdf->Cell(126, 6, utf8_decode($oficio->encaminhado_para), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($oficio->data_encaminhamento), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($oficio->hora_encaminhamento), 1, 0,'L');
+              $this->pdf->Ln();
+            }
+            if ($oficio->concluido == 's'){
+              $this->pdf->Cell(126, 6, utf8_decode('Resposta da conclusão'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+              $this->pdf->Ln();
+              $this->pdf->Cell(126, 6, utf8_decode($oficio->resposta), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($oficio->data_conclusao), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($oficio->hora_conclusao), 1, 0,'L');
+              $this->pdf->Ln();
+              if ($oficio->resposta_mensagem != ''){
+                $this->pdf->Cell(186, 6, utf8_decode('Mensagem de resposta'), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->MultiCell(186, 6, utf8_decode($oficio->resposta_mensagem), 1, 'L', false);
+              }
             }
 
             // tramitações
@@ -615,8 +680,20 @@ class OficioController extends Controller
         $oficio = $oficio->join('oficio_tipos', 'oficio_tipos.id', '=', 'oficios.oficio_tipo_id');
         $oficio = $oficio->join('oficio_situacaos', 'oficio_situacaos.id', '=', 'oficios.oficio_situacao_id');
         $oficio = $oficio->join('users', 'users.id', '=', 'oficios.user_id');
+        $oficio = $oficio->leftjoin('grupos', 'grupos.id', '=', 'oficios.grupo_id');
+        $oficio = $oficio->join('respostas', 'respostas.id', '=', 'oficios.resposta_id');
         // select
-        $oficio = $oficio->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador', 'oficios.chave');
+        $oficio = $oficio->select('oficios.id as numeroRH', DB::raw('DATE_FORMAT(oficios.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(oficios.created_at, \'%H:%i\') AS hora'),'oficios.remetente', 'oficio_tipos.descricao as tipo_oficio', 'oficio_situacaos.descricao as situacao_oficio', 'oficios.observacao', 'users.name as operador', 'oficios.chave',
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(oficios.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(oficios.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'oficios.concluido as concluido',
+          'oficios.grupo_id as grupo_id',
+          DB::raw('DATE_FORMAT(oficios.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(oficios.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'oficios.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         //filtros
         $oficio = $oficio->where('oficios.id', '=', $id);
@@ -652,7 +729,31 @@ class OficioController extends Controller
             $this->pdf->Ln();
             $this->pdf->MultiCell(186, 6, utf8_decode($oficio->observacao), 1, 'L', false);
         }
-        
+        if ($oficio->grupo_id > 1){
+          $this->pdf->Cell(126, 6, utf8_decode('Encaminhado para'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+          $this->pdf->Ln();
+          $this->pdf->Cell(126, 6, utf8_decode($oficio->encaminhado_para), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($oficio->data_encaminhamento), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($oficio->hora_encaminhamento), 1, 0,'L');
+          $this->pdf->Ln();
+        }
+        if ($oficio->concluido == 's'){
+          $this->pdf->Cell(126, 6, utf8_decode('Resposta da conclusão'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+          $this->pdf->Ln();
+          $this->pdf->Cell(126, 6, utf8_decode($oficio->resposta), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($oficio->data_conclusao), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($oficio->hora_conclusao), 1, 0,'L');
+          $this->pdf->Ln();
+          if ($oficio->resposta_mensagem != ''){
+            $this->pdf->Cell(186, 6, utf8_decode('Mensagem de resposta'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->MultiCell(186, 6, utf8_decode($oficio->resposta_mensagem), 1, 'L', false);
+          }
+        }
         // tramitações
         // consulta secundariatramitacoes
         $tramitacoes = DB::table('oficio_tramitacaos');

@@ -282,12 +282,10 @@ class MemorandoController extends Controller
         $this->validate($request, [
             'remetente' => 'required',
             'memorando_tipo_id' => 'required',
-            'memorando_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
             'memorando_tipo_id.required' => 'Selecione o tipo do memorando',
-            'memorando_situacao_id.required' => 'Selecione a situação do memorando',
         ]);
 
         $memorando = Memorando::findOrFail($id);

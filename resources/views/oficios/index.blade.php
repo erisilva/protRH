@@ -52,7 +52,7 @@
                 <th scope="col">Remetente(s)/Assunto</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Situação</th>
-                <th scope="col">Operador</th>
+                <th scope="col">Grupo</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -65,7 +65,7 @@
                 <td>{{$oficio->remetente}}</td>
                 <td>{{$oficio->oficioTipo->descricao}}</td>
                 <td>{{$oficio->oficioSituacao->descricao}}</td>
-                <td>{{$oficio->user->name}}</td>
+                <td>{{$oficio->grupo->descricao}}</td>
                 <td>
                   <div class="btn-group" role="group">
                     <a href="{{route('oficios.edit', $oficio->id)}}" class="btn btn-primary btn-sm" role="button"><i class="fas fa-edit"></i></a>
@@ -95,10 +95,16 @@
         <div class="modal-body">
           <!-- Filtragem dos dados -->
           <form method="GET" action="{{ route('oficios.index') }}">
-            <div class="form-group">
-              <label for="remetente">Remetente</label>
-                <input type="text" class="form-control" id="remetente" name="remetente" value="{{request()->input('remetente')}}">
-            </div>  
+            <div class="form-row">
+              <div class="form-group col-md-9">
+                <label for="remetente">Remetente</label>
+                  <input type="text" class="form-control" id="remetente" name="remetente" value="{{request()->input('remetente')}}">
+              </div>  
+              <div class="form-group col-md-3">
+                <label for="operador">Operador</label>
+                <input type="text" class="form-control" id="operador" name="operador" value="{{request()->input('operador')}}">
+              </div>
+            </div>             
             <div class="form-row">
               <div class="form-group col-md-4">
                 <label for="numero">Nº</label>
@@ -113,11 +119,7 @@
                 <input type="text" class="form-control" id="dtafinal" name="dtafinal" value="{{request()->input('dtafinal')}}" autocomplete="off">                
               </div>  
             </div>
-            <div class="form-row">
-              <div class="form-group col-md-4">
-                <label for="operador">Operador</label>
-                <input type="text" class="form-control" id="operador" name="operador" value="{{request()->input('operador')}}">
-              </div>
+            <div class="form-row">  
               <div class="form-group col-md-4">
                 <label for="oficio_tipo_id">Tipo do Ofício</label>
                 <select class="form-control" name="oficio_tipo_id" id="oficio_tipo_id">
@@ -135,7 +137,16 @@
                   <option value="{{$oficiosituacao->id}}" {{ ($oficiosituacao->id == request()->input('oficio_situacao_id')) ? ' selected' : '' }} >{{$oficiosituacao->descricao}}</option>
                   @endforeach
                 </select>
-              </div>  
+              </div>
+              <div class="form-group col-md-4">
+                <label for="oficio_grupo_id">Grupo de Trabalho</label>
+                <select class="form-control" name="oficio_grupo_id" id="oficio_grupo_id">
+                  <option value="">Mostrar todos</option>
+                  @foreach($oficiogrupos as $oficiologrupo)
+                  <option value="{{$oficiologrupo->id}}" {{ ($oficiologrupo->id == request()->input('oficio_grupo_id')) ? ' selected' : '' }} >{{$oficiologrupo->descricao}}</option>
+                  @endforeach
+                </select>
+              </div> 
             </div>
             <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Pesquisar</button>
             <a href="{{ route('oficios.index') }}" class="btn btn-primary btn-sm" role="button">Limpar</a>
@@ -181,11 +192,15 @@ $(document).ready(function(){
         var filtro_oficio_situacao_id = $('select[name="oficio_situacao_id"]').val();
         if (typeof filtro_oficio_situacao_id === "undefined") {
           filtro_oficio_situacao_id = "";
-        }        
+        }
+        var filtro_oficio_grupo_id = $('select[name="oficio_grupo_id"]').val();
+        if (typeof filtro_oficio_grupo_id === "undefined") {
+          filtro_oficio_grupo_id = "";
+        }     
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('oficios.export.csv') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&oficio_tipo_id=" + filtro_oficio_tipo_id + "&oficio_situacao_id=" + filtro_oficio_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('oficios.export.csv') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&oficio_tipo_id=" + filtro_oficio_tipo_id + "&oficio_situacao_id=" + filtro_oficio_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal + "&oficio_grupo_id=" + filtro_oficio_grupo_id,"_self");
     });
 
     $('#btnExportarPDF').on('click', function(){
@@ -199,11 +214,15 @@ $(document).ready(function(){
         var filtro_oficio_situacao_id = $('select[name="oficio_situacao_id"]').val();
         if (typeof filtro_oficio_situacao_id === "undefined") {
           filtro_oficio_situacao_id = "";
-        }        
+        }
+        var filtro_oficio_grupo_id = $('select[name="oficio_grupo_id"]').val();
+        if (typeof filtro_oficio_grupo_id === "undefined") {
+          filtro_oficio_grupo_id = "";
+        }       
         var filtro_dtainicio = $('input[name="dtainicio"]').val();
         var filtro_dtafinal = $('input[name="dtafinal"]').val();
 
-        window.open("{{ route('oficios.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&oficio_tipo_id=" + filtro_oficio_tipo_id + "&oficio_situacao_id=" + filtro_oficio_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal,"_self");
+        window.open("{{ route('oficios.export.pdf') }}" + "?remetente=" + filtro_remetente + "&numero=" + filtro_numero + "&operador=" + filtro_operador + "&oficio_tipo_id=" + filtro_oficio_tipo_id + "&oficio_situacao_id=" + filtro_oficio_situacao_id + "&dtainicio=" + filtro_dtainicio + "&dtafinal=" + filtro_dtafinal + "&oficio_grupo_id=" + filtro_oficio_grupo_id,"_self");
     });
 
     $('#dtainicio').datepicker({

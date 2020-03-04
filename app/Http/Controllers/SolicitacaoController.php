@@ -7,6 +7,8 @@ use App\SolicitacaoTipo;
 use App\SolicitacaoSituacao;
 use App\SolicitacaoTramitacao;
 use App\Perpage;
+use App\Grupo;
+use App\Resposta;
 
 use Response;
 
@@ -87,6 +89,12 @@ class SolicitacaoController extends Controller
             }
         }
 
+        if (request()->has('solicitacao_grupo_id')){
+            if (request('solicitacao_grupo_id') != ""){
+                $solicitacoes = $solicitacoes->where('grupo_id', '=', request('solicitacao_grupo_id'));
+            }
+        } 
+
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 // converte o formato de entrada dd/mm/yyyy para o formato aceito pelo mysql
@@ -132,7 +140,10 @@ class SolicitacaoController extends Controller
 
         $solicitacaosituacoes = SolicitacaoSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('solicitacoes.index', compact('solicitacoes', 'perpages', 'solicitacaotipos', 'solicitacaosituacoes'));
+        // consulta a tabela dos tipos de protocolo
+        $solicitacaogrupos = Grupo::orderBy('descricao', 'asc')->get();
+
+        return view('solicitacoes.index', compact('solicitacoes', 'perpages', 'solicitacaotipos', 'solicitacaosituacoes', 'solicitacaogrupos'));
     }
 
     /**
@@ -148,9 +159,7 @@ class SolicitacaoController extends Controller
 
         $solicitacaotipos = SolicitacaoTipo::orderBy('descricao', 'asc')->get();
 
-        $solicitacaosituacoes = SolicitacaoSituacao::orderBy('descricao', 'asc')->get();
-
-        return view('solicitacoes.create', compact('solicitacaotipos', 'solicitacaosituacoes'));
+        return view('solicitacoes.create', compact('solicitacaotipos'));
     }
 
     /**
@@ -176,15 +185,23 @@ class SolicitacaoController extends Controller
 
         $solicitacao_input['user_id'] = $user->id;
 
+        // grupo de trabalho padrão
+        $solicitacao_input['grupo_id'] = 1; // não encaminhado para nenhuma grupo
+
+        // dados da conclusão
+        $solicitacao_input['concluido'] = 'n'; // ainda não foi concluido
+        $solicitacao_input['resposta_id'] = 1; // ainda não disponível
+
+        // situação do protocolo
+        $solicitacao_input['solicitacao_situacao_id'] = 1;
+
         $this->validate($request, [
           'remetente' => 'required',
           'solicitacao_tipo_id' => 'required',
-          'solicitacao_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
             'solicitacao_tipo_id.required' => 'Selecione o tipo de solicitação',
-            'solicitacao_situacao_id.required' => 'Selecione a situação de solicitação',
         ]);
 
         // salvar o barcode
@@ -244,7 +261,11 @@ class SolicitacaoController extends Controller
 
         $solicitacaosituacoes = SolicitacaoSituacao::orderBy('descricao', 'asc')->get();
 
-        return view('solicitacoes.edit', compact('solicitacao', 'solicitacaotipos', 'solicitacaosituacoes', 'solicitacaotramitacoes', 'anexos'));
+        $grupos = Grupo::orderBy('descricao', 'asc')->get();      
+        
+        $respostas = Resposta::orderBy('descricao', 'asc')->get(); 
+
+        return view('solicitacoes.edit', compact('solicitacao', 'solicitacaotipos', 'solicitacaosituacoes', 'solicitacaotramitacoes', 'anexos', 'grupos', 'respostas'));
     }
 
     /**
@@ -259,12 +280,10 @@ class SolicitacaoController extends Controller
         $this->validate($request, [
             'remetente' => 'required',
             'solicitacao_tipo_id' => 'required',
-            'solicitacao_situacao_id' => 'required',
         ],
         [
             'remetente.required' => 'Preencha o campo de remetente(s)',
             'solicitacao_tipo_id.required' => 'Selecione o tipo de solicitação',
-            'solicitacao_situacao_id.required' => 'Selecione a situação de solicitação',
         ]);
 
         $solicitacao = Solicitacao::findOrFail($id);
@@ -296,6 +315,79 @@ class SolicitacaoController extends Controller
     }
 
     /**
+     * Preenche a vaga com o funcionario selecionado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function concluir(Request $request, $id)
+    {
+      if (Gate::denies('solicitacao.concluir')) {
+            abort(403, 'Acesso negado.');
+      }
+
+      $this->validate($request, [
+          'resposta_id' => 'required',
+        ],
+        [
+            'resposta_id.required' => 'Selecione a resposta da conclusão do solicitação',
+        ]);
+
+      $solicitacao_input = $request->all();
+
+      $solicitacao = Solicitacao::findOrFail($id);
+
+      $solicitacao->concluido_mensagem = $solicitacao_input['concluido_mensagem'];
+
+      $solicitacao->concluido = 's';
+
+      $solicitacao->concluido_em = Carbon::now()->toDateTimeString();
+
+      $solicitacao->resposta_id = $solicitacao_input['resposta_id'];
+
+      $solicitacao->solicitacao_situacao_id = 4; // concluido
+
+      $solicitacao->save();
+
+      return redirect(route('solicitacoes.edit', $id));
+    }
+
+
+    /**
+     * Preenche a vaga com o funcionario selecionado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function encaminhar(Request $request, $id)
+    {
+      if (Gate::denies('solicitacao.encaminhar')) {
+            abort(403, 'Acesso negado.');
+      }
+
+      $this->validate($request, [
+          'grupo_id' => 'required',
+        ],
+        [
+            'grupo_id.required' => 'Selecione o grupo a ser encaminhado o solicitação',
+        ]);
+
+      $solicitacao_input = $request->all();
+
+      $solicitacao = Solicitacao::findOrFail($id);
+
+      $solicitacao->grupo_id = $solicitacao_input['grupo_id'];
+
+      $solicitacao->solicitacao_situacao_id = 2; // encaminhado
+
+      $solicitacao->encaminhado_em = Carbon::now()->toDateTimeString();
+
+      $solicitacao->save();
+
+      return redirect(route('solicitacoes.edit', $id));
+    }      
+
+    /**
      * Exportação para planilha (csv)
      *
      * @param  int  $id
@@ -320,8 +412,19 @@ class SolicitacaoController extends Controller
         $solicitacoes = $solicitacoes->join('solicitacao_tipos', 'solicitacao_tipos.id', '=', 'solicitacaos.solicitacao_tipo_id');
         $solicitacoes = $solicitacoes->join('solicitacao_situacaos', 'solicitacao_situacaos.id', '=', 'solicitacaos.solicitacao_situacao_id');
         $solicitacoes = $solicitacoes->join('users', 'users.id', '=', 'solicitacaos.user_id');
+        $solicitacoes = $solicitacoes->leftjoin('grupos', 'grupos.id', '=', 'solicitacaos.grupo_id');
+        $solicitacoes = $solicitacoes->join('respostas', 'respostas.id', '=', 'solicitacaos.resposta_id');
         // select
-        $solicitacoes = $solicitacoes->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente', 'solicitacaos.identificacao','solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador');
+        $solicitacoes = $solicitacoes->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente', 'solicitacaos.identificacao','solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador', 
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(solicitacaos.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(solicitacaos.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'solicitacaos.concluido as concluido',
+          DB::raw('DATE_FORMAT(solicitacaos.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(solicitacaos.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'solicitacaos.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         if (request()->has('numeromemorando')){
             $solicitacoes = $solicitacoes->where('solicitacaos.id', 'like', '%' . request('numeromemorando') . '%');
@@ -341,7 +444,12 @@ class SolicitacaoController extends Controller
             if (request('solicitacao_tipo_id') != ""){
                 $solicitacoes = $solicitacoes->where('solicitacaos.solicitacao_tipo_id', '=', request('solicitacao_tipo_id'));
             }
-        } 
+        }
+        if (request()->has('solicitacao_grupo_id')){
+            if (request('solicitacao_grupo_id') != ""){
+                $solicitacoes = $solicitacoes->where('solicitacaos.grupo_id', '=', request('solicitacao_grupo_id'));
+            }
+        }
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
@@ -395,8 +503,20 @@ class SolicitacaoController extends Controller
         $solicitacaos = $solicitacaos->join('solicitacao_tipos', 'solicitacao_tipos.id', '=', 'solicitacaos.solicitacao_tipo_id');
         $solicitacaos = $solicitacaos->join('solicitacao_situacaos', 'solicitacao_situacaos.id', '=', 'solicitacaos.solicitacao_situacao_id');
         $solicitacaos = $solicitacaos->join('users', 'users.id', '=', 'solicitacaos.user_id');
+        $solicitacaos = $solicitacaos->leftjoin('grupos', 'grupos.id', '=', 'solicitacaos.grupo_id');
+        $solicitacaos = $solicitacaos->join('respostas', 'respostas.id', '=', 'solicitacaos.resposta_id');
         // select
-        $solicitacaos = $solicitacaos->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente','solicitacaos.identificacao', 'solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador');
+        $solicitacaos = $solicitacaos->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente','solicitacaos.identificacao', 'solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador',
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(solicitacaos.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(solicitacaos.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'solicitacaos.concluido as concluido',
+          'solicitacaos.grupo_id as grupo_id',
+          DB::raw('DATE_FORMAT(solicitacaos.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(solicitacaos.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'solicitacaos.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         if (request()->has('numeromemorando')){
             $solicitacaos = $solicitacaos->where('solicitacaos.id', 'like', '%' . request('numeromemorando') . '%');
@@ -416,7 +536,12 @@ class SolicitacaoController extends Controller
             if (request('solicitacao_situacao_id') != ""){
                 $solicitacaos = $solicitacaos->where('solicitacaos.solicitacao_situacao_id', '=', request('solicitacao_situacao_id'));
             }
-        } 
+        }
+        if (request()->has('solicitacao_grupo_id')){
+            if (request('solicitacao_grupo_id') != ""){
+                $solicitacaos = $solicitacaos->where('solicitacaos.grupo_id', '=', request('solicitacao_grupo_id'));
+            }
+        }
         if (request()->has('dtainicio')){
              if (request('dtainicio') != ""){
                 $dataFormatadaMysql = Carbon::createFromFormat('d/m/Y', request('dtainicio'))->format('Y-m-d 00:00:00');           
@@ -466,6 +591,31 @@ class SolicitacaoController extends Controller
                 $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
                 $this->pdf->Ln();
                 $this->pdf->MultiCell(186, 6, utf8_decode($solicitacao->observacao), 1, 'L', false);
+            }
+            if ($solicitacao->grupo_id > 1){
+              $this->pdf->Cell(126, 6, utf8_decode('Encaminhado para'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+              $this->pdf->Ln();
+              $this->pdf->Cell(126, 6, utf8_decode($solicitacao->encaminhado_para), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($solicitacao->data_encaminhamento), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($solicitacao->hora_encaminhamento), 1, 0,'L');
+              $this->pdf->Ln();
+            }
+            if ($solicitacao->concluido == 's'){
+              $this->pdf->Cell(126, 6, utf8_decode('Resposta da conclusão'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+              $this->pdf->Ln();
+              $this->pdf->Cell(126, 6, utf8_decode($solicitacao->resposta), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($solicitacao->data_conclusao), 1, 0,'L');
+              $this->pdf->Cell(30, 6, utf8_decode($solicitacao->hora_conclusao), 1, 0,'L');
+              $this->pdf->Ln();
+              if ($solicitacao->resposta_mensagem != ''){
+                $this->pdf->Cell(186, 6, utf8_decode('Mensagem de resposta'), 1, 0,'L');
+                $this->pdf->Ln();
+                $this->pdf->MultiCell(186, 6, utf8_decode($solicitacao->resposta_mensagem), 1, 'L', false);
+              }
             }
 
             // tramitações
@@ -533,8 +683,20 @@ class SolicitacaoController extends Controller
         $solicitacao = $solicitacao->join('solicitacao_tipos', 'solicitacao_tipos.id', '=', 'solicitacaos.solicitacao_tipo_id');
         $solicitacao = $solicitacao->join('solicitacao_situacaos', 'solicitacao_situacaos.id', '=', 'solicitacaos.solicitacao_situacao_id');
         $solicitacao = $solicitacao->join('users', 'users.id', '=', 'solicitacaos.user_id');
+        $solicitacao = $solicitacao->leftjoin('grupos', 'grupos.id', '=', 'solicitacaos.grupo_id');
+        $solicitacao = $solicitacao->join('respostas', 'respostas.id', '=', 'solicitacaos.resposta_id');
         // select
-        $solicitacao = $solicitacao->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente','solicitacaos.identificacao', 'solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador', 'solicitacaos.chave');
+        $solicitacao = $solicitacao->select('solicitacaos.id as numeroRH', DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%d/%m/%Y\') AS data'), DB::raw('DATE_FORMAT(solicitacaos.created_at, \'%H:%i\') AS hora'),'solicitacaos.remetente','solicitacaos.identificacao', 'solicitacao_tipos.descricao as tipo_solicitacao', 'solicitacao_situacaos.descricao as situacao_solicitacao', 'solicitacaos.observacao', 'users.name as operador', 'solicitacaos.chave',
+          DB::raw("coalesce(grupos.descricao, '-') as encaminhado_para"), 
+          DB::raw('DATE_FORMAT(solicitacaos.encaminhado_em, \'%d/%m/%Y\') AS data_encaminhamento'),
+          DB::raw('DATE_FORMAT(solicitacaos.encaminhado_em, \'%H:%i\') AS hora_encaminhamento'),
+          'solicitacaos.concluido as concluido',
+          'solicitacaos.grupo_id as grupo_id',
+          DB::raw('DATE_FORMAT(solicitacaos.concluido_em, \'%d/%m/%Y\') AS data_conclusao'),
+          DB::raw('DATE_FORMAT(solicitacaos.concluido_em, \'%H:%i\') AS hora_conclusao'),
+          DB::raw("coalesce(respostas.descricao, '-') as resposta"),
+          'solicitacaos.concluido_mensagem as resposta_mensagem',
+        );
         // filtros
         //filtros
         $solicitacao = $solicitacao->where('solicitacaos.id', '=', $id);
@@ -571,6 +733,31 @@ class SolicitacaoController extends Controller
             $this->pdf->Cell(186, 6, utf8_decode('Observações'), 1, 0,'L');
             $this->pdf->Ln();
             $this->pdf->MultiCell(186, 6, utf8_decode($solicitacao->observacao), 1, 'L', false);
+        }
+        if ($solicitacao->grupo_id > 1){
+          $this->pdf->Cell(126, 6, utf8_decode('Encaminhado para'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+          $this->pdf->Ln();
+          $this->pdf->Cell(126, 6, utf8_decode($solicitacao->encaminhado_para), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($solicitacao->data_encaminhamento), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($solicitacao->hora_encaminhamento), 1, 0,'L');
+          $this->pdf->Ln();
+        }
+        if ($solicitacao->concluido == 's'){
+          $this->pdf->Cell(126, 6, utf8_decode('Resposta da conclusão'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Data'), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode('Hora'), 1, 0,'L');
+          $this->pdf->Ln();
+          $this->pdf->Cell(126, 6, utf8_decode($solicitacao->resposta), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($solicitacao->data_conclusao), 1, 0,'L');
+          $this->pdf->Cell(30, 6, utf8_decode($solicitacao->hora_conclusao), 1, 0,'L');
+          $this->pdf->Ln();
+          if ($solicitacao->resposta_mensagem != ''){
+            $this->pdf->Cell(186, 6, utf8_decode('Mensagem de resposta'), 1, 0,'L');
+            $this->pdf->Ln();
+            $this->pdf->MultiCell(186, 6, utf8_decode($solicitacao->resposta_mensagem), 1, 'L', false);
+          }
         }
         
         // tramitações

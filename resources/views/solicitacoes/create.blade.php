@@ -26,7 +26,7 @@
         <label for="identificacao">Identificação</label>
         <input type="text" class="form-control" id="identificacao" name="identificacao" value="{{{ old('identificacao') ?? '' }}}">
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-8">
         <label for="solicitacao_tipo_id">Tipo de Solicitação</label>
         <select class="form-control {{ $errors->has('solicitacao_tipo_id') ? ' is-invalid' : '' }}" name="solicitacao_tipo_id" id="solicitacao_tipo_id">
           <option value="" selected="true">Selecione ...</option>        
@@ -37,20 +37,6 @@
         @if ($errors->has('solicitacao_tipo_id'))
         <div class="invalid-feedback">
         {{ $errors->first('solicitacao_tipo_id') }}
-        </div>
-        @endif
-      </div>
-      <div class="form-group col-md-4">
-        <label for="solicitacao_situacao_id">Situação de Solicitação</label>
-        <select class="form-control {{ $errors->has('solicitacao_situacao_id') ? ' is-invalid' : '' }}" name="solicitacao_situacao_id" id="solicitacao_situacao_id">
-          <option value="" selected="true">Selecione ...</option>        
-          @foreach($solicitacaosituacoes as $solicitacaosituacoe)
-          <option value="{{$solicitacaosituacoe->id}}">{{$solicitacaosituacoe->descricao}}</option>
-          @endforeach
-        </select>
-        @if ($errors->has('solicitacao_situacao_id'))
-        <div class="invalid-feedback">
-        {{ $errors->first('solicitacao_situacao_id') }}
         </div>
         @endif
       </div>
